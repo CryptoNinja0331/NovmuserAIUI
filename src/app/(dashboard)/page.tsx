@@ -1,7 +1,7 @@
 export default function Home() {
   return (
     <div>
-      home
+      <h1>dashaboard home</h1>
     </div>
   );
 }

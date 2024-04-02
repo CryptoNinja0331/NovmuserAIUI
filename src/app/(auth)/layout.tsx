@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
+import '../globals.css';
 import { ClerkProvider, ClerkLoading, ClerkLoaded } from '@clerk/nextjs';
-import Navbar from "@/components/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -22,13 +21,12 @@ export default function RootLayout({
           <div>
             <div>
               <ClerkLoading>
-                <div>
+                <div className="text-center text-xl mt-4">
                   Loading...........
                 </div>
               </ClerkLoading>
             </div>
             <ClerkLoaded>
-              <Navbar />
               {children}
             </ClerkLoaded>
           </div>
