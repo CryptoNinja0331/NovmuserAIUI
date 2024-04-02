@@ -1,16 +1,18 @@
 import Navbar from "@/components/ui/Navbar";
 import Sidebar from "@/components/ui/Sidebar";
 import '../globals.css';
-import { auth, ClerkLoading, ClerkProvider } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import { ClerkLoading, ClerkProvider } from "@clerk/nextjs";
 
 
-export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-    const { userId } = await auth()
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 
-    if (!userId) {
-        redirect('/sing-in')
-    }
+
+
+
+
+
+
+
 
     return (
         <ClerkProvider>
