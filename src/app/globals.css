@@ -78,3 +78,28 @@
 .gird-row{
   grid-row: 1 / -1;
 }
+
+.gradient-bg{
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url('../assets/images/section-bg.png')
+
+}
+
+/* clerk ui design overwrite  */
+.cl-internal-105jsc1{
+  background-color: #151522 !important;
+}
+
+.cl-formFieldInput{
+  background-color: transparent !important;
+}
+
+.cl-formFieldInput:focus{
+  box-shadow: none !important;
+}
+
+
+.button-gradient{
+  background-image:  linear-gradient(94.4deg, #7000ff, #0c65c2);;
+}

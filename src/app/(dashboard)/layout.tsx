@@ -3,22 +3,13 @@ import Sidebar from "@/components/ui/Sidebar";
 import '../globals.css';
 import { ClerkLoading, ClerkProvider } from "@clerk/nextjs";
 
-
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-
-
-
-
-
-
-
-
 
     return (
         <ClerkProvider>
             <html lang="en">
                 <body >
-                    <div>
+                    <div >
                         <div>
                             <ClerkLoading>
                                 <div className="text-center text-xl mt-4">
@@ -30,7 +21,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                             <Navbar />
                             <Sidebar />
 
-                            <main className="bg-gray-50 p-10 pb-16">
+                            <main className="bg-gray-50 p-10 pb-16 bg-[#0F0F1A]">
                                 <div className="p-4">{children}</div>
                             </main>
 
