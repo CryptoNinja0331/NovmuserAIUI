@@ -6,6 +6,7 @@ export default function Page() {
             <SignIn appearance={{
                 elements: {
                     formButtonPrimary:
+
                         "button-gradient text-sm normal-case",
                 },
             }} />
