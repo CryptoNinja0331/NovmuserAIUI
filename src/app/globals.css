@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background:240, 4%, 5%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -28,7 +28,7 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
+    --border:0, 0%, 20%;
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
@@ -98,8 +98,24 @@
 .cl-formFieldInput:focus{
   box-shadow: none !important;
 }
+ /* overwrite css end  */
 
 
 .button-gradient{
-  background-image:  linear-gradient(94.4deg, #7000ff, #0c65c2);;
+  background-image:  linear-gradient(94.4deg, #7000ff, #0c65c2);
 }
+
+/* .button-gradient-2{
+  background:linear-gradient(90deg, #9064da 0, #2171e0 49.37%, #844eb4 101.93%) !important;
+} */
+
+
+
+.button-gradient-2{
+
+  background: linear-gradient(136.85deg, #ff37f2 -15.82%, #405aff 99.57%) !important;
+  color: #fff !important;
+
+}
+
+
