@@ -4,7 +4,7 @@ import '../globals.css';
 import style from '../style.module.css';
 import { ClerkLoading, ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
-
+import { ThemeProvider } from "@/components/theme-provider";
 export const metadata: Metadata = {
     title: "Your Personal AI Novel Writer",
     description: "Your Personal AI Novel Writer",
@@ -23,12 +23,22 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                                 </div>
                             </ClerkLoading>
                         </div>
-                        <div className="grid grid-cols-[14rem_1fr] grid-rows-[auto_1fr] h-screen">
+                        <div className="grid  grid-cols-[14rem_1fr] grid-rows-[auto_1fr] h-screen">
                             <Navbar />
                             <Sidebar />
 
-                            <main className=" p-10 pb-16 ">
-                                <div className="p-4">{children}</div>
+                            <main className=" p-10 pb-16 z-[49] relative">
+
+
+
+                                <div className="p-4"><ThemeProvider
+                                    attribute="class"
+                                    // defaultTheme="dark"
+                                    enableSystem
+                                    disableTransitionOnChange
+                                >
+                                    {children}
+                                </ThemeProvider></div>
                             </main>
 
                         </div>

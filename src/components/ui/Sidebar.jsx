@@ -1,4 +1,13 @@
 import { Button } from "./button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const Sidebar = () => {
   return (
@@ -14,9 +23,29 @@ const Sidebar = () => {
         style={{ marginTop: "2rem" }}
         className=" mx-auto text-center relative"
       >
-        <Button className="button-gradient-2 z-[9999]  relative">
-          Add Novel
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="button-gradient-2 z-[49]  relative">
+              Add Novel
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px] bg-[#110630] border-css">
+            <DialogHeader>
+              <DialogTitle>Edit profile</DialogTitle>
+              <DialogDescription>
+                Make changes to your profile here. Click save when you're done.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                this is sumon bala
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
