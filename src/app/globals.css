@@ -29,7 +29,7 @@
     --destructive-foreground: 210 40% 98%;
 
     --border:0, 0%, 20%;
-    --input: 214.3 31.8% 91.4%;
+    --input:260, 100%, 99%;
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
@@ -119,3 +119,29 @@
 }
 
 
+.border-imaged-element {
+  border-width: 4px;
+  border-style: solid;
+  border-radius: 10px;
+  border-image: 
+    linear-gradient(
+      to right, #13a338 0%, #1f3876 100%
+    ) 4 4 4 4 stretch; /* Adjust the slice values to apply to all sides */
+}
+
+
+.border-gradient-rounded {
+  /* Border */
+  border: 2px solid transparent;
+  border-radius: 20px;
+  background: 
+    linear-gradient(to right, #140E2D, rgb(22, 21, 21)), 
+    linear-gradient(136.85deg, #ff37f2 -15.82%, #405aff 99.57%); 
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  
+}
+
+.bg-black\/80 {
+  background-color: rgb(0 0 0 / 0.5);
+}

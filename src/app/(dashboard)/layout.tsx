@@ -1,10 +1,11 @@
 import Navbar from "@/components/ui/Navbar";
-import Sidebar from "@/components/ui/Sidebar";
 import '../globals.css';
 import style from '../style.module.css';
 import { ClerkLoading, ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
+import Sidebar from "@/components/ui/Sidebar";
+
 export const metadata: Metadata = {
     title: "Your Personal AI Novel Writer",
     description: "Your Personal AI Novel Writer",
@@ -28,9 +29,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                             <Sidebar />
 
                             <main className=" p-10 pb-16 z-[49] relative">
-
-
-
                                 <div className="p-4"><ThemeProvider
                                     attribute="class"
                                     // defaultTheme="dark"

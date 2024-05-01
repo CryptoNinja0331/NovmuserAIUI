@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import '../globals.css';
 import { ClerkProvider, ClerkLoading, ClerkLoaded } from '@clerk/nextjs';
-import { dark } from '@clerk/themes';
-const inter = Inter({ subsets: ["latin"] });
+import { Toaster } from "@/components/ui/sonner";
+const poppins = Poppins({
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
 export const metadata: Metadata = {
   title: "Your Personal AI Novel Writer",
   description: "Your Personal AI Novel Writer",
@@ -15,11 +17,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider appearance={{
-      baseTheme: dark
-    }}>
+    <ClerkProvider >
       <html lang="en">
-        <body className={inter.className}>
+        <body className={poppins.className}>
           <div>
             <div>
               <ClerkLoading>
@@ -32,6 +32,7 @@ export default function RootLayout({
               {children}
             </ClerkLoaded>
           </div>
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>
