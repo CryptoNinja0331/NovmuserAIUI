@@ -5,6 +5,7 @@ import { ClerkProvider, ClerkLoading, ClerkLoaded } from '@clerk/nextjs';
 import { Toaster } from "@/components/ui/sonner";
 const poppins = Poppins({
   weight: ["400", "500", "600", "700", "800", "900"],
+  subsets: ['latin']
 });
 export const metadata: Metadata = {
   title: "Your Personal AI Novel Writer",
