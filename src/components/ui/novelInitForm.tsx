@@ -1,4 +1,4 @@
-'use client';
+'use client';;
 import { Button } from "./button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -7,67 +7,54 @@ import { Textarea } from "./textarea";
 import { useFormState } from "react-dom";
 import { handleInitNovel } from "@/lib/actions/novel.init";
 import { useFormStatus } from 'react-dom';
-import Image from "next/image";
-import prepareImage from '../../assets/images/writter.svg';
+
+import PrepareNovel from "../PrepareNovel";
+
 const initialState = {
     message: '',
+    data: []
 }
+
 const NovelInitForm = () => {
     const [state, formAction] = useFormState(handleInitNovel, initialState)
+
     return (
-        <div
-            style={{ marginTop: "2rem" }}
-            className=" mx-auto text-center relative"
-        >
+        <div style={{ marginTop: "2rem" }} className=" mx-auto text-center relative" >
             <Dialog>
                 <DialogTrigger asChild>
-                    <Button className="button-gradient-2 z-[49]  relative">
-                        Add Novel
-                    </Button>
+                    <Button className="button-gradient-2 z-[49] relative"> Add Novel </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[500px] bg-[#110630] border-css border-gradient-rounded text-white">
-                    {
-                        state?.data?.success ?
-                            <div className="text-white p-4">
-                                <Image className="mx-auto" style={{ width: '60%' }} src={prepareImage} alt="prepare image " />
-                                <div className="text-center mt-8">
-                                    <Button className="button-gradient-2">Prepare Novel</Button>
+                <DialogContent className="sm:max-w-[1000px] bg-[#110630] border-css border-gradient-rounded text-white">
+                    {state?.data?.success ? (
+                        <PrepareNovel novelId={state?.data?.data?.id} />
+                    ) : (
+                        <form action={formAction}>
+                            <DialogHeader style={{ marginBottom: "1rem" }}>
+                                <h1 className="text-xl font-medium">Please Fill Input</h1>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                                <div>
+                                    <Label htmlFor="name" className="text-right mb-4 inline-block" >
+                                        Novel Name
+                                    </Label>
+                                    <Input id="name" name="name" className="col-span-3" />
+                                </div>
+                                <div >
+                                    <Label htmlFor="username" className="text-right mb-4 inline-block" >
+                                        Idea/Requirement
+                                    </Label>
+                                    <Textarea name="requirements" placeholder="Type your message here." />
+                                    <p aria-live="polite" className="block mt-2 text-sm">
+                                        {state?.message}
+                                    </p>
                                 </div>
                             </div>
-                            : <form action={formAction}>
-                                <DialogHeader style={{ marginBottom: "1rem" }}>
-                                    <h1 className="text-xl font-medium">Please Fill Input</h1>
-                                </DialogHeader>
-                                <div className="grid gap-4 py-4">
-                                    <div>
-                                        <Label htmlFor="name" className="text-right mb-4  inline-block" >
-                                            Novel Name
-                                        </Label>
-                                        <Input
-                                            id="name"
-                                            name="name"
-                                            className="col-span-3"
-                                        />
-                                    </div>
-                                    <div
-                                    >
-                                        <Label htmlFor="username" className="text-right mb-4 inline-block" >
-                                            Idea/Requirement
-                                        </Label>
-                                        <Textarea name="requirements" placeholder="Type your message here." />
-                                        <p aria-live="polite" className="block mt-2 text-sm">
-                                            {state?.message}
-                                        </p>
-                                    </div>
-                                </div>
-                                <DialogFooter className="">
-
-                                    <SubmitButton />
-                                </DialogFooter>
-                            </form>
-                    }
+                            <DialogFooter className="">
+                                <SubmitButton />
+                            </DialogFooter>
+                        </form>
+                    )}
                 </DialogContent>
-
             </Dialog>
         </div>
     );
@@ -75,14 +62,8 @@ const NovelInitForm = () => {
 
 export default NovelInitForm;
 
-
-
-
-
-
 export function SubmitButton() {
     const { pending } = useFormStatus()
-
     return (
         <Button type="submit" disabled={pending}>
             Save Changes
