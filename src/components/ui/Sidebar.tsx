@@ -8,6 +8,14 @@ const Sidebar = () => {
         Logo
       </div>
 
+      {/* <div className="text-center mt-6">
+        <Button className="button-gradient-2 z-[49] relative ">
+          <Link href={'/add-novel'}>
+            Add Novel
+          </Link>
+        </Button>
+      </div> */}
+
       <NovelInitForm />
     </div>
   );

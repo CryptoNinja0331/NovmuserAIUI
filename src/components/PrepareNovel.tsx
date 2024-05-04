@@ -68,7 +68,7 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
                 prepareNovel?.success ?
                     <AgentUi novelMsg={novelMsg} />
                     : <div>
-                        <Image className="mx-auto" style={{ width: '60%' }} src={prepareImage} alt="prepare image " />
+                        <Image className="mx-auto" style={{ width: '36%' }} src={prepareImage} alt="prepare image " />
                         <div className="text-center mt-8">
                             <Button className="button-gradient-2" onClick={handlePrepareNovel}>Prepare Novel</Button>
                         </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-
+import aiAgent from '../assets/images/artificial-intelligence 2.png';
+import Image from "next/image";
 interface Agent {
     name: string;
     novel: string | null;
@@ -56,39 +57,48 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg }) => {
     };
 
     return (
-        <>
-            <div className="flex">
-                <div>
+        <div>
+            <div className="flex gap-4 ">
+                <div className="w-[90%] max-h-[80vh] overflow-y-auto">
+                    <div className="w-full whitespace-normal">
+                        {agents[activeTab] && agents[activeTab].novel !== null ? (
+                            agents[activeTab].novel
+                        ) : agents[activeTab] && agents[activeTab].working ? (
+                            <div>{agents[activeTab].name} is working, please wait...</div>
+                        ) : (
+                            null
+                        )}
+
+
+                    </div>
+                </div>
+                <div className="w-[10%] space-y-4 ">
                     {agents.map((agent, index) => (
                         <div
-                            className={`${activeTab === index ? "active" : ""} list-none`}
+                            // className={`${activeTab === index ? "active" : ""} list-none`}
+                            className={`border border-[#441760] px-4 py-2`}
                             key={agent.name}
                             onClick={() => handleTabChange(index)}
                         >
-                            {agent.name}
+                            <div className="flex flex-col items-center">
+                                <Image src={aiAgent} style={{ transform: 'rotateY(180deg)' }} className="rotate-90" alt="ai gent" width={50} height={50} />
+                                <p className="text-sm mt-1">{agent.name}</p>
+                            </div>
                         </div>
                     ))}
                 </div>
-                <div>
 
-                    {agents[activeTab] && agents[activeTab].novel !== null ? (
-                        agents[activeTab].novel
-                    ) : agents[activeTab] && agents[activeTab].working ? (
-                        <div>{agents[activeTab].name} is working, please wait...</div>
-                    ) : (
-                        null
-                    )}
-
-                    {preparing ? (
-                        <div>{workingAgent || "Agent is working, please wait..."}</div>
-                    ) : (
-                        <div>Finished Prepare</div>
-                    )}
-                </div>
 
 
             </div>
-        </>
+            <div className="fixed left-[50%]">
+                {preparing ? (
+                    <div>{workingAgent || "Agent is working, please wait..."}</div>
+                ) : (
+                    <div>Finished Prepare</div>
+                )}
+            </div>
+        </div>
     );
 };
 
