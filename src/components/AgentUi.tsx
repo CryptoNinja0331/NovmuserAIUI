@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import aiAgent from '../assets/images/artificial-intelligence 2.png';
 import Image from "next/image";
+import BrainstormingUi from "./aiAgent/BrainstormingUi";
+import WorldViewUi from "./aiAgent/WorldViewUi";
+import CharacterProfileUi from "./aiAgent/CharacterProfileUi";
+import ChapterOutlineUi from "./aiAgent/ChapterOutlineUi";
+import PlotUi from "./aiAgent/PlotUi";
 interface Agent {
     name: string;
     novel: string | null;
@@ -59,16 +64,27 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg }) => {
     return (
         <div>
             <div className="flex gap-4 ">
-                <div className="w-[90%] max-h-[80vh] overflow-y-auto">
-                    <div className="w-full whitespace-normal">
+                <div className="">
+                    <div className="  max-h-[80vh]">
                         {agents[activeTab] && agents[activeTab].novel !== null ? (
-                            agents[activeTab].novel
+                            // Render the appropriate UI component based on the active tab
+                            activeTab === 0 ? (
+                                <BrainstormingUi novelMsg={agents[activeTab].novel} />
+                            ) : activeTab === 1 ? (
+                                <WorldViewUi novelMsg={agents[activeTab].novel} />
+                            ) : activeTab === 2 ? (
+                                <CharacterProfileUi novelMsg={agents[activeTab].novel} />
+                            ) : activeTab === 3 ? (
+                                <PlotUi novelMsg={agents[activeTab].novel} />
+                            ) : activeTab === 4 ? (
+                                <ChapterOutlineUi novelMsg={agents[activeTab].novel} />
+                            ) : (
+                                // Render other UI components for other tabs (if any)
+                                <div>{agents[activeTab].novel}</div>
+                            )
                         ) : agents[activeTab] && agents[activeTab].working ? (
                             <div>{agents[activeTab].name} is working, please wait...</div>
-                        ) : (
-                            null
-                        )}
-
+                        ) : null}
 
                     </div>
                 </div>
@@ -91,12 +107,12 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg }) => {
 
 
             </div>
-            <div className="fixed left-[50%]">
-                {preparing ? (
+            <div className="">
+                {/* {preparing ? (
                     <div>{workingAgent || "Agent is working, please wait..."}</div>
                 ) : (
                     <div>Finished Prepare</div>
-                )}
+                )} */}
             </div>
         </div>
     );

@@ -148,126 +148,30 @@ letter-spacing: 1px;
 
 
 
-
-
-:root {
-  --text-color: #9eb25d;
-  --bg-color: rgba(238, 252, 206, 0.4);
+.text-violet-gradient{
+  background: linear-gradient(90deg, rgb(232, 85, 222) -26.01%, rgb(84, 0, 238) 121.7%) text;
+  font-weight: 700;
+  -webkit-text-fill-color: transparent;
 }
 
 
 
-.main__container {
-  border-radius: 2rem;
-  display: flex;
-  margin-top: 4rem;
+.bubble {
+  position: relative;
+ 
+  /* background: red; */
 
-  flex-direction: column;
-  gap: 4rem;
-
-  align-items: center;
-  font-family: "Space Grotesk", sans-serif;
-  width: max-content;
-  padding: 8rem;
-  color: var(--text-color);
-  background: var(--bg-color);
-  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
 }
 
-
-.tab__header {
-  display: flex;
-  list-style: none;
-  gap: 2rem;
-}
-
-.tab__header li {
-  flex: 1;
-  cursor: pointer;
-  padding: 2rem;
-  border: 2px solid var(--text-color);
-  text-align: center;
-  border-top-right-radius: 100%;
-  border-top-left-radius: 100%;
-  font-size: 2rem;
-}
-
-.tab__container {
-  display: flex;
-  flex-direction: column;
-  font-size: 2rem;
-  width: 80rem;
-  border-radius: 2rem;
-  padding: 4rem;
-  box-shadow: inset -3px -3px 3px rgba(0, 0, 0, 0.2),
-    inset 3px 3px 3px rgba(0, 0, 0, 0.2);
-  gap: 2rem;
-}
-
-.tab__content {
-  padding: 2rem;
-  min-height: 25rem;
-  border: 2px solid var(--text-color);
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  align-items: center;
-  gap: 4rem;
-  background: #fff;
-  border-radius: 2rem;
-}
-
-.tab__content img {
-  max-width: 31rem;
-  max-height: 20rem;
-  width: 100%;
-}
-
-.tab__content p {
-  text-align: center;
-}
-
-.active {
-  background: var(--text-color);
-
-  color: #fff;
-  font-weight: 600;
-}
-
-@media screen and (max-width: 1000px) {
-  .main__container {
-    gap: 2rem;
-    padding: 1rem;
-    width: 95%;
-    margin: 5rem auto;
-  }
-
-  h1 {
-    font-size: 3rem;
-  }
-
-  .tab__header {
-    flex-wrap: wrap;
-  }
-
-  .tab__content {
-    gap: 2rem;
-    min-height: 35rem;
-  }
-  .tab__header li {
-    font-size: 1.6rem;
-  }
-
-  .tab__container {
-    width: 100%;
-    padding: 2rem;
-  }
-
-  .tab__content img {
-    max-width: 150px;
-  }
-
-  .tab__content p {
-    font-size: 1.6rem;
-  }
+.bubble::before{
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  transform: rotate(180deg);
+  right: -29px;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 15px solid #441760;
+   
 }
