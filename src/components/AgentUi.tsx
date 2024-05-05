@@ -63,9 +63,9 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg }) => {
 
     return (
         <div>
-            <div className="flex gap-4 ">
-                <div className="">
-                    <div className="  max-h-[80vh]">
+            <div className="flex gap-8 ">
+                <div className="w-[90%]">
+                    <div className=" bg-[#170F21] max-h-[80vh] overflow-y-auto overflow-x-hidden agent-card border-2 shadow-md border-input p-6 text-sm rounded-md">
                         {agents[activeTab] && agents[activeTab].novel !== null ? (
                             // Render the appropriate UI component based on the active tab
                             activeTab === 0 ? (
@@ -88,11 +88,11 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg }) => {
 
                     </div>
                 </div>
-                <div className="w-[10%] space-y-4 ">
+                <div className="w-[10%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border">
                     {agents.map((agent, index) => (
                         <div
                             // className={`${activeTab === index ? "active" : ""} list-none`}
-                            className={`border border-[#441760] px-4 py-2`}
+                            className={` cursor-pointer px-3 py-2`}
                             key={agent.name}
                             onClick={() => handleTabChange(index)}
                         >
@@ -108,11 +108,11 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg }) => {
 
             </div>
             <div className="">
-                {/* {preparing ? (
+                {preparing ? (
                     <div>{workingAgent || "Agent is working, please wait..."}</div>
                 ) : (
                     <div>Finished Prepare</div>
-                )} */}
+                )}
             </div>
         </div>
     );

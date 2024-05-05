@@ -18,6 +18,7 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
 
         newWebsocket.onmessage = (event) => {
             setNovelMsg(event.data)
+            console.log(event.data);
         };
 
         newWebsocket.onerror = (error) => {

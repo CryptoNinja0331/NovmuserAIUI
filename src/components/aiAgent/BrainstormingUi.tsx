@@ -10,7 +10,7 @@ const BrainstormingUi: React.FC<BrainstormingUiProps> = ({ novelMsg }) => {
     const parsedMsg = novelMsg ? JSON.parse(novelMsg) : null;
     const msg = parsedMsg ? parsedMsg.msg : '';
     return (
-        <div className='w-full agent-card border-2 shadow-md border-input p-4 text-sm rounded-md   '>
+        <div className='w-full    '>
             <div className='bubble' />
 
 
