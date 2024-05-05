@@ -11,7 +11,7 @@ const BrainstormingUi: React.FC<BrainstormingUiProps> = ({ novelMsg }) => {
     const msg = parsedMsg ? parsedMsg.msg : '';
     return (
         <div className='w-full    '>
-            <div className='bubble' />
+            {/* <div className='bubble' /> */}
 
 
             <div className='flex items-center justify-between my-4'>

@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
-import aiAgent from '../assets/images/artificial-intelligence 2.png';
+// import aiAgent from '../assets/images/artificial-intelligence 2.png';
+import aiAgent from '../assets/images/tick.svg';
 import Image from "next/image";
+import { FaRobot } from "react-icons/fa6";
 import BrainstormingUi from "./aiAgent/BrainstormingUi";
 import WorldViewUi from "./aiAgent/WorldViewUi";
 import CharacterProfileUi from "./aiAgent/CharacterProfileUi";
 import ChapterOutlineUi from "./aiAgent/ChapterOutlineUi";
 import PlotUi from "./aiAgent/PlotUi";
+import SimpleBar from 'simplebar-react';
+import 'simplebar-react/dist/simplebar.min.css';
 interface Agent {
     name: string;
     novel: string | null;
@@ -64,41 +68,56 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg }) => {
     return (
         <div>
             <div className="flex gap-8 ">
-                <div className="w-[90%]">
-                    <div className=" bg-[#170F21] max-h-[80vh] overflow-y-auto overflow-x-hidden agent-card border-2 shadow-md border-input p-6 text-sm rounded-md">
-                        {agents[activeTab] && agents[activeTab].novel !== null ? (
-                            // Render the appropriate UI component based on the active tab
-                            activeTab === 0 ? (
-                                <BrainstormingUi novelMsg={agents[activeTab].novel} />
-                            ) : activeTab === 1 ? (
-                                <WorldViewUi novelMsg={agents[activeTab].novel} />
-                            ) : activeTab === 2 ? (
-                                <CharacterProfileUi novelMsg={agents[activeTab].novel} />
-                            ) : activeTab === 3 ? (
-                                <PlotUi novelMsg={agents[activeTab].novel} />
-                            ) : activeTab === 4 ? (
-                                <ChapterOutlineUi novelMsg={agents[activeTab].novel} />
-                            ) : (
-                                // Render other UI components for other tabs (if any)
-                                <div>{agents[activeTab].novel}</div>
-                            )
-                        ) : agents[activeTab] && agents[activeTab].working ? (
-                            <div>{agents[activeTab].name} is working, please wait...</div>
-                        ) : null}
+                <div className="w-[85%]">
+                    <SimpleBar style={{ maxHeight: '90vh' }}>
+                        <div className=" bg-[#170F21]  overflow-y-auto overflow-x-hidden agent-card border-2 shadow-md border-input p-6 text-sm rounded-md">
+                            {agents[activeTab] && agents[activeTab].novel !== null ? (
+                                // Render the appropriate UI component based on the active tab
+                                activeTab === 0 ? (
+                                    <BrainstormingUi novelMsg={agents[activeTab].novel} />
+                                ) : activeTab === 1 ? (
+                                    <WorldViewUi novelMsg={agents[activeTab].novel} />
+                                ) : activeTab === 2 ? (
+                                    <CharacterProfileUi novelMsg={agents[activeTab].novel} />
+                                ) : activeTab === 3 ? (
+                                    <PlotUi novelMsg={agents[activeTab].novel} />
+                                ) : activeTab === 4 ? (
+                                    <ChapterOutlineUi novelMsg={agents[activeTab].novel} />
+                                ) : (
+                                    // Render other UI components for other tabs (if any)
+                                    <div>{agents[activeTab].novel}</div>
+                                )
+                            ) : agents[activeTab] && agents[activeTab].working ? (
+                                <div>{agents[activeTab].name} is working, please wait...</div>
+                            ) : null}
 
-                    </div>
+                        </div>
+
+                    </SimpleBar>
+
                 </div>
-                <div className="w-[10%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border">
+                <div className="w-[15%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border">
                     {agents.map((agent, index) => (
                         <div
-                            // className={`${activeTab === index ? "active" : ""} list-none`}
-                            className={` cursor-pointer px-3 py-2`}
+
+
                             key={agent.name}
                             onClick={() => handleTabChange(index)}
                         >
-                            <div className="flex flex-col items-center">
-                                <Image src={aiAgent} style={{ transform: 'rotateY(180deg)' }} className="rotate-90" alt="ai gent" width={50} height={50} />
-                                <p className="text-sm mt-1">{agent.name}</p>
+                            <div className={`${activeTab === index ? "active-tab" : ""}  relative list-none cursor-pointer flex gap-4 items-center justify-between agent-sidebar-item`}
+
+
+                            >
+                                <div className="flex gap-2 items-center">
+                                    <div className="item-icon-conatiner">
+                                        <FaRobot className="text-[1.5rem] item-icon" />
+                                    </div>
+                                    <span className="item-name">{agent.name}</span>
+                                </div>
+
+                                {/* <Image src={aiAgent} style={{ transform: 'rotateY(180deg)' }} className="rotate-90" alt="ai gent" width={50} height={50} /> */}
+
+                                <Image src={aiAgent} alt="ai gent" width={20} height={20} />
                             </div>
                         </div>
                     ))}
