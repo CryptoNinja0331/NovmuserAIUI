@@ -1,20 +1,12 @@
 import React from 'react';
-import { Label } from '../ui/label';
-import { Input } from '../ui/input';
 import { FaRegEdit } from "react-icons/fa";
+import { FormGroup } from '../ui/form-group';
 
 interface WorldViewUiProps {
     novelMsg: string | null;
 }
 
-const FormGroup = ({ label, value }: { label: string, value: string }) => (
-    <div className='mt-6'>
-        <div className='form-group'>
-            <Label className='mb-2 inline-block' htmlFor="email">{label}</Label>
-            <Input defaultValue={value} className='border-none font-medium bg-[#20172D]' type="email" id="email" />
-        </div>
-    </div>
-);
+
 
 const WorldViewUi: React.FC<WorldViewUiProps> = ({ novelMsg }) => {
     const data = JSON.parse(novelMsg || '{}');
@@ -34,7 +26,9 @@ const WorldViewUi: React.FC<WorldViewUiProps> = ({ novelMsg }) => {
                     <FormGroup label="Novel Style" value={novel_style} />
                 </div>
             </div>
-            <FormGroup label="Point Of View" value={point_of_view} />
+            <div className='mt-4'>
+                <FormGroup label="Point Of View" value={point_of_view} />
+            </div>
 
             <div className='my-8 border-b-2 pb-2 border-dashed border-[#eaaaff33]'>
 
@@ -53,7 +47,9 @@ const WorldViewUi: React.FC<WorldViewUiProps> = ({ novelMsg }) => {
 
 
 
-            <FormGroup label="Economy" value={economy} />
+            <div className='mt-4'>
+                <FormGroup label="Economy" value={economy} />
+            </div>
 
             <div className='flex gap-8 justify-between items-center w-full mt-5'>
                 <div className='w-1/2'>

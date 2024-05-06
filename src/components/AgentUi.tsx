@@ -66,9 +66,9 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg }) => {
     };
 
     return (
-        <div>
-            <div className="flex gap-8 ">
-                <div className="w-[85%]">
+        <div className="w-[80%] mx-auto">
+            <div className="flex gap-8 w-full">
+                <div className="w-[80%]">
                     <SimpleBar style={{ maxHeight: '90vh' }}>
                         <div className=" bg-[#170F21]  overflow-y-auto overflow-x-hidden agent-card border-2 shadow-md border-input p-6 text-sm rounded-md">
                             {agents[activeTab] && agents[activeTab].novel !== null ? (
@@ -96,7 +96,7 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg }) => {
                     </SimpleBar>
 
                 </div>
-                <div className="w-[15%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border">
+                <div className="w-[20%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border">
                     {agents.map((agent, index) => (
                         <div
 

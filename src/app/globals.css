@@ -234,3 +234,11 @@ font-weight: 600;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 }
+
+.charecter textarea{
+  resize: none;
+}
+
+.vertical-timeline--animate .vertical-timeline-element-icon.is-hidden{
+  visibility: visible !important;
+}
