@@ -25,7 +25,7 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg }) => {
     const [activeTab, setActiveTab] = useState<number>(0);
     const [preparing, setPreparing] = useState<boolean>(true);
     const [workingAgent, setWorkingAgent] = useState<string>("");
-
+    console.log(novelMsg);
     useEffect(() => {
         if (novelMsg) {
             const message = JSON.parse(novelMsg);
@@ -66,7 +66,7 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg }) => {
     };
 
     return (
-        <div className="w-[80%] mx-auto">
+        <div className=" mx-auto">
             <div className="flex gap-8 w-full">
                 <div className="w-[80%]">
                     <SimpleBar style={{ maxHeight: '90vh' }}>
