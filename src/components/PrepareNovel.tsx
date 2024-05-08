@@ -6,14 +6,14 @@ import AgentUi from './AgentUi';
 const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
 
     const [prepareNovel, setPrepareNovel] = useState(null);
-
-    const [novelMsg, setNovelMsg] = useState(null)
+    const [finishedPrepare, setFinishPreapre] = useState(null)
+    const [novelMsg, setNovelMsg] = useState()
     useEffect(() => {
         const socketUrl = `ws://novmuser-api-test.us-east-1.elasticbeanstalk.com/novel/preparing/${novelId}/ws`;
         const newWebsocket = new WebSocket(socketUrl);
         newWebsocket.onopen = () => {
             console.log('WebSocket connection opened');
-
+            setFinishPreapre(true)
         };
 
         newWebsocket.onmessage = (event) => {
@@ -27,6 +27,8 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
 
         newWebsocket.onclose = () => {
             console.log('WebSocket connection closed');
+            setFinishPreapre(false)
+
         };
 
 
@@ -67,7 +69,7 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
 
             {
                 prepareNovel?.success ?
-                    <AgentUi novelMsg={novelMsg} />
+                    <AgentUi finishedPrepare={finishedPrepare} novelMsg={novelMsg} />
                     : <div>
                         <Image className="mx-auto" style={{ width: '36%' }} src={prepareImage} alt="prepare image " />
                         <div className="text-center mt-8">

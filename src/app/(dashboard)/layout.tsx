@@ -3,8 +3,9 @@ import '../globals.css';
 import style from '../style.module.css';
 import { ClerkLoading, ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
-
+import { Toaster } from "react-hot-toast";
 import Sidebar from "@/components/ui/Sidebar";
+import StoreProvider from "./StoreProvider";
 
 export const metadata: Metadata = {
     title: "Your Personal AI Novel Writer",
@@ -25,15 +26,18 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                             </ClerkLoading>
                         </div>
                         <div className="grid  grid-cols-[14rem_1fr] grid-rows-[auto_1fr] h-screen">
-                            <Navbar />
-                            <Sidebar />
+                            <StoreProvider>
+                                <Navbar />
+                                <Sidebar />
 
-                            <main className=" p-10 pb-16 z-[49] relative">
+                                <main className=" p-10 pb-16 z-[49] relative">
+                                    <Toaster position="bottom-center" />
 
-                                {children}
+                                    {children}
 
-                            </main>
 
+                                </main>
+                            </StoreProvider>
                         </div>
                     </div>
                 </body>

@@ -280,6 +280,7 @@ width: 100%;
 }
 
 .timeline-event-content {
+  width: 100%;
   display: flex;
   justify-content: space-between;
 }
@@ -296,7 +297,7 @@ width: 100%;
 
 .timeline-connector {
   position: absolute;
-  top: 111%;
+  top: 107%;
   left: 50.1%;
   transform: translate(-50%, -50%);
   width: 10px;

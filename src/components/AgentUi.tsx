@@ -10,6 +10,7 @@ import ChapterOutlineUi from "./aiAgent/ChapterOutlineUi";
 import PlotUi from "./aiAgent/PlotUi";
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
+
 interface Agent {
     name: string;
     novel: string | null;
@@ -20,23 +21,20 @@ interface AgentUiProps {
     novelMsg: string | null;
 }
 
-const AgentUi: React.FC<AgentUiProps> = ({ novelMsg }) => {
+const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
     const [agents, setAgents] = useState<Agent[]>([]);
     const [activeTab, setActiveTab] = useState<number>(0);
     const [preparing, setPreparing] = useState<boolean>(true);
-    const [workingAgent, setWorkingAgent] = useState<string>("");
-    console.log(novelMsg);
+
+
     useEffect(() => {
         if (novelMsg) {
             const message = JSON.parse(novelMsg);
             if (message.msg_key === "finish_prepare") {
-                // If it's the finish_prepare message, stop creating agents and show "Finished Prepare"
-                setPreparing(false);
                 return;
             }
 
             setAgents((prevAgents) => {
-                // If the agent already exists, update its novel
                 const updatedAgents = prevAgents.map((agent) => {
                     if (agent.novel === null) {
                         return { ...agent, novel: novelMsg, working: false };
@@ -44,7 +42,6 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg }) => {
                     return agent;
                 });
 
-                // If a new agent's data arrives, add it to the list
                 if (!prevAgents.some((agent) => agent.novel === null)) {
                     return [...prevAgents, { name: `Agent ${prevAgents.length + 1}`, novel: novelMsg, working: false }];
                 }
@@ -54,12 +51,7 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg }) => {
         }
     }, [novelMsg]);
 
-    useEffect(() => {
-        if (preparing && agents.length > 0 && workingAgent === "") {
-            // Once the first message arrives, update the working agent message
-            setWorkingAgent(`next agent is working, please wait...`);
-        }
-    }, [preparing, agents, workingAgent]);
+
 
     const handleTabChange = (index: number) => {
         setActiveTab(index);
@@ -67,68 +59,54 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg }) => {
 
     return (
         <div className=" mx-auto">
-            <div className="flex gap-8 w-full">
-                <div className="w-[80%]">
-                    <SimpleBar style={{ maxHeight: '90vh' }}>
-                        <div className=" bg-[#170F21]  overflow-y-auto overflow-x-hidden agent-card border-2 shadow-md border-input p-6 text-sm rounded-md">
-                            {agents[activeTab] && agents[activeTab].novel !== null ? (
-                                // Render the appropriate UI component based on the active tab
-                                activeTab === 0 ? (
-                                    <BrainstormingUi novelMsg={agents[activeTab].novel} />
-                                ) : activeTab === 1 ? (
-                                    <WorldViewUi novelMsg={agents[activeTab].novel} />
-                                ) : activeTab === 2 ? (
-                                    <CharacterProfileUi novelMsg={agents[activeTab].novel} />
-                                ) : activeTab === 3 ? (
-                                    <PlotUi novelMsg={agents[activeTab].novel} />
-                                ) : activeTab === 4 ? (
-                                    <ChapterOutlineUi novelMsg={agents[activeTab].novel} />
-                                ) : (
-                                    // Render other UI components for other tabs (if any)
-                                    <div>{agents[activeTab].novel}</div>
-                                )
-                            ) : agents[activeTab] && agents[activeTab].working ? (
-                                <div>{agents[activeTab].name} is working, please wait...</div>
-                            ) : null}
-
-                        </div>
-
-                    </SimpleBar>
-
-                </div>
-                <div className="w-[20%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border">
-                    {agents.map((agent, index) => (
-                        <div
-
-
-                            key={agent.name}
-                            onClick={() => handleTabChange(index)}
-                        >
-                            <div className={`${activeTab === index ? "active-tab" : ""}  relative list-none cursor-pointer flex gap-4 items-center justify-between agent-sidebar-item`}
-
-
-                            >
-                                <div className="flex gap-2 items-center">
-                                    <div className="item-icon-conatiner">
-                                        <FaRobot className="text-[1.5rem] item-icon" />
-                                    </div>
-                                    <span className="item-name">{agent.name}</span>
-                                </div>
-
-                                {/* <Image src={aiAgent} style={{ transform: 'rotateY(180deg)' }} className="rotate-90" alt="ai gent" width={50} height={50} /> */}
-
-                                <Image src={aiAgent} alt="ai gent" width={20} height={20} />
+            {agents.length > 0 && (
+                <div className="flex gap-8 w-full">
+                    <div className="w-[80%]">
+                        <SimpleBar style={{ maxHeight: '90vh' }}>
+                            <div className=" bg-[#170F21]  overflow-y-auto overflow-x-hidden agent-card border-2 shadow-md border-input p-6 text-sm rounded-md">
+                                {agents[activeTab] && agents[activeTab].novel !== null ? (
+                                    activeTab === 0 ? (
+                                        <BrainstormingUi novelMsg={agents[activeTab].novel} />
+                                    ) : activeTab === 1 ? (
+                                        <WorldViewUi novelMsg={agents[activeTab].novel} />
+                                    ) : activeTab === 2 ? (
+                                        <CharacterProfileUi novelMsg={agents[activeTab].novel} />
+                                    ) : activeTab === 3 ? (
+                                        <PlotUi novelMsg={agents[activeTab].novel} />
+                                    ) : activeTab === 4 ? (
+                                        <ChapterOutlineUi novelMsg={agents[activeTab].novel} />
+                                    ) : (
+                                        <div>{agents[activeTab].novel}</div>
+                                    )
+                                ) : agents[activeTab] && agents[activeTab].working ? (
+                                    <div>{agents[activeTab].name} is working, please wait...</div>
+                                ) : null}
                             </div>
-                        </div>
-                    ))}
+                        </SimpleBar>
+                    </div>
+                    <div className="w-[20%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border">
+                        {agents.map((agent, index) => (
+                            <div
+                                key={agent.name}
+                                onClick={() => handleTabChange(index)}
+                            >
+                                <div className={`${activeTab === index ? "active-tab" : ""}  relative list-none cursor-pointer flex gap-4 items-center justify-between agent-sidebar-item`}>
+                                    <div className="flex gap-2 items-center">
+                                        <div className="item-icon-conatiner">
+                                            <FaRobot className="text-[1.5rem] item-icon" />
+                                        </div>
+                                        <span className="item-name">{agent.name}</span>
+                                    </div>
+                                    <Image src={aiAgent} alt="ai gent" width={20} height={20} />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-
-
-
-            </div>
+            )}
             <div className="">
-                {preparing ? (
-                    <div>{workingAgent || "Agent is working, please wait..."}</div>
+                {finishedPrepare ? (
+                    <div>{"Agent is working, please wait..."}</div>
                 ) : (
                     <div>Finished Prepare</div>
                 )}
