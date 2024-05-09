@@ -1,11 +1,10 @@
-import Navbar from "@/components/ui/Navbar";
 import '../globals.css';
 import style from '../style.module.css';
 import { ClerkLoading, ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
-import { Toaster } from "react-hot-toast";
 import Sidebar from "@/components/ui/Sidebar";
 import StoreProvider from "./StoreProvider";
+import Navbar from '@/components/ui/Navbar';
 
 export const metadata: Metadata = {
     title: "Your Personal AI Novel Writer",
@@ -17,7 +16,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <ClerkProvider>
             <html lang="en">
                 <body  >
-                    <div className={style.dashboard}>
+                    <div >
                         <div>
                             <ClerkLoading>
                                 <div className="text-center text-xl mt-4">
@@ -25,18 +24,19 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                                 </div>
                             </ClerkLoading>
                         </div>
-                        <div className="grid  grid-cols-[14rem_1fr] grid-rows-[auto_1fr] h-screen">
+                        <div className={`h-screen w-full ${style.dashboard}`} >
+
                             <StoreProvider>
-                                <Navbar />
-                                <Sidebar />
 
-                                <main className=" p-10 pb-16 z-[49] relative">
-                                    <Toaster position="bottom-center" />
+                                <div className='flex h-full'>
+                                    <Sidebar />
+                                    <main className="flex-1  z-[49] relative">
+                                        <Navbar />
+                                        {children}
 
-                                    {children}
 
-
-                                </main>
+                                    </main>
+                                </div>
                             </StoreProvider>
                         </div>
                     </div>

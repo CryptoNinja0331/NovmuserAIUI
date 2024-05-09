@@ -9,8 +9,6 @@ import { handleInitNovel } from "@/lib/actions/novel.init";
 import { useFormStatus } from 'react-dom';
 
 import PrepareNovel from "../PrepareNovel";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { increment } from "@/lib/store/features/counter/counterSlice";
 
 
 const initialState = {
@@ -19,15 +17,12 @@ const initialState = {
 }
 
 const NovelInitForm = () => {
-    const count = useAppSelector((state) => state.counter.value)
-    const dispatch = useAppDispatch()
+
     const [state, formAction] = useFormState(handleInitNovel, initialState)
 
     return (
         <div style={{ marginTop: "2rem" }} className=" mx-auto text-center relative">
-            <span>{count}</span>
 
-            <button onClick={() => dispatch(increment())}>Decrement</button>
             <Dialog>
                 <DialogTrigger asChild>
                     <Button className="button-gradient-2 z-[49] relative"> Add Novel </Button>

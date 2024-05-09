@@ -22,6 +22,7 @@ interface AgentUiProps {
 }
 
 const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
+
     const [agents, setAgents] = useState<Agent[]>([]);
     const [activeTab, setActiveTab] = useState<number>(0);
     const [preparing, setPreparing] = useState<boolean>(true);

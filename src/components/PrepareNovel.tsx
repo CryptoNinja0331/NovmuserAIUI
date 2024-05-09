@@ -5,20 +5,23 @@ import { useEffect, useState } from 'react';
 import AgentUi from './AgentUi';
 const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
 
-    const [prepareNovel, setPrepareNovel] = useState(null);
-    const [finishedPrepare, setFinishPreapre] = useState(null)
+    const [prepareNovel, setPrepareNovel] = useState<any>(null);
+    const [finishedPrepare, setFinishPreapre] = useState<any>(null)
     const [novelMsg, setNovelMsg] = useState()
+
     useEffect(() => {
         const socketUrl = `ws://novmuser-api-test.us-east-1.elasticbeanstalk.com/novel/preparing/${novelId}/ws`;
         const newWebsocket = new WebSocket(socketUrl);
         newWebsocket.onopen = () => {
             console.log('WebSocket connection opened');
             setFinishPreapre(true)
+
         };
 
         newWebsocket.onmessage = (event) => {
             setNovelMsg(event.data)
-            console.log(event.data);
+
+
         };
 
         newWebsocket.onerror = (error) => {

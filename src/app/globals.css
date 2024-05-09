@@ -317,3 +317,8 @@ width: 100%;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
+
+
+.EZDrawer .EZDrawer__container{
+  background-image: linear-gradient(to top, rgba(16, 28, 39, 0.08), #101C27) !important;
+}

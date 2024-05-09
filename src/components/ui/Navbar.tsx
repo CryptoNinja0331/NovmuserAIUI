@@ -5,8 +5,8 @@ const Navbar = async () => {
     const { userId } = await auth()
 
     return (
-        <div className='border-border border-b'>
-            <ul className='flex justify-between m-6 items-center'>
+        <div className=''>
+            <ul className='flex justify-between m-4 items-center'>
                 <h1 className='text-white'>header</h1>
                 {
                     userId && (

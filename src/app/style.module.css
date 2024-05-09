@@ -29,11 +29,11 @@
     top: 0;
     opacity: .32;
     transform: rotate(-50.41deg);
-    /* transform: rotate(-20.41deg); */
+
     bottom: 10%;
     right: -25%;
     background: linear-gradient(252.93deg, #d054ce 33.59%, #0092f4 59.88%, #20dc86 87.87%);
     filter: blur(142.5px);
-    -webkit-filter: blur(142.5px);
+  
     will-change: filter;
 }
