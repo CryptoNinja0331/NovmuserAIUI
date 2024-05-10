@@ -17,6 +17,7 @@ const WorldViewUi: React.FC<WorldViewUiProps> = ({ novelMsg }) => {
                 <FaRegEdit className='text-[#B997E3] text-xl cursor-pointer' />
             </div>
 
+
             <div className='flex gap-8 justify-between items-center w-full mt-5'>
                 <div className='w-1/2'>
                     <FormGroup label="Novel Type" value={novel_type} className="mb-4" />
