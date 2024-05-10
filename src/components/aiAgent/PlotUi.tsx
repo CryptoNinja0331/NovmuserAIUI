@@ -1,21 +1,58 @@
 import React from 'react';
 import 'react-vertical-timeline-component/style.min.css';
 
+interface Subplot {
+    plot: string;
+    involved_characters: string[];
+    expected_impact: string;
+}
+
+interface Beginning {
+    event: string;
+    main_characters: string[];
+    scene: string;
+}
+
+interface Development {
+    conflict_expansion: string;
+    inciting_incident: string;
+    subplots: Subplot[];
+}
+
+interface Climax {
+    key_turn: string;
+    decisions: string;
+    consequences: string;
+}
+
+interface Ending {
+    character_outcomes: string;
+    conflict_resolution: string;
+    loose_ends: string;
+    world_state: string;
+}
+
+interface PlotData {
+    beginning: Beginning;
+    development: Development;
+    climax: Climax;
+    ending: Ending;
+}
+
 interface PlotUiProps {
     novelMsg: string | null;
 }
 
 const PlotUi: React.FC<PlotUiProps> = ({ novelMsg }) => {
     const dataMain = JSON.parse(novelMsg || '{}');
-    const data = JSON.parse(dataMain.msg || '{}');
-    console.log(data);
+    const data: PlotData = JSON.parse(dataMain.msg || '{}');
 
-    const renderSubplots = (subplots) => {
+    const renderSubplots = (subplots: Subplot[]) => {
         return subplots?.map((subplot, index) => (
             <div key={index} className="bg-gray-100 rounded-md p-4 shadow-md mb-4">
-                <h4 className="text-lg font-semibold mb-2">Plot: {subplot?.plot}</h4>
-                <p className="mb-2">Involved Characters: {subplot?.involved_characters?.join(', ')}</p>
-                <p>Expected Impact: {subplot?.expected_impact}</p>
+                <h4 className="text-lg font-semibold mb-2">Plot: {subplot.plot}</h4>
+                <p className="mb-2">Involved Characters: {subplot.involved_characters.join(', ')}</p>
+                <p>Expected Impact: {subplot.expected_impact}</p>
             </div>
         ));
     };

@@ -1,6 +1,6 @@
 import { Textarea } from "./textarea";
 
-export const FormGroup = ({ label, value, className }: { label: string, value: string }) => (
+export const FormGroup = ({ label, value, className }: { label: string, value: string, className: string | null }) => (
     <div className=''>
         <div className={`${className}`}>
             <h1 className='mb-2 inline-block flex font-medium text-[1.1rem]'>{label}</h1>
