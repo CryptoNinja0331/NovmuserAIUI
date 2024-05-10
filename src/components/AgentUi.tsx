@@ -19,6 +19,7 @@ interface Agent {
 
 interface AgentUiProps {
     novelMsg: string | null;
+    finishedPrepare: boolean | null;
 }
 
 const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
