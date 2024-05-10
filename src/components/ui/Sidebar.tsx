@@ -9,6 +9,8 @@ import NovelInitForm from "./novelInitForm";
 const Sidebar = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const toggleSidebar = () => {
+
+
     setIsExpanded(!isExpanded);
   };
 
