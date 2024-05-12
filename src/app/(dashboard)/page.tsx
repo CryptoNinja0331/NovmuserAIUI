@@ -1,11 +1,12 @@
-export default function Home() {
+import { auth } from '@clerk/nextjs/server';
 
+export default async function Home() {
+  const { userId, getToken } = auth();
 
-
+  const token = await getToken()
   return (
-    <div>
-      {/* <h1 className="text-white">dashaboard home</h1> */}
-
+    <div className='text-white'>
+      {/* {token} */}
     </div>
   );
 }

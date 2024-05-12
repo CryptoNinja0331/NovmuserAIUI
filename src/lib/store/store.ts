@@ -1,8 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { clientApi } from "../apiCall/client/clientAPi";
 
 export const makeStore = () => {
   return configureStore({
-    reducer: {},
+    reducer: {
+      [clientApi.reducerPath]: clientApi.reducer,
+    },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(clientApi.middleware),
   });
 };
 

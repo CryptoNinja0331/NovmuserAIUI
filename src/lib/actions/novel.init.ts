@@ -23,13 +23,16 @@ export async function handleInitNovel(prevState: any, formData: FormData) {
   console.log(data);
 
   try {
-    const response = await fetch(`${process.env.SERVER_URL}/novel/init`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/novel/init`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
 
     if (response.ok) {
       const responseData = await response.json();

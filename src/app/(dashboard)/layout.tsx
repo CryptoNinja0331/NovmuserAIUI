@@ -33,8 +33,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                                     <main className="flex-1  z-[49] relative">
                                         <Navbar />
                                         {children}
-
-
                                     </main>
                                 </div>
                             </StoreProvider>
