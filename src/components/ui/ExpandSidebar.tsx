@@ -65,6 +65,9 @@ const ExpandSidebar = () => {
             }
         };
 
+
+
+
         if (userId) {
             fetchData();
         }
