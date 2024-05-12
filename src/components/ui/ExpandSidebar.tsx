@@ -11,7 +11,7 @@ const ExpandSidebar = () => {
     const [userId, setUserId] = useState<string | null>(null);
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
+
 
     const toggleSidebar = () => {
         setIsExpanded(!isExpanded);
@@ -35,7 +35,7 @@ const ExpandSidebar = () => {
         console.log('hii');
         const fetchData = async () => {
             setIsLoading(true);
-            setError(null);
+
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/novel/page?page_number=1&page_size=10`, {
                     headers: {
@@ -59,7 +59,7 @@ const ExpandSidebar = () => {
                 setData(data);
             } catch (error) {
                 console.log(error);
-                setError(error);
+
             } finally {
                 setIsLoading(false);
             }
