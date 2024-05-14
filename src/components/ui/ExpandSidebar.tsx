@@ -8,7 +8,7 @@ import NovelInitForm from "./novelInitForm";
 import { useAuth } from "@clerk/nextjs";
 const ExpandSidebar = () => {
     const [isExpanded, setIsExpanded] = useState(true);
-    const [userId, setUserId] = useState<string | null>(null);
+
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -17,24 +17,14 @@ const ExpandSidebar = () => {
         setIsExpanded(!isExpanded);
     };
 
-    console.log(userId);
-    const { isLoaded, sessionId, getToken } = useAuth();
+    const { getToken } = useAuth();
+
+
 
     useEffect(() => {
-        const fetchUserId = async () => {
-            const token = await getToken();
-            setUserId(token);
-        };
 
-        if (isLoaded) {
-            fetchUserId();
-        }
-    }, [isLoaded, getToken]);
-
-    useEffect(() => {
-        console.log('hii');
         const fetchData = async () => {
-            setIsLoading(true);
+            let userId = await getToken()
 
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/novel/page?page_number=1&page_size=10`, {
@@ -60,19 +50,17 @@ const ExpandSidebar = () => {
             } catch (error) {
                 console.log(error);
 
-            } finally {
-                setIsLoading(false);
             }
         };
 
 
 
 
-        if (userId) {
-            fetchData();
-        }
 
-    }, [userId]);
+        fetchData();
+
+
+    }, [getToken]);
 
 
 
