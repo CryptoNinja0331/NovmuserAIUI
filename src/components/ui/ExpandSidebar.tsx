@@ -85,9 +85,7 @@ const ExpandSidebar = () => {
                             <NovelInitForm />
 
                             <div className="mt-6 bg-red-600 text-blue-600">
-                                {
-                                    userId
-                                }
+
                             </div>
 
 
