@@ -1,4 +1,5 @@
 "use server";
+import { auth } from "@clerk/nextjs";
 import { z } from "zod";
 
 export async function handleInitNovel(prevState: any, formData: FormData) {
@@ -21,7 +22,8 @@ export async function handleInitNovel(prevState: any, formData: FormData) {
 
   const data = parse.data;
   console.log(data);
-
+  const { getToken } = auth();
+  const userId = await getToken();
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_SERVER_URL}/novel/init`,
@@ -29,6 +31,7 @@ export async function handleInitNovel(prevState: any, formData: FormData) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${userId}`,
         },
         body: JSON.stringify(data),
       }

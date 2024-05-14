@@ -44,7 +44,7 @@ const ExpandSidebar = () => {
                     },
                 });
 
-                console.log('hiii2');
+
 
                 console.log(response, 'res');
 
@@ -95,7 +95,12 @@ const ExpandSidebar = () => {
                         </div>
                         <div className="mt-4">
                             <NovelInitForm />
-                            {/* Hello, {userId} your current active session is {sessionId} */}
+
+                            <div className="mt-6 bg-red-600 text-blue-600">
+                                {
+                                    userId
+                                }
+                            </div>
 
 
                         </div>

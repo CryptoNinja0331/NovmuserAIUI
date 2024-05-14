@@ -3,6 +3,7 @@ import Image from "next/image";
 import prepareImage from '../assets/images/writter.svg';
 import { useEffect, useState } from 'react';
 import AgentUi from './AgentUi';
+import { useAuth } from '@clerk/nextjs';
 
 interface PrepareNovelResponse {
     success: boolean;
@@ -13,6 +14,16 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
     const [prepareNovel, setPrepareNovel] = useState<PrepareNovelResponse | null>(null);
     const [finishedPrepare, setFinishedPrepare] = useState<boolean>(false);
     const [novelMsg, setNovelMsg] = useState<string>('');
+    const [userId, setUserId] = useState<string | null>(null);
+
+    const { isLoaded, sessionId, getToken } = useAuth();
+
+
+
+
+
+
+
 
     useEffect(() => {
         const socketUrl = `ws://novmuser-api-test.us-east-1.elasticbeanstalk.com/novel/preparing/${novelId}/ws`;
@@ -42,14 +53,20 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
     }, [novelId]);
 
     const handlePrepareNovel = async () => {
-        const url = `http://novmuser-api-test.us-east-1.elasticbeanstalk.com/novel/prepare/${novelId}/task`;
+        const userId = await getToken();
+
         try {
-            const response = await fetch(url, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/novel/prepare/${novelId}/task`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${userId}`,
                 },
             });
+
+
+            console.log(response);
+
 
             if (!response.ok) {
                 throw new Error('Failed to fetch');
