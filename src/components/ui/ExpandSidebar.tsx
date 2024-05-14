@@ -1,4 +1,4 @@
-'use client';;
+'use client';
 import { useEffect, useState } from "react";
 import { BiSolidLeftArrow, BiSolidRightArrow } from "react-icons/bi";
 import { IoMdSettings } from "react-icons/io";
@@ -6,66 +6,70 @@ import Image from "next/image";
 import logo from '@/assets/logo-tiny.svg';
 import NovelInitForm from "./novelInitForm";
 import { useAuth } from "@clerk/nextjs";
+import { useGetCreatedNovelQuery } from "@/lib/apiCall/client/clientAPi";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "./button";
+
+interface NovelDetails {
+    brain_storming: null;
+    chapter_outline: null;
+    characters: null;
+    plot_outline: null;
+    world_view: null;
+}
+
+interface NovelMetadata {
+    name: string;
+    requirements: string;
+    author_id: string;
+    created_at: string;
+    status: string;
+    updated_at: string;
+}
+
+interface Novel {
+    id: string;
+    content: null;
+    details: NovelDetails;
+    metadata: NovelMetadata;
+}
+
 const ExpandSidebar = () => {
     const [isExpanded, setIsExpanded] = useState(true);
-
-    const [data, setData] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-
+    const [userId, setUserId] = useState<string | null>(null);
+    const [novelData, setNovelData] = useState<Novel[]>([]);
 
     const toggleSidebar = () => {
         setIsExpanded(!isExpanded);
     };
 
-    const { getToken } = useAuth();
-
-
+    const { isLoaded, sessionId, getToken } = useAuth();
 
     useEffect(() => {
-
-        const fetchData = async () => {
-            let userId = await getToken()
-
-            try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/novel/page?page_number=1&page_size=10`, {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${userId}`,
-                    },
-                });
-
-
-
-                console.log(response, 'res');
-
-
-
-
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                const data = await response.json();
-                setData(data);
-            } catch (error) {
-                console.log(error);
-
-            }
+        const fetchUserId = async () => {
+            const token = await getToken();
+            setUserId(token);
         };
 
+        if (isLoaded) {
+            fetchUserId();
+        }
+    }, [isLoaded, getToken]);
 
+    const { isLoading, data, error } = useGetCreatedNovelQuery({
+        page_number: "1",
+        page_size: "8",
+        userId: userId,
+    });
 
-
-
-        fetchData();
-
-
-    }, [getToken]);
-
-
+    useEffect(() => {
+        if (!isLoading && isLoaded && data?.data?.records) {
+            setNovelData(data.data.records);
+        }
+    }, [isLoading, isLoaded, data?.data?.records]);
 
     return (
-        <div className={`h-full transition-all duration-500 ease-in-out ${isExpanded ? 'w-[17rem] bg-gradient-to-t to-[#101e2a08] from-[#101C27]' : 'w-16'}`}>
+        <div className={`h-full transition-all duration-500 ease-in-out ${isExpanded ? 'w-[17rem] bg-[#170F21]' : 'w-16'}`}>
             <div className="flex flex-col ">
                 {isExpanded ? (
                     <div className="flex-grow border-r ">
@@ -84,11 +88,31 @@ const ExpandSidebar = () => {
                         <div className="mt-4">
                             <NovelInitForm />
 
-                            <div className="mt-6 bg-red-600 text-blue-600">
-
+                            <div className="mt-6">
+                                {novelData?.length !== 0 ? (
+                                    <div className="div space-y-3 px-4">
+                                        {novelData?.map((item) => (
+                                            <div key={item.id} className="text-[#817691] cursor-pointer p-3 bg-[#231B2C] rounded-lg">{item.metadata.name}</div>
+                                        ))}
+                                        <Button variant="outline" className="mx-auto flex mt-4 " >View More...</Button>
+                                    </div>
+                                ) : (
+                                    <div className=" space-y-8">
+                                        <div className="space-y-2">
+                                            <Skeleton className="h-3 w-[250px] bg-[#655e70]" />
+                                            <Skeleton className="h-3 w-[200px] bg-[#655e70]" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Skeleton className="h-3 w-[250px] bg-[#655e70]" />
+                                            <Skeleton className="h-3 w-[200px] bg-[#655e70]" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Skeleton className="h-3 w-[250px] bg-[#655e70]" />
+                                            <Skeleton className="h-3 w-[200px] bg-[#655e70]" />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-
-
                         </div>
                     </div>
                 ) : (

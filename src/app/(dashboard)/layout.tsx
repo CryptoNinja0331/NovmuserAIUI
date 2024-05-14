@@ -15,7 +15,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     return (
         <ClerkProvider>
             <html lang="en">
-                <body  >
+                <body className='bg-[#0F0F1A] gradient-bg'>
                     <div >
                         <div>
                             <ClerkLoading>

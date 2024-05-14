@@ -26,7 +26,7 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
 
 
     useEffect(() => {
-        const socketUrl = `ws://novmuser-api-test.us-east-1.elasticbeanstalk.com/novel/preparing/${novelId}/ws`;
+        const socketUrl = `ws://api-dev.novmuserai.com/novel/preparing/${novelId}/ws`;
         const newWebsocket = new WebSocket(socketUrl);
 
         newWebsocket.onopen = () => {
