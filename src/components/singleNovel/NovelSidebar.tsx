@@ -21,7 +21,7 @@ const NovelSidebar = ({ novelDetails }) => {
 
     return (
         <div className="relative">
-            <div onClick={() => setNovelSheet(!openNOvelSheet)} className="cursor-pointer absolute right-0 flex gap-2 items-center p-2 bg-[#191B31]  ">
+            <div onClick={() => setNovelSheet(!openNOvelSheet)} className="cursor-pointer absolute top-0 right-0 flex gap-2 items-center p-2 bg-[#191B31]  ">
                 <BiSolidRightArrow className="text-white" />
                 <IoMdSettings className="text-white" />
             </div>
