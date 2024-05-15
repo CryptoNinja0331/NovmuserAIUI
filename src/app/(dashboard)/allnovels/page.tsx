@@ -1,3 +1,4 @@
+'use server'
 import { auth } from "@clerk/nextjs";
 import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/pagination";
 import Link from "next/link";
@@ -7,8 +8,9 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import Swal from "sweetalert2";
 
 
-const { getToken } = auth();
+
 async function getAllNovels(pageNumber: any) {
+    const { getToken } = auth();
     const userId = await getToken({ template: 'UserToken' });
 
     let params = new URLSearchParams();
