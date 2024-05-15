@@ -5,6 +5,7 @@ export const clientApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.NEXT_PUBLIC_SERVER_URL}`,
   }),
+  tagTypes: ["novelData"],
 
   endpoints: (builder) => ({
     getCreatedNovel: builder.query<
@@ -18,8 +19,21 @@ export const clientApi = createApi({
           headers: { Authorization: `Bearer ${userId}` },
         };
       },
+      providesTags: ["novelData"],
+    }),
+    deleteNovel: builder.mutation({
+      query: (arg) => {
+        const { novelId, userId } = arg;
+        return {
+          url: `/novel/${novelId}`,
+          headers: { Authorization: `Bearer ${userId}` },
+
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: ["novelData"],
     }),
   }),
 });
 
-export const { useGetCreatedNovelQuery } = clientApi;
+export const { useGetCreatedNovelQuery, useDeleteNovelMutation } = clientApi;

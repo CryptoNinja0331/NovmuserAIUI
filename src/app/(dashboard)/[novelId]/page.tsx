@@ -66,7 +66,7 @@ export default async function Page({ params }: { params: { novelId: string } }) 
                 <div className="space-y-2 mt-2 text-sm font-medium">
                     {
                         response.data.details?.chapter_outline?.chapters.map((item: Chapter) => (
-                            <div key={item?.chapter_number} className="bg-[#150F2D] rounded-md p-3">
+                            <div key={item?.chapter_number} className="bg-[#150F2D] tracking-wide rounded-md p-3">
                                 {item?.chapter_number}{""}
                                 <span> : {item?.title}</span>
                             </div>
@@ -75,7 +75,7 @@ export default async function Page({ params }: { params: { novelId: string } }) 
                 </div>
             </div>
             <div className="relative mt-2">
-                <NovelSidebar novelDetails={response.data.details} />
+                <NovelSidebar novelDetails={response.data} />
             </div>
         </div>
 

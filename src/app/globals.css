@@ -327,3 +327,9 @@ width: 100%;
 .bg-black\/80{
  display: none;
 }
+
+/* swal css  */
+.swal2-modal {
+  background-color: #150f2d !important;
+  color: white !important;
+}

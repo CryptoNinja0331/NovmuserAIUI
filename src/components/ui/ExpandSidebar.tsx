@@ -103,7 +103,7 @@ const ExpandSidebar = () => {
                                 {novelData?.length !== 0 ? (
                                     <div className="div space-y-3 px-4">
                                         {novelData?.map((item) => (
-                                            <div onClick={() => handleNavigate(item.id)} key={item.id} className="text-[#817691] cursor-pointer p-3 bg-[#231B2C] rounded-lg">{item.metadata.name}</div>
+                                            <div onClick={() => handleNavigate(item.id)} key={item.id} className="text-[#817691] font-medium capitalize cursor-pointer p-3 bg-[#231B2C] rounded-lg">{item.metadata.name}</div>
                                         ))}
                                         <Button variant="outline" className="mx-auto flex mt-4 " >View More...</Button>
                                     </div>

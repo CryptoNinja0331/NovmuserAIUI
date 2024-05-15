@@ -1,28 +1,68 @@
 'use client';;
-import { BiSolidRightArrow } from "react-icons/bi";
+import { BiSolidLeftArrow } from "react-icons/bi";
 import { IoMdSettings } from "react-icons/io";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useState } from "react";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import Swal from 'sweetalert2';
+import { useDeleteNovelMutation } from "@/lib/apiCall/client/clientAPi";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 
-
-const NovelSidebar = ({ novelDetails }) => {
+const NovelSidebar = ({ novelDetails }: { novelDetails: any }) => {
 
 
     const [openNOvelSheet, setNovelSheet] = useState(true)
-
+    const [deleteFn, { isLoading }] = useDeleteNovelMutation()
+    const router = useRouter()
+    const { getToken } = useAuth();
 
     const displayNames = {
-        'Brain Storming': 'brain_storming',
-        'Characters': 'characters',
-        'World View': 'world_view',
-        'Plot Outline': 'plot_outline',
-        'Chapter Outline': 'chapter_outline'
+        'brain_storming': 'Brain Storming',
+        'characters': 'Characters',
+        'world_view': 'World View',
+        'plot_outline': 'Plot Outline',
+        'chapter_outline': 'Chapter Outline'
     };
+
+    const handleDeleteNovel = async () => {
+        const token = await getToken({ template: "UserToken" });
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteFn({
+                    novelId: novelDetails.id,
+                    userId: token
+
+                })
+                Swal.fire({
+                    title: "Deleted!",
+                    text: "Your file has been deleted.",
+                    icon: "success"
+                });
+                router.push(`/`, { scroll: false })
+
+            }
+        });
+    }
+
+
+
+
 
     return (
         <div className="relative">
             <div onClick={() => setNovelSheet(!openNOvelSheet)} className="cursor-pointer absolute top-0 right-0 flex gap-2 items-center p-2 bg-[#191B31]  ">
-                <BiSolidRightArrow className="text-white" />
+                <BiSolidLeftArrow className="text-white" />
+
                 <IoMdSettings className="text-white" />
             </div>
 
@@ -33,26 +73,20 @@ const NovelSidebar = ({ novelDetails }) => {
                     e.preventDefault();
                 }}
                     className="bg-[#170F21] w-[17rem] text-white p-0">
-
-                    <div className="p-2">
-                        <button type="button" className="absolute text-white right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-x h-4 w-4"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg><span className="sr-only">Close</span></button>
+                    <div className="border-b border-input p-3 flex items-center justify-between">
+                        <h1 className="font-medium">Dashboard</h1>
+                        <RiDeleteBin6Line onClick={handleDeleteNovel} className="mr-8 text-[#FF453A] cursor-pointer" />
                     </div>
-
-
-
-                    <div className="border-b border-input p-2">
-                        <h1 className="">Dashboard</h1>
+                    <div className="p-2 border-b border-input text-center tracking-wider">
+                        <h1 className="text-[1.05rem]">User Info</h1>
+                        <p className="text-sm font-semibold">500 Credits</p>
                     </div>
-                    <div className="p-2">
-                        <h1>User Info</h1>
-                        <p>500 Credits</p>
-                    </div>
-                    <div className="p-2">
-
-                        {Object.keys(novelDetails).map((name) => (
-                            <p key={name}>{name}</p>
+                    <div className="p-2 space-y-3">
+                        {(Object.keys(novelDetails?.details) as (keyof typeof displayNames)[]).map((name) => (
+                            <div key={name} className="bg-[#150F2D] tracking-wide rounded-md p-3 cursor-pointer">
+                                <p>{displayNames[name]}</p>
+                            </div>
                         ))}
-
                     </div>
 
 
