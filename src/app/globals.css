@@ -333,3 +333,10 @@ width: 100%;
   background-color: #150f2d !important;
   color: white !important;
 }
+
+.heading-color{
+  font-size: 1.1rem;
+    background: linear-gradient(98deg, rgb(234, 170, 255) 15.56%, rgb(181, 172, 255) 92.85%) text;
+    font-weight: 700;
+    -webkit-text-fill-color: transparent;
+}
