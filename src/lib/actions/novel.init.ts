@@ -21,9 +21,9 @@ export async function handleInitNovel(prevState: any, formData: FormData) {
   }
 
   const data = parse.data;
-  console.log(data);
+
   const { getToken } = auth();
-  const userId = await getToken();
+  const userId = await getToken({ template: "UserToken" });
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_SERVER_URL}/novel/init`,

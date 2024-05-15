@@ -16,44 +16,57 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
     const [novelMsg, setNovelMsg] = useState<string>('');
     const [userId, setUserId] = useState<string | null>(null);
 
-    const { isLoaded, sessionId, getToken } = useAuth();
-
-
-
-
-
-
-
+    const { isLoaded, getToken } = useAuth();
 
     useEffect(() => {
-        const socketUrl = `ws://api-dev.novmuserai.com/novel/preparing/${novelId}/ws`;
-        const newWebsocket = new WebSocket(socketUrl);
+        const socketUrl = `wss://api-dev.novmuserai.com/novel/preparing/${novelId}/ws`;
 
-        newWebsocket.onopen = () => {
-            console.log('WebSocket connection opened');
-            setFinishedPrepare(true);
-        };
+        async function getAuthToken() {
+            if (!isLoaded) {
+                return null;
+            }
+            const token = await getToken({ template: 'UserToken' });
+            return token;
+        }
 
-        newWebsocket.onmessage = (event) => {
-            setNovelMsg(event.data);
-        };
+        async function connectWebSocket() {
+            const authToken = await getAuthToken();
+            if (!authToken) {
+                console.error('Failed to obtain auth token');
+                return;
+            }
 
-        newWebsocket.onerror = (error) => {
-            console.error('WebSocket error:', error);
-        };
+            const newWebsocket = new WebSocket(socketUrl, [authToken]);
 
-        newWebsocket.onclose = () => {
-            console.log('WebSocket connection closed');
-            setFinishedPrepare(false);
-        };
+            newWebsocket.onopen = () => {
+                console.log('WebSocket connection opened');
+                setFinishedPrepare(true);
+            };
 
-        return () => {
-            newWebsocket.close();
-        };
-    }, [novelId]);
+            newWebsocket.onmessage = (event) => {
+                console.log(event.data);
+                setNovelMsg(event.data);
+            };
+
+            newWebsocket.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            newWebsocket.onclose = () => {
+                console.log('WebSocket connection closed');
+                setFinishedPrepare(false);
+            };
+
+            return () => {
+                newWebsocket.close();
+            };
+        }
+
+        connectWebSocket();
+    }, [isLoaded, getToken, novelId]);
 
     const handlePrepareNovel = async () => {
-        const userId = await getToken();
+        const userId = await getToken({ template: "UserToken" });
 
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/novel/prepare/${novelId}/task`, {

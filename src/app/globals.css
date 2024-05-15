@@ -322,3 +322,8 @@ width: 100%;
 .EZDrawer .EZDrawer__container{
   background-image: linear-gradient(to top, rgba(16, 28, 39, 0.08), #101C27) !important;
 }
+
+
+.bg-black\/80{
+ display: none;
+}

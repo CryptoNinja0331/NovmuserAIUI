@@ -1,4 +1,4 @@
-'use client';
+'use client';;
 import { useEffect, useState } from "react";
 import { BiSolidLeftArrow, BiSolidRightArrow } from "react-icons/bi";
 import { IoMdSettings } from "react-icons/io";
@@ -9,7 +9,7 @@ import { useAuth } from "@clerk/nextjs";
 import { useGetCreatedNovelQuery } from "@/lib/apiCall/client/clientAPi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "./button";
-
+import { useRouter } from 'next/navigation';
 interface NovelDetails {
     brain_storming: null;
     chapter_outline: null;
@@ -47,7 +47,7 @@ const ExpandSidebar = () => {
 
     useEffect(() => {
         const fetchUserId = async () => {
-            const token = await getToken();
+            const token = await getToken({ template: "UserToken" });
             setUserId(token);
         };
 
@@ -67,6 +67,17 @@ const ExpandSidebar = () => {
             setNovelData(data.data.records);
         }
     }, [isLoading, isLoaded, data?.data?.records]);
+
+
+    const router = useRouter()
+    const handleNavigate = (id: string) => {
+        router.push(`/${id}`, { scroll: false })
+    }
+
+
+
+
+
 
     return (
         <div className={`h-full transition-all duration-500 ease-in-out ${isExpanded ? 'w-[17rem] bg-[#170F21]' : 'w-16'}`}>
@@ -92,7 +103,7 @@ const ExpandSidebar = () => {
                                 {novelData?.length !== 0 ? (
                                     <div className="div space-y-3 px-4">
                                         {novelData?.map((item) => (
-                                            <div key={item.id} className="text-[#817691] cursor-pointer p-3 bg-[#231B2C] rounded-lg">{item.metadata.name}</div>
+                                            <div onClick={() => handleNavigate(item.id)} key={item.id} className="text-[#817691] cursor-pointer p-3 bg-[#231B2C] rounded-lg">{item.metadata.name}</div>
                                         ))}
                                         <Button variant="outline" className="mx-auto flex mt-4 " >View More...</Button>
                                     </div>

@@ -5,7 +5,7 @@ const { getToken } = auth();
 
 
 async function getData() {
-  const userId = await getToken();
+  const userId = await getToken({ template: 'UserToken' });
   const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/novel/page?page_number=1&page_size=10`, {
     headers: {
       'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ async function getData() {
 
 export default async function Home() {
   // const userId = await getToken();
-  // console.log(userId);
+  // // console.log(userId);
   // let data = await getData()
   // console.log(data);
   return (
