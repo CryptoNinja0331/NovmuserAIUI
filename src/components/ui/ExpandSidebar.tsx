@@ -74,6 +74,10 @@ const ExpandSidebar = () => {
         router.push(`/${id}`, { scroll: false })
     }
 
+    const handleViewMore = () => {
+        router.push(`/allnovels`, { scroll: false })
+    }
+
 
 
 
@@ -101,12 +105,14 @@ const ExpandSidebar = () => {
 
                             <div className="mt-6">
                                 {novelData?.length !== 0 ? (
-                                    <div className="div space-y-3 px-4">
-                                        {novelData?.map((item) => (
-                                            <div onClick={() => handleNavigate(item.id)} key={item.id} className="text-[#817691] font-medium capitalize cursor-pointer p-3 bg-[#231B2C] rounded-lg">{item.metadata.name}</div>
-                                        ))}
-                                        <Button variant="outline" className="mx-auto flex mt-4 " >View More...</Button>
-                                    </div>
+                                    <>
+                                        <div className="div space-y-3 px-4">
+                                            {novelData?.map((item) => (
+                                                <div onClick={() => handleNavigate(item.id)} key={item.id} className="text-[#817691] font-medium capitalize cursor-pointer p-3 bg-[#231B2C] rounded-lg">{item.metadata.name}</div>
+                                            ))}
+                                        </div>
+                                        <Button onClick={handleViewMore} variant="outline" className="mx-auto flex mt-6 " >View More...</Button>
+                                    </>
                                 ) : (
                                     <div className=" space-y-8">
                                         <div className="space-y-2">
