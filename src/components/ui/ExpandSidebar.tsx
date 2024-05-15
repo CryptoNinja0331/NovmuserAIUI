@@ -89,8 +89,8 @@ const ExpandSidebar = () => {
                 {isExpanded ? (
                     <div className="flex-grow border-r ">
                         <div className="flex min-h-[65px] pl-4 border-b border-gray-700">
-                            <div className="flex gap-1 mr-2 items-center">
-                                <Image width={30} height={30} src={logo} alt="logo" />
+                            <div onClick={() => router.push(`/`, { scroll: false })} className="flex cursor-pointer gap-1 mr-2 items-center">
+                                <Image className="cursor-pointer" width={30} height={30} src={logo} alt="logo" />
                                 <h1 className="font-medium text-xl">NovmuserAi</h1>
                             </div>
                             <div onClick={toggleSidebar} className="px-[15px] flex justify-center items-center border-l border-gray-700 cursor-pointer">
