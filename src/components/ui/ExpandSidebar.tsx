@@ -111,7 +111,11 @@ const ExpandSidebar = () => {
                                                 <div onClick={() => handleNavigate(item.id)} key={item.id} className="text-[#817691] font-medium text-[1.1rem] capitalize cursor-pointer p-3 bg-[#231B2C] rounded-lg">{item.metadata.name}</div>
                                             ))}
                                         </div>
-                                        <Button onClick={handleViewMore} variant="outline" className="mx-auto flex mt-6 hover:bg-background hover:text-white" >View More...</Button>
+
+                                        {
+                                            novelData.length > 7 && <Button onClick={handleViewMore} variant="outline" className="mx-auto flex mt-6 hover:bg-background hover:text-white" >View More...</Button>
+                                        }
+
                                     </>
                                 ) : (
                                     <div className=" space-y-8">

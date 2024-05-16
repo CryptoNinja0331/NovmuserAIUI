@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import Sidebar from "@/components/ui/Sidebar";
 import StoreProvider from "./StoreProvider";
 import Navbar from '@/components/ui/Navbar';
-
+import { dark } from '@clerk/themes';
 export const metadata: Metadata = {
     title: "Your Personal AI Novel Writer",
     description: "Your Personal AI Novel Writer",
@@ -13,7 +13,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 
     return (
-        <ClerkProvider>
+        <ClerkProvider appearance={{
+            baseTheme: dark
+        }}>
             <html lang="en">
                 <body className='bg-[#0F0F1A] gradient-bg'>
                     <div >

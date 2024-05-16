@@ -8,6 +8,13 @@ import Swal from 'sweetalert2';
 import { useDeleteNovelMutation } from "@/lib/apiCall/client/clientAPi";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
+import { Button } from "../ui/button";
+import { HiCurrencyDollar } from "react-icons/hi2";
+import { HiOutlineUpload } from "react-icons/hi";
+
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+
+
 
 const NovelSidebar = ({ novelDetails }: { novelDetails: any }) => {
 
@@ -78,8 +85,43 @@ const NovelSidebar = ({ novelDetails }: { novelDetails: any }) => {
                         <RiDeleteBin6Line onClick={handleDeleteNovel} className="mr-8 text-[#FF453A] cursor-pointer" />
                     </div>
                     <div className="p-2 border-b border-input text-center tracking-wider">
-                        <h1 className="text-[1.05rem]">User Info</h1>
-                        <p className="text-sm font-semibold">500 Credits</p>
+
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button variant="outline" className="mx-auto flex gap-2 mt-1 hover:bg-background hover:text-white" >
+                                    <HiCurrencyDollar className='text-xl' />
+
+                                    500 Credits
+                                </Button>
+                            </DialogTrigger>
+
+
+                            <DialogContent className="bg-[#150f2d] text-white flex justify-center items-center">
+                                <div>
+                                    <div className="text-xl font-medium ">
+                                        <h1 className="heading-color !text-xl">Balance : 500 Credits</h1>
+                                    </div>
+
+
+                                    <Button onClick={() =>
+                                        router.push(`/payment`, { scroll: false })
+                                    } variant="outline" className="mx-auto flex gap-2 mt-8 hover:bg-background hover:text-white" >
+                                        <HiOutlineUpload className='text-xl' />
+
+                                        Top Up
+                                    </Button>
+                                </div>
+
+
+                            </DialogContent>
+                        </Dialog>
+
+
+
+
+
+
+
                     </div>
                     <div className="p-2 space-y-3">
                         {(Object.keys(novelDetails?.details) as (keyof typeof displayNames)[]).map((name) => (

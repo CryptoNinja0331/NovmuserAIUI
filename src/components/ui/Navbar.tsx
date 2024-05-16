@@ -1,7 +1,10 @@
-import { auth, UserButton } from '@clerk/nextjs';
+'use client'
 
-const Navbar = async () => {
-    const { userId } = await auth()
+import { useAuth, UserButton } from '@clerk/nextjs';
+import { HiCurrencyDollar } from "react-icons/hi2";
+const Navbar = () => {
+    const { userId } = useAuth()
+
 
     return (
         <div className='min-h-[3rem] flex justify-end  items-center'>
@@ -10,7 +13,15 @@ const Navbar = async () => {
                     userId && (
                         <div className='flex items-center gap-4'>
                             {/* <Link href={'/'}><li>Profile</li></Link> */}
-                            <li><UserButton afterSignOutUrl='/sign-in' /></li>
+
+                            <UserButton afterSignOutUrl='/sign-in'>
+                                <UserButton.UserProfileLink
+                                    label="Subscription"
+                                    url="/subscription"
+                                    labelIcon={<HiCurrencyDollar className='text-xl' />}
+                                />
+                            </UserButton>
+
                         </div>)
                 }
 
