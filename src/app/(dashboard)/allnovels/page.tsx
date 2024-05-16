@@ -1,34 +1,23 @@
-'use server'
-import { auth } from "@clerk/nextjs";
+'use server';;
 import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/pagination";
 import Link from "next/link";
+import { getAllNovels } from "@/lib/apiCall/server/getAllNovel";
+
 import { Button } from "@/components/ui/button";
-
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import Swal from "sweetalert2";
 
 
-
-async function getAllNovels(pageNumber: any) {
-    const { getToken } = auth();
-    const userId = await getToken({ template: 'UserToken' });
-
-    let params = new URLSearchParams();
-
-    params.append("page_number", pageNumber);
-    params.append("page_size", '7');
-
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/novel/page?${params.toString()}`, {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${userId}`,
-        },
-    })
-    if (!res.ok) {
-        throw new Error('Failed to fetch data')
-    }
-    return res.json()
-}
 
 
 
@@ -45,56 +34,42 @@ const page = async ({ searchParams }: { searchParams: any }) => {
 
 
 
-
-
-
-    const handleDeleteNovel = async () => {
-        'use server'
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: "Deleted!",
-                    text: "Your file has been deleted.",
-                    icon: "success"
-                });
-
-
-            }
-        });
-    }
-
-
-
-
-
-
-
-
     return (
         <div>
-
             <div className="bg-[#010313] w-[70%] mx-auto p-6 rounded-md">
                 <div className="div space-y-6 px-4 ">
                     {response?.data?.records?.map((item: any) => (
 
-                        <div key={item.id} className="text-[#817691]  font-medium capitalize cursor-pointer p-4 bg-[#160929] rounded-lg">
-                            <Link href={`/${item.id}`} className="flex justify-between items-center">
-                                <h1 className="heading-color font-medium">    {item.metadata.name}</h1>
-                                <form>
-                                    <button type="submit">
-                                        <RiDeleteBin6Line className="mr-8 text-2xl text-[#FF453A] cursor-pointer" />
-                                    </button>
-                                </form>
-
+                        <div key={item.id} className="flex justify-between gap-4 items-center">
+                            <Link href={`/${item.id}`} className="w-[95%]">
+                                <div className="text-[#817691]   font-medium capitalize cursor-pointer p-4 bg-[#160929] rounded-lg">
+                                    <div className="">
+                                        <h1 className="heading-color font-medium">    {item.metadata.name}</h1>
+                                    </div>
+                                </div>
                             </Link>
+                            <div className="flex-1 flex justify-center">
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <RiDeleteBin6Line className=" text-2xl text-[#FF453A] cursor-pointer" />
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                This action cannot be undone. This will permanently delete your
+                                                account and remove your data from our servers.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction>Continue</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </div>
+
+
 
                         </div>
 
