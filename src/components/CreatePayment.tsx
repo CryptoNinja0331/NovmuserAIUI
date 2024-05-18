@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { useAuth } from "@clerk/nextjs";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
-const CreatePayment = ({ paymentId }: { paymentId: any }) => {
+const CreatePayment = ({ paymentId, buttonText }: { paymentId: any, buttonText: string | null }) => {
     const [loading, setLoading] = useState(false)
 
     const { getToken } = useAuth();
@@ -55,7 +55,7 @@ const CreatePayment = ({ paymentId }: { paymentId: any }) => {
                         <>
 
                             <FaCartPlus />
-                            Purchase
+                            {buttonText}
 
                         </>
                 }

@@ -56,7 +56,7 @@ const page = async () => {
                                 item.price_name.includes('Ultimate')
                             ) && (
                                     <div>
-                                        <CreatePayment paymentId={item.id} />
+                                        <CreatePayment buttonText={' Purchase'} paymentId={item.id} />
                                     </div>
                                 )}
                         </div>

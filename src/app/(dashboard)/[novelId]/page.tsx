@@ -1,6 +1,6 @@
+import NovelName from "@/components/NovelName";
 import NovelSidebar from "@/components/singleNovel/NovelSidebar";
 import { getSingleNovel } from "@/lib/apiCall/server/getSingleNovel";
-
 // Define interfaces
 interface NovelDetails {
     brain_storming: null;
@@ -56,7 +56,7 @@ export default async function Page({ params }: { params: { novelId: string } }) 
     let response = await getSingleNovel(params.novelId);
 
     return <div className="h-[calc(100%-50px)]">
-        <p className="text-white border-b border-input pb-2 font-semibold capitalize text-[1.1rem] px-2">{response?.data?.metadata?.name}</p>
+        <NovelName novelName={response?.data?.metadata?.name} />
 
 
         <div className="text-white relative flex justify-between  h-[calc(100%-40px)]">
