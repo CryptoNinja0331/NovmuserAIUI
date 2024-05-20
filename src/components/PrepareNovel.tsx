@@ -4,6 +4,9 @@ import prepareImage from '../assets/images/writter.svg';
 import { useEffect, useState } from 'react';
 import AgentUi from './AgentUi';
 import { useAuth } from '@clerk/nextjs';
+import { clientApi } from '@/lib/apiCall/client/clientAPi';
+
+import { useDispatch } from 'react-redux';
 
 interface PrepareNovelResponse {
     success: boolean;
@@ -73,6 +76,46 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
 
 
 
+
+
+
+
+
+
+
+
+
+    return (
+        <div className="text-white p-4">
+            {prepareNovel?.success ? (
+                <AgentUi finishedPrepare={finishedPrepare} novelMsg={novelMsg} />
+            ) : (
+                <div>
+                    <Image className="mx-auto" style={{ width: '36%' }} src={prepareImage} alt="prepare image " />
+                    <div className="text-center mt-8">
+                        <PrepareButton setPrepareNovel={setPrepareNovel} novelId={novelId} />
+
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default PrepareNovel;
+
+
+const PrepareButton: React.FC<{ setPrepareNovel: (data: any) => void; novelId: string }> = ({
+    setPrepareNovel,
+    novelId,
+}) => {
+    const dispatch = useDispatch();
+
+
+
+    dispatch(clientApi.util.invalidateTags(['novelData']));
+    const { isLoaded, getToken } = useAuth();
+
     const handlePrepareNovel = async () => {
         const userId = await getToken({ template: "UserToken" });
 
@@ -86,7 +129,7 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
             });
 
 
-            console.log(response);
+
 
 
             if (!response.ok) {
@@ -94,29 +137,18 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
             }
 
             const data = await response.json();
+
+
             setPrepareNovel(data);
+
+
+
+
+
         } catch (error) {
             console.error('Error:', error);
             // Handle errors, e.g., show an error message to the user
         }
     };
-
-    return (
-        <div className="text-white p-4">
-            {prepareNovel?.success ? (
-                <AgentUi finishedPrepare={finishedPrepare} novelMsg={novelMsg} />
-            ) : (
-                <div>
-                    <Image className="mx-auto" style={{ width: '36%' }} src={prepareImage} alt="prepare image " />
-                    <div className="text-center mt-8">
-                        <Button className="button-gradient-2" onClick={handlePrepareNovel}>
-                            Prepare Novel
-                        </Button>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-};
-
-export default PrepareNovel;
+    return (<Button onClick={handlePrepareNovel}>Prepare Novel</Button>)
+}
