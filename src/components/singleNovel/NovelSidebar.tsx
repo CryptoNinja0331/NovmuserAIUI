@@ -13,6 +13,7 @@ import { HiCurrencyDollar } from "react-icons/hi2";
 import { HiOutlineUpload } from "react-icons/hi";
 
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import NovelDetailsItem from "./NovelDetailsItem";
 
 
 
@@ -24,13 +25,6 @@ const NovelSidebar = ({ novelDetails }: { novelDetails: any }) => {
     const router = useRouter()
     const { getToken } = useAuth();
 
-    const displayNames = {
-        'brain_storming': 'Brain Storming',
-        'characters': 'Characters',
-        'world_view': 'World View',
-        'plot_outline': 'Plot Outline',
-        'chapter_outline': 'Chapter Outline'
-    };
 
     const handleDeleteNovel = async () => {
         const token = await getToken({ template: "UserToken" });
@@ -61,6 +55,15 @@ const NovelSidebar = ({ novelDetails }: { novelDetails: any }) => {
         });
     }
 
+    const displayNames = {
+        'brain_storming': 'Brain Storming',
+        'characters': 'Characters',
+        'world_view': 'World View',
+        'plot_outline': 'Plot Outline',
+        'chapter_outline': 'Chapter Outline'
+    } as const;
+
+    type DisplayNameKeys = keyof typeof displayNames;
 
 
 
@@ -115,19 +118,14 @@ const NovelSidebar = ({ novelDetails }: { novelDetails: any }) => {
 
                             </DialogContent>
                         </Dialog>
-
-
-
-
-
-
-
                     </div>
                     <div className="p-2 space-y-3">
-                        {(Object.keys(novelDetails?.details) as (keyof typeof displayNames)[]).map((name) => (
-                            <div key={name} className="bg-[#150F2D] tracking-wide rounded-md p-3 cursor-pointer">
-                                <p>{displayNames[name]}</p>
-                            </div>
+                        {Object.keys(novelDetails?.details).map((name) => (
+                            <NovelDetailsItem
+                                key={name}
+                                name={name as DisplayNameKeys}
+                                data={novelDetails?.details[name]}
+                            />
                         ))}
                     </div>
 

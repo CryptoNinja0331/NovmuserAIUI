@@ -10,6 +10,7 @@ export async function getSingleNovel(id: string) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${userId}`,
     },
+    next: { tags: ["singleNovels"] },
   });
 
   if (!res.ok) {

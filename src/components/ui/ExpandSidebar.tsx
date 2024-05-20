@@ -104,7 +104,7 @@ const ExpandSidebar = () => {
                             <NovelInitForm />
 
                             <div className="mt-6">
-                                {novelData?.length !== 0 ? (
+                                {!isLoading ? (
                                     <>
                                         <div className="div space-y-3 px-4">
                                             {novelData?.map((item) => (

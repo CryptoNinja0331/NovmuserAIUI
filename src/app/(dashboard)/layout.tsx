@@ -6,6 +6,7 @@ import Sidebar from "@/components/ui/Sidebar";
 import StoreProvider from "./StoreProvider";
 import Navbar from '@/components/ui/Navbar';
 import { dark } from '@clerk/themes';
+import { Toaster } from "@/components/ui/sonner";
 export const metadata: Metadata = {
     title: "Your Personal AI Novel Writer",
     description: "Your Personal AI Novel Writer",
@@ -36,6 +37,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                                         <Navbar />
                                         {children}
                                     </main>
+                                    <Toaster
+                                    />
                                 </div>
                             </StoreProvider>
                         </div>

@@ -56,7 +56,7 @@ export default async function Page({ params }: { params: { novelId: string } }) 
     let response = await getSingleNovel(params.novelId);
 
     return <div className="h-[calc(100%-50px)]">
-        <NovelName novelName={response?.data?.metadata?.name} />
+        <NovelName novelData={response?.data} />
 
 
         <div className="text-white relative flex justify-between  h-[calc(100%-40px)]">

@@ -65,6 +65,14 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
         connectWebSocket();
     }, [isLoaded, getToken, novelId]);
 
+
+
+
+
+
+
+
+
     const handlePrepareNovel = async () => {
         const userId = await getToken({ template: "UserToken" });
 
