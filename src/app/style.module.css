@@ -1,5 +1,5 @@
 .dashboard {
-    background-color: #000000;
+    background-color: #060417;
     position: relative;
 }
 
@@ -7,12 +7,12 @@
     content: "";
     position: absolute;
     z-index: 0;
-    width: 1200px;
+    width: 1086px;
     height: 580px;
-    bottom: 50%;
-    left: -37%;
-    opacity: .32;
-    background: linear-gradient(252.93deg, #d054ce 33.59%, #0092f4 59.88%, #20dc86 87.87%);
+    bottom: 37%;
+    left: -300px;
+    opacity: .5;
+    background: #7c66e3;
     filter: blur(142.5px);
     -webkit-filter: blur(142.5px);
     will-change: filter;
@@ -25,14 +25,14 @@
     z-index: 0;
     width: 700px;
     height: 460px;
-    left: 40%;
+    left: 50%;
     top: 0;
-    opacity: .32;
+    opacity: .5;
     transform: rotate(-50.41deg);
 
     bottom: 10%;
     right: -25%;
-    background: linear-gradient(252.93deg, #d054ce 33.59%, #0092f4 59.88%, #20dc86 87.87%);
+    background: #7c66e3;
     filter: blur(142.5px);
 
     will-change: filter;

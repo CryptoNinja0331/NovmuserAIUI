@@ -150,5 +150,5 @@ const PrepareButton: React.FC<{ setPrepareNovel: (data: any) => void; novelId: s
             // Handle errors, e.g., show an error message to the user
         }
     };
-    return (<Button onClick={handlePrepareNovel}>Prepare Novel</Button>)
+    return (<Button className='bg-bluish' onClick={handlePrepareNovel}>Prepare Novel</Button>)
 }

@@ -71,7 +71,7 @@ const ExpandSidebar = () => {
 
     const router = useRouter()
     const handleNavigate = (id: string) => {
-        router.push(`/${id}`, { scroll: false })
+        router.push(`/novel/${id}`, { scroll: false })
     }
 
     const handleViewMore = () => {
@@ -84,10 +84,10 @@ const ExpandSidebar = () => {
 
 
     return (
-        <div className={`h-full transition-all duration-500 ease-in-out ${isExpanded ? 'w-[17rem] bg-[#170F21]' : 'w-16'}`}>
-            <div className="flex flex-col ">
+        <div className={`h-full transition-all duration-500 ease-in-out ${isExpanded ? 'w-[17rem] bg-[#0000001a]' : 'w-16'}`}>
+            <div className="flex flex-col h-full">
                 {isExpanded ? (
-                    <div className="flex-grow border-r ">
+                    <div className="flex-grow  h-full bg-[#0000001a]">
                         <div className="flex min-h-[65px] pl-4 border-b border-gray-700">
                             <div onClick={() => router.push(`/`, { scroll: false })} className="flex cursor-pointer gap-1 mr-2 items-center">
                                 <Image className="cursor-pointer" width={30} height={30} src={logo} alt="logo" />
@@ -108,7 +108,7 @@ const ExpandSidebar = () => {
                                     <>
                                         <div className="div space-y-3 px-4">
                                             {novelData?.map((item) => (
-                                                <div onClick={() => handleNavigate(item.id)} key={item.id} className="text-[#817691] font-medium text-[1.1rem] capitalize cursor-pointer p-3 bg-[#231B2C] rounded-lg">{item.metadata.name}</div>
+                                                <div onClick={() => handleNavigate(item.id)} key={item.id} className=" font-medium text-[1.1rem] capitalize cursor-pointer p-3 bg-[#16112f65] rounded-lg">{item.metadata.name}</div>
                                             ))}
                                         </div>
 

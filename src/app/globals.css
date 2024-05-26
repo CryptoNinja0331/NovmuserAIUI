@@ -340,3 +340,7 @@ width: 100%;
     font-weight: 700;
     -webkit-text-fill-color: transparent;
 }
+
+.bg-bluish{
+background: linear-gradient(90deg,#a993fe,0%,#7e61e7) !important; 
+}

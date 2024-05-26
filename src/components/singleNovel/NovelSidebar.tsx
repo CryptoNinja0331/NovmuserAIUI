@@ -34,7 +34,7 @@ const NovelSidebar = ({ novelDetails }: { novelDetails: any }) => {
             text: "You won't be able to revert this!",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
+            confirmButtonColor: "linear-gradient(90deg,#a993fe,0%,#7e61e7)",
             cancelButtonColor: "#d33",
             confirmButtonText: "Yes, delete it!"
         }).then((result) => {
@@ -82,7 +82,7 @@ const NovelSidebar = ({ novelDetails }: { novelDetails: any }) => {
                 <SheetContent onInteractOutside={(e) => {
                     e.preventDefault();
                 }}
-                    className="bg-[#170F21] w-[17rem] text-white p-0">
+                    className="bg-[#16112f65] backdrop-blur-lg w-[17rem] text-white p-0">
                     <div className="border-b border-input p-3 flex items-center justify-between">
                         <h1 className="font-medium">Dashboard</h1>
                         <RiDeleteBin6Line onClick={handleDeleteNovel} className="mr-8 text-[#FF453A] cursor-pointer" />
@@ -91,7 +91,7 @@ const NovelSidebar = ({ novelDetails }: { novelDetails: any }) => {
 
                         <Dialog>
                             <DialogTrigger asChild>
-                                <Button variant="outline" className="mx-auto flex gap-2 mt-1 hover:bg-background hover:text-white" >
+                                <Button variant="outline" className="mx-auto bg-bluish flex gap-2 mt-1 hover:bg-background hover:text-white" >
                                     <HiCurrencyDollar className='text-xl' />
 
                                     500 Credits
@@ -108,7 +108,7 @@ const NovelSidebar = ({ novelDetails }: { novelDetails: any }) => {
 
                                     <Button onClick={() =>
                                         router.push(`/payment`, { scroll: false })
-                                    } variant="outline" className="mx-auto flex gap-2 mt-8 hover:bg-background hover:text-white" >
+                                    } variant="outline" className="mx-auto flex bg-bluish gap-2 mt-8 hover:bg-background hover:text-white" >
                                         <HiOutlineUpload className='text-xl' />
 
                                         Top Up

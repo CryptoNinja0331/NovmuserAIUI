@@ -33,7 +33,23 @@ export const clientApi = createApi({
       },
       invalidatesTags: ["novelData"],
     }),
+    initChapter: builder.mutation({
+      query: (arg) => {
+        const { novelId, chapterKey, userId } = arg;
+        return {
+          url: `/chapter/init/${novelId}/${chapterKey}`,
+          headers: { Authorization: `Bearer ${userId}` },
+
+          method: "POST",
+        };
+      },
+      invalidatesTags: ["novelData"],
+    }),
   }),
 });
 
-export const { useGetCreatedNovelQuery, useDeleteNovelMutation } = clientApi;
+export const {
+  useGetCreatedNovelQuery,
+  useDeleteNovelMutation,
+  useInitChapterMutation,
+} = clientApi;

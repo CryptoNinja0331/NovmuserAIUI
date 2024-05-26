@@ -1,7 +1,8 @@
 
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "../ui/textarea";
-
+import SimpleBar from "simplebar-react";
+import 'simplebar-react/dist/simplebar.min.css';
 
 
 
@@ -25,28 +26,25 @@ interface NovelDetailsItemProps {
 }
 
 const NovelDetailsItem: React.FC<NovelDetailsItemProps> = ({ name, data }) => {
-    const handleClick = () => {
-        console.log(data);
-    };
 
     return (
         <div
             key={name}
-            className="bg-[#150F2D] tracking-wide rounded-md p-3 cursor-pointer"
-            onClick={handleClick}
+            className="bg-[#150F2D] p-2 tracking-wide rounded-md  cursor-pointer"
+
         >
             <Dialog>
                 <DialogTrigger asChild>
                     <p>{displayNames[name]}</p>
                 </DialogTrigger>
-                <DialogContent className="max-w-[50vw] min-h-[50rem] bg-[#150F2D] text-white">
-                    <Textarea defaultValue={data} placeholder="Type your message here." />
-
-
+                <DialogContent className="max-w-[50vw] min-h-[40vh] bg-[#150F2D] text-white ">
+                    <SimpleBar style={{ maxHeight: '40vh' }}>
+                        <Textarea defaultValue={data} className="!min-h-[60vh] p-4" placeholder="Type your message here." />
+                    </SimpleBar>
                 </DialogContent>
             </Dialog>
-
         </div>
+
     );
 };
 
