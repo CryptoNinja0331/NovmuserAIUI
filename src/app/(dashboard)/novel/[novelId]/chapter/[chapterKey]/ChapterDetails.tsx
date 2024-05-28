@@ -6,6 +6,7 @@ import { auth } from '@clerk/nextjs';
 import { getChapterInfo } from '@/lib/apiCall/server/getChapterInfo';
 
 import ChapterUi from './ChapterUi';
+import TopicRoadMapUi from './TopicRoadMapUi';
 
 
 
@@ -42,8 +43,8 @@ const ChapterDetails = async ({ params }: { params: any }) => {
 
     initChapter()
 
-  let topicsData =  await getChapterInfo(chapterKey)
-console.log(topicsData);
+    let topicsData = await getChapterInfo(chapterKey)
+    console.log(topicsData);
 
     return (
         <div className="text-white relative flex justify-between  ">
@@ -58,10 +59,13 @@ console.log(topicsData);
                 </Link>
                 <h1 className="text-[1.1rem] font-medium">Chapter List</h1>
                 <div className="mt-4 bg-[#150F2D] text-center rounded-md p-3">
-                    <h1 className="p-2 font-medium  border-b border-input">Topic Roadmap</h1>
-                    <div>
 
-                        <ChapterUi novelId={novelId} chapterKey={chapterKey} />
+                    <div>
+                        <ChapterUi topicDetails={topicsData.data} novelId={novelId} chapterKey={chapterKey} />
+                    </div>
+
+                    <div>
+                        <TopicRoadMapUi topicDetails={topicsData.data} />
                     </div>
                 </div>
             </div>

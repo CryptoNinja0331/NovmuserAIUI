@@ -19,14 +19,17 @@ const ChapterDetailsWrapper = ({ chapters, novelId }: ChapterDetailsWrapperProps
 
             <div className="space-y-2 mt-2 text-sm font-medium">
                 <h1 className="text-[1.1rem] font-medium mb-2">Chapter List</h1>
-                {chapters.map((item: Chapter) => (
-                    <SingleChapter
-                        novelId={novelId}
-                        key={item.chapter_number}
-                        item={item}
+                <div className="space-y-3">
+                    {chapters.map((item: Chapter) => (
+                        <SingleChapter
+                            novelId={novelId}
+                            key={item.chapter_number}
+                            item={item}
 
-                    />
-                ))}
+                        />
+                    ))}
+                </div>
+
             </div>
 
         </div>

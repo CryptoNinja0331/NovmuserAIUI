@@ -8,18 +8,20 @@ interface SingleChapterProps {
 }
 
 const SingleChapter = ({ item, novelId }: SingleChapterProps) => {
-    const chapterTitle = encodeURIComponent(item.title);
-    const chapterNumber = item.chapter_number;
+
 
     return (
-        <div className="bg-[#150F2D] tracking-wide rounded-md p-3 cursor-pointer">
-            <Link
-                href={`/novel/${novelId}/chapter/${item.chapter_key}`}
 
-            >
+        <Link
+            href={`/novel/${novelId}/chapter/${item.chapter_key}`}
+            className="inline-block"
+        >
+            <div className="bg-[#150F2D] tracking-wide rounded-md p-3 cursor-pointer">
+
                 {item?.chapter_number} {""} <span> : {item?.title}</span>
-            </Link>
-        </div>
+            </div>
+        </Link>
+
     );
 };
 
