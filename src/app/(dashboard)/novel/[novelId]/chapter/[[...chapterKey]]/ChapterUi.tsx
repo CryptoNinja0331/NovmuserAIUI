@@ -49,6 +49,7 @@ interface ChapterUiProps {
 }
 
 const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
+
     const { getToken } = useAuth();
     const [loading, setLoading] = useState(false);
     const [openTopicsModal, setOpenTopicsModal] = useState(false);
@@ -83,7 +84,7 @@ const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
         const token = await getToken({ template: "UserToken" });
 
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/topic/${novelId}/${chapterKey}`,
+            `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/topic/${novelId}/${chapterKey[0]}`,
             {
                 method: "POST",
                 headers: {
@@ -178,8 +179,9 @@ const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
         setErrorMessage(null);
 
         setSubmitLoader(true);
+        console.log(data);
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/edit/${chapterKey}/topics`,
+            `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/edit/${chapterKey[0]}/topics`,
             {
                 method: "PUT",
                 headers: {
@@ -213,7 +215,7 @@ const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
                     }
                 </DialogTrigger>
                 <DialogContent className="max-w-[85vw] bg-[#150F2D] text-white">
-                    <SimpleBar style={{ maxHeight: '70vh' }}>
+                    <SimpleBar style={{ maxHeight: '80vh' }}>
                         <form id="topic-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-1/2 relative p-[2.5rem]">
                             {topicsData ? (
                                 topicsData.topics.map((topic, topicIndex) => (

@@ -14,7 +14,9 @@ import TopicRoadMapUi from './TopicRoadMapUi';
 
 const ChapterDetails = async ({ params }: { params: any }) => {
     let chapterKey = params.chapterKey;
+
     let novelId = params.novelId
+    console.log(novelId, 'novelid');
     const { getToken } = auth();
 
     async function initChapter() {
@@ -43,23 +45,25 @@ const ChapterDetails = async ({ params }: { params: any }) => {
 
     initChapter()
 
-    let topicsData = await getChapterInfo(chapterKey)
-    console.log(topicsData);
-
+    let topicsData = await getChapterInfo(chapterKey[0])
+    console.log(topicsData, 'data need');
+    console.log(chapterKey[0]);
     return (
-        <div className="text-white relative flex justify-between  ">
-
+        <div className="text-white relative h-full flex justify-between">
             <div className=" inline-block w-[16rem] h-full p-3">
                 <Link className='' href={`/novel/${novelId}`}
                 >
                     <button className="flex bg-[#150F2D] mb-3 rounded-md p-1 text-sm items-center gap-1" >
                         <IoArrowBackCircleOutline />
-                        Chapter 1
+                        <h1 className="">Chapter List</h1>
+
                     </button>
                 </Link>
-                <h1 className="text-[1.1rem] font-medium">Chapter List</h1>
-                <div className="mt-4 bg-[#150F2D] text-center rounded-md p-3">
+                <div className="mt-4 bg-[#150F2D]  rounded-md p-3">
+                    <div className='text-sm'>
+                        {decodeURIComponent(chapterKey[1])} :  {decodeURIComponent(chapterKey[2])}
 
+                    </div>
                     <div>
                         <ChapterUi topicDetails={topicsData.data} novelId={novelId} chapterKey={chapterKey} />
                     </div>

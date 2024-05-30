@@ -82,7 +82,7 @@ const NovelSidebar = ({ novelDetails }: { novelDetails: any }) => {
                 <SheetContent onInteractOutside={(e) => {
                     e.preventDefault();
                 }}
-                    className="bg-[#16112f65] backdrop-blur-lg w-[17rem] text-white p-0">
+                    className="bg-[#16112f65] backdrop-blur-lg w-[15rem] text-white p-0">
                     <div className="border-b border-input p-3 flex items-center justify-between">
                         <h1 className="font-medium">Dashboard</h1>
                         <RiDeleteBin6Line onClick={handleDeleteNovel} className="mr-8 text-[#FF453A] cursor-pointer" />
