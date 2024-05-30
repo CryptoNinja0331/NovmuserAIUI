@@ -5,10 +5,11 @@ import NextChunkTest from './NextChunkTest';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import { IoIosCheckbox, IoMdEye } from 'react-icons/io';
-
+import { IoMdEye } from 'react-icons/io';
+import { Checkbox } from "@/components/ui/checkbox";
 const Terminal = ({ chapterKey }: { chapterKey: string }) => {
     const [streamedText, setStreamedText] = useState("");
+    const [nextPointChecked, setNextPointChecked] = useState(true)
 
     return (
         <div className="w-full relative h-full border-r border-input p-3">
@@ -28,12 +29,12 @@ const Terminal = ({ chapterKey }: { chapterKey: string }) => {
                         </Button>
 
                         <div className="flex items-center gap-2">
+                            <Checkbox checked={nextPointChecked} onCheckedChange={() => setNextPointChecked(!nextPointChecked)} id="terms" />
 
-                            <IoIosCheckbox className="text-xl mt-[5px]" />
                             Link to next point</div>
                     </div>
 
-                    <NextChunkTest setStreamedText={setStreamedText} chapterKey={chapterKey} />
+                    <NextChunkTest nextPointChecked={nextPointChecked} setNextPointChecked={setNextPointChecked} streamedText={streamedText} setStreamedText={setStreamedText} chapterKey={chapterKey} />
 
                 </div>
             </div>

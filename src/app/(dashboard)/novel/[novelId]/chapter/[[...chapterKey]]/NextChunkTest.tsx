@@ -8,13 +8,17 @@ import { GrPowerReset } from "react-icons/gr";
 interface NextChunkTestProps {
     chapterKey: string;
     setStreamedText: React.Dispatch<React.SetStateAction<string>>;
+    streamedText: string,
+    nextPointChecked: boolean
+    setNextPointChecked: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const NextChunkTest = ({ chapterKey, setStreamedText }: NextChunkTestProps) => {
+const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPointChecked, nextPointChecked }: NextChunkTestProps) => {
     const [isStreaming, setIsStreaming] = useState(false);
-
+    const [fullStreamedText, setFullStreamedText] = useState('');
     const [doneEventData, setDoneEventData] = useState<any>(null);
-    const { getToken } = useAuth();
 
+    const { getToken } = useAuth();
+    console.log(doneEventData);
     const handleNextChunk = async () => {
         setIsStreaming(true);
         const userId = await getToken({ template: "UserToken" });
@@ -84,14 +88,18 @@ const NextChunkTest = ({ chapterKey, setStreamedText }: NextChunkTestProps) => {
                     }
                 });
 
+                setFullStreamedText(buffer);
                 const words = buffer.split(/\s+/);
-                words.forEach((word) => {
+                console.log(words, 'need');
+                for (let i = 0; i < words.length; i++) {
                     setTimeout(() => {
-                        setStreamedText((prevText) => prevText + word + " ");
-                    }, words.indexOf(word) * 300);
-                });
+                        setStreamedText((prevText) => prevText + words[i] + " ");
+                    }, i * 300);
+                }
 
                 buffer = "";
+
+
             } catch (error) {
                 console.error('Error processing data chunk:', error);
             }
@@ -106,23 +114,45 @@ const NextChunkTest = ({ chapterKey, setStreamedText }: NextChunkTestProps) => {
     useEffect(() => {
         async function saveChunk() {
             const userId = await getToken({ template: "UserToken" });
+            const payload = {
+                "cur_chunk": {
+                    "metadata": {
+                        "topic_mapping": {
+                            "topic_id": doneEventData.meta_data.cur_topic_id,
+                            "topic_point_id": doneEventData.meta_data.cur_topic_point_id
+                        },
+                        "chunk_type": "leader",
+                        "generate_from": "ai"
+                    },
+                    "chunk_content": fullStreamedText
+                },
 
+
+            }
             const response = await fetch(
                 `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/${chapterKey}/chunk`,
                 {
-                    method: "POST",
+                    method: "PATCH",
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${userId}`,
                     },
-                    body: JSON.stringify({}),
+                    body: JSON.stringify(payload),
                 }
             );
+            if (response.ok) {
+                const responseData = await response.json();
+
+                console.log(responseData.data);
+            } else {
+                console.error("Failed to save changes");
+            }
         }
-    }, [])
 
-
-
+        if (doneEventData) {
+            saveChunk()
+        }
+    }, [chapterKey, doneEventData, fullStreamedText, getToken])
 
 
 
@@ -130,7 +160,6 @@ const NextChunkTest = ({ chapterKey, setStreamedText }: NextChunkTestProps) => {
     return (
         <div>
             <div className="w-1/2 flex justify-between items-center">
-
                 <Button className="flex gap-1 bg-[#1A1647] items-center hover:bg-background hover:text-white" variant="outline">
                     <GrPowerReset className="mt-[5px" /> Re-generate
                 </Button>
