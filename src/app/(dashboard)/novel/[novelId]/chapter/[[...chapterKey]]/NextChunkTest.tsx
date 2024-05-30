@@ -1,31 +1,51 @@
 'use client';;
 import { Button } from "@/components/ui/button";
+import { useAppDispatch } from "@/lib/hooks";
+import { addChunkData } from "@/lib/store/features/chunkSlice";
 import { useAuth } from "@clerk/nextjs";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FaRobot } from "react-icons/fa6";
 import { GrPowerReset } from "react-icons/gr";
+
 interface NextChunkTestProps {
     chapterKey: string;
     setStreamedText: React.Dispatch<React.SetStateAction<string>>;
     streamedText: string,
     nextPointChecked: boolean
     setNextPointChecked: React.Dispatch<React.SetStateAction<boolean>>;
+
 }
 const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPointChecked, nextPointChecked }: NextChunkTestProps) => {
     const [isStreaming, setIsStreaming] = useState(false);
     const [fullStreamedText, setFullStreamedText] = useState('');
     const [doneEventData, setDoneEventData] = useState<any>(null);
+    const [isFirstChunk, setIsFirstChunk] = useState(true);
 
     const { getToken } = useAuth();
-    console.log(doneEventData);
+    const dispatch = useAppDispatch();
     const handleNextChunk = async () => {
         setIsStreaming(true);
         const userId = await getToken({ template: "UserToken" });
-        const payload = {
+        const payload = isFirstChunk ? {
             "is_first_chunk": true,
             "user_feedback": "string",
             "chunk_type": "leader"
+        } : {
+            "prev_chunk": {
+                "id": doneEventData.meta_data.cur_chunk_id,
+                "metadata": {
+                    "topic_mapping": {
+                        "topic_id": doneEventData.meta_data.cur_topic_id,
+                        "topic_point_id": doneEventData.meta_data.cur_topic_point_id
+                    },
+                    "chunk_type": doneEventData.meta_data.chunk_type,
+                    "generate_from": "ai"
+                }
+            },
+            "is_first_chunk": false,
+            "user_feedback": "string",
+            "chunk_type": "follower"
         };
 
         const response = await fetch(
@@ -80,6 +100,8 @@ const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPoint
                         }
                         if (data.is_final) {
                             setDoneEventData(data);
+                            dispatch(addChunkData(data));
+                            // setAllChunkData((prevChunkData: any) => [...prevChunkData, data]);
                         }
 
 
@@ -150,7 +172,8 @@ const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPoint
         }
 
         if (doneEventData) {
-            saveChunk()
+
+            setIsFirstChunk(false);
         }
     }, [chapterKey, doneEventData, fullStreamedText, getToken])
 
@@ -159,7 +182,7 @@ const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPoint
 
     return (
         <div>
-            <div className="w-1/2 flex justify-between items-center">
+            <div className="w-1/2 flex gap-3 justify-between items-center">
                 <Button className="flex gap-1 bg-[#1A1647] items-center hover:bg-background hover:text-white" variant="outline">
                     <GrPowerReset className="mt-[5px" /> Re-generate
                 </Button>
