@@ -60,15 +60,14 @@ const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
 
     useEffect(() => {
         if (topicDetails?.details) {
-            setTopicsData(topicDetails?.details?.chapter_topics);
-            const topics_from_resp: Topic[] = topicDetails?.details?.chapter_topics?.topics;
-            const topics: FormValues["topics"] = topics_from_resp?.map((topic, idx) => ({
+            const topics_from_resp: Topic[] = topicDetails.details.chapter_topics.topics;
+            const topics: FormValues["topics"] = topics_from_resp.map((topic, idx) => ({
                 id: topic.id,
                 name: topic.name,
                 abstract: topic.abstract,
                 edit_type: "U",
                 add_index: idx,
-                topic_points: topic?.topic_points?.map((point, pointIdx) => ({
+                topic_points: topic.topic_points.map((point, pointIdx) => ({
                     id: point.id,
                     point_content: point.point_content,
                     edit_type: "U",
@@ -76,6 +75,7 @@ const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
                 })),
             }));
             reset({ topics });
+            setTopicsData({ topics: topics_from_resp });
         }
     }, [reset, topicDetails]);
 
@@ -101,12 +101,14 @@ const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
 
             const topics_from_resp: Topic[] = responseData.data.topics;
             const topics: FormValues["topics"] = topics_from_resp.map((topic, idx) => ({
+                id: topic.id,
                 name: topic.name,
                 abstract: topic.abstract,
                 edit_type: "A",
                 add_index: idx,
                 topic_points: topic.topic_points.map((point, pointIdx) => ({
-                    point_content: point,
+                    id: point.id,
+                    point_content: point.point_content,
                     edit_type: "A",
                     add_index: pointIdx,
                 })),
@@ -152,7 +154,6 @@ const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
                 add_index: idx,
                 topic_points: topic.topic_points.map((point, pointIdx) => ({
                     ...point,
-
                     point_content: point.point_content,
                     edit_type: point.id ? "D" : "A",
                     add_index: pointIdx,
@@ -162,42 +163,50 @@ const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
     };
 
     const onSubmit: SubmitHandler<FormValues> = async (data) => {
-        const token = await getToken({ template: "UserToken" });
+        try {
+            const token = await getToken({ template: "UserToken" });
 
-        if (!data?.topics || data?.topics?.length === 0) {
-            setErrorMessage("You must have at least one topic to save.");
-            toast.error('You must have at least one topic to save.');
-            return;
-        }
-        for (let topic of data.topics) {
-            if (topic.topic_points.length === 0) {
-                setErrorMessage("Each topic must have at least one topic point.");
+            if (!data?.topics || data?.topics?.length === 0) {
+                setErrorMessage("You must have at least one topic to save.");
+                toast.error('You must have at least one topic to save.');
                 return;
             }
-        }
 
-        setErrorMessage(null);
-
-        setSubmitLoader(true);
-        console.log(data);
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/edit/${chapterKey[0]}/topics`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(data),
+            for (let topic of data.topics) {
+                if (topic.topic_points.length === 0) {
+                    setErrorMessage("Each topic must have at least one topic point.");
+                    toast.error("Each topic must have at least one topic point.");
+                    return;
+                }
             }
-        );
 
-        if (response.ok) {
-            const responseData = await response.json();
+            setErrorMessage(null);
+            setSubmitLoader(true);
+
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/edit/${chapterKey[0]}/topics`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(data),
+                }
+            );
+
+            if (response.ok) {
+                const responseData = await response.json();
+                setSubmitLoader(false);
+                console.log(responseData.data);
+                toast.success("Changes saved successfully.");
+            } else {
+                throw new Error("Failed to save changes");
+            }
+        } catch (error) {
+            console.error("Error:", error);
             setSubmitLoader(false);
-            console.log(responseData.data);
-        } else {
-            console.error("Failed to save changes");
+            toast.error("An error occurred while saving changes.");
         }
     };
 
@@ -289,7 +298,7 @@ const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
                                             <h1>This is an abstract</h1>
                                         </div>
                                     </div>
-                                    <div className='flex justify-end'>
+                                    <div className='flex justify-end mt-4'>
                                         <div className='bg-[#0C0C0D] w-[70%] point border relative topics-point border-input rounded-md p-4'>
                                             <IoAddCircle className='text-white text-2xl absolute top-[50%] left-[-30px]' />
                                             <div className='mb-4 flex items-start justify-between'>
@@ -342,4 +351,3 @@ const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
 };
 
 export default ChapterUi;
-

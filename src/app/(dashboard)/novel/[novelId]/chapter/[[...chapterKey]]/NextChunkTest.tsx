@@ -172,7 +172,7 @@ const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPoint
         }
 
         if (doneEventData) {
-
+            saveChunk()
             setIsFirstChunk(false);
         }
     }, [chapterKey, doneEventData, fullStreamedText, getToken])
