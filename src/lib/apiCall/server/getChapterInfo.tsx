@@ -13,6 +13,7 @@ export async function getChapterInfo(chapterKey: string) {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${userId}`,
             },
+            next: { tags: ["chapterInfo"] },
         }
     );
     if (!res.ok) {

@@ -4,13 +4,13 @@ import NovelSidebar from "@/components/singleNovel/NovelSidebar";
 import ChapterDetails from "./ChapterDetails";
 import { getSingleNovel } from "@/lib/apiCall/server/getSingleNovel";
 import Terminal from "./Terminal";
+import { getChapterInfo } from "@/lib/apiCall/server/getChapterInfo";
 const page = async ({ params }: { params: { chapterKey: string, novelId: string } }) => {
     const response = await getSingleNovel(params.novelId);
     const chapterKey = params.chapterKey[0]
 
 
-
-
+    let topicsData = await getChapterInfo(chapterKey)
 
 
 
@@ -24,7 +24,9 @@ const page = async ({ params }: { params: { chapterKey: string, novelId: string 
                     <ChapterDetails params={params} />
                 </div>
 
-                <Terminal chapterKey={chapterKey} />
+                <Terminal topicDetails={topicsData.data} chapterKey={chapterKey} />
+
+
                 <div className="relative mt-2">
                     <NovelSidebar novelDetails={response.data} />
                 </div>

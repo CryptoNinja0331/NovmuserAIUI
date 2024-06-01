@@ -1,4 +1,5 @@
-'use client';;
+'use client';
+
 import { useEffect, useState } from "react";
 import { BiSolidLeftArrow, BiSolidRightArrow } from "react-icons/bi";
 import { IoMdSettings } from "react-icons/io";
@@ -10,6 +11,8 @@ import { useGetCreatedNovelQuery } from "@/lib/apiCall/client/clientAPi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "./button";
 import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+
 interface NovelDetails {
     brain_storming: null;
     chapter_outline: null;
@@ -68,26 +71,23 @@ const ExpandSidebar = () => {
         }
     }, [isLoading, isLoaded, data?.data?.records]);
 
+    const router = useRouter();
+    const pathname = usePathname();
+    console.log(pathname);
 
-    const router = useRouter()
     const handleNavigate = (id: string) => {
-        router.push(`/novel/${id}`, { scroll: false })
-    }
+        router.push(`/novel/${id}`, { scroll: false });
+    };
 
     const handleViewMore = () => {
-        router.push(`/allnovels`, { scroll: false })
-    }
-
-
-
-
-
+        router.push(`/allnovels`, { scroll: false });
+    };
 
     return (
         <div className={`h-full transition-all duration-500 ease-in-out ${isExpanded ? 'w-[17rem] bg-[#0000001a]' : 'w-16'}`}>
             <div className="flex flex-col h-full">
                 {isExpanded ? (
-                    <div className="flex-grow  h-full bg-[#0000001a]">
+                    <div className="flex-grow h-full bg-[#0000001a]">
                         <div className="flex min-h-[65px] pl-4 border-b border-gray-700">
                             <div onClick={() => router.push(`/`, { scroll: false })} className="flex cursor-pointer gap-1 mr-2 items-center">
                                 <Image className="cursor-pointer" width={30} height={30} src={logo} alt="logo" />
@@ -108,17 +108,25 @@ const ExpandSidebar = () => {
                                     <>
                                         <div className="div space-y-3 px-4">
                                             {novelData?.map((item) => (
-                                                <div onClick={() => handleNavigate(item.id)} key={item.id} className=" font-medium text-[1.1rem] capitalize cursor-pointer p-3 bg-[#16112f65] rounded-lg">{item.metadata.name}</div>
+                                                <div
+                                                    onClick={() => handleNavigate(item.id)}
+                                                    key={item.id}
+                                                    className={`font-medium text-[1.1rem] capitalize cursor-pointer p-3 rounded-lg ${pathname.includes(item.id) ? 'bg-[#0f0b2565]' : 'bg-[#16112f65]'
+                                                        }`}
+                                                >
+                                                    {item.metadata.name}
+                                                </div>
                                             ))}
                                         </div>
 
-                                        {
-                                            novelData.length > 7 && <Button onClick={handleViewMore} variant="outline" className="mx-auto flex mt-6 hover:bg-background hover:text-white" >View More...</Button>
-                                        }
-
+                                        {novelData.length > 7 && (
+                                            <Button onClick={handleViewMore} variant="outline" className="mx-auto flex mt-6 hover:bg-background hover:text-white">
+                                                View More...
+                                            </Button>
+                                        )}
                                     </>
                                 ) : (
-                                    <div className=" space-y-8">
+                                    <div className="space-y-8">
                                         <div className="space-y-2">
                                             <Skeleton className="h-3 w-[250px] bg-[#655e70]" />
                                             <Skeleton className="h-3 w-[200px] bg-[#655e70]" />

@@ -46,8 +46,8 @@ const ChapterDetails = async ({ params }: { params: any }) => {
     initChapter()
 
     let topicsData = await getChapterInfo(chapterKey[0])
-    console.log(topicsData, 'data need');
-    console.log(chapterKey[0]);
+
+
     return (
         <div className="text-white relative h-full flex justify-between">
             <div className=" inline-block w-[16rem] h-full p-3">

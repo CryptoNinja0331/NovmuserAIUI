@@ -1,9 +1,11 @@
 'use client';;
 import { Button } from "@/components/ui/button";
+import { customRevalidateTag } from "@/lib/actions/revalidateTag";
 import { useAppDispatch } from "@/lib/hooks";
 import { addChunkData } from "@/lib/store/features/chunkSlice";
 import { useAuth } from "@clerk/nextjs";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaRobot } from "react-icons/fa6";
 import { GrPowerReset } from "react-icons/gr";
@@ -16,31 +18,47 @@ interface NextChunkTestProps {
     setNextPointChecked: React.Dispatch<React.SetStateAction<boolean>>;
 
 }
-const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPointChecked, nextPointChecked }: NextChunkTestProps) => {
+
+
+
+
+
+
+
+
+
+
+const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPointChecked, nextPointChecked, topicDetails }: NextChunkTestProps) => {
     const [isStreaming, setIsStreaming] = useState(false);
     const [fullStreamedText, setFullStreamedText] = useState('');
     const [doneEventData, setDoneEventData] = useState<any>(null);
     const [isFirstChunk, setIsFirstChunk] = useState(true);
-
+    const [saveChunkInformation, setSaveChunkInformation] = useState(null)
+    console.log(doneEventData, 'done data');
     const { getToken } = useAuth();
     const dispatch = useAppDispatch();
+    const router = useRouter();
+    const latestChunk = topicDetails?.details?.chapter_chunks[topicDetails?.details?.chapter_chunks.length - 1]
+    console.log(topicDetails, 'topic details');
     const handleNextChunk = async () => {
         setIsStreaming(true);
         const userId = await getToken({ template: "UserToken" });
-        const payload = isFirstChunk ? {
+        const payload = topicDetails?.details?.chapter_chunks?.length === 0 ? {
             "is_first_chunk": true,
             "user_feedback": "string",
             "chunk_type": "leader"
         } : {
             "prev_chunk": {
-                "id": doneEventData.meta_data.cur_chunk_id,
+                "id": latestChunk?.id,
                 "metadata": {
                     "topic_mapping": {
-                        "topic_id": doneEventData.meta_data.cur_topic_id,
-                        "topic_point_id": doneEventData.meta_data.cur_topic_point_id
+                        "topic_id": latestChunk?.metadata?.topic_mapping?.topic_id,
+                        "topic_point_id": latestChunk?.metadata?.topic_mapping?.topic_point_id
+
                     },
-                    "chunk_type": doneEventData.meta_data.chunk_type,
-                    "generate_from": "ai"
+                    "chunk_type": latestChunk?.metadata.chunk_type,
+                    "generate_from": latestChunk?.metadata.generate_from
+
                 }
             },
             "is_first_chunk": false,
@@ -63,6 +81,7 @@ const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPoint
         if (!response.body) {
             console.error("ReadableStream not supported");
             setIsStreaming(false);
+
             return;
         }
 
@@ -87,12 +106,9 @@ const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPoint
         const processDataChunk = (dataChunk: string) => {
             try {
                 let buffer = "";
-
                 const lines = dataChunk.trim().split('\n');
-
+                console.log(lines, 'lines');
                 lines.forEach((line) => {
-
-
                     if (line.startsWith('data:') && line.endsWith('}')) {
                         const data = JSON.parse(line.substring(5));
                         if (data.content) {
@@ -101,7 +117,11 @@ const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPoint
                         if (data.is_final) {
                             setDoneEventData(data);
                             dispatch(addChunkData(data));
-                            // setAllChunkData((prevChunkData: any) => [...prevChunkData, data]);
+
+                            setStreamedText((prevState) => ({
+                                ...prevState,
+                                data: data
+                            }));
                         }
 
 
@@ -111,16 +131,19 @@ const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPoint
                 });
 
                 setFullStreamedText(buffer);
+
                 const words = buffer.split(/\s+/);
                 console.log(words, 'need');
                 for (let i = 0; i < words.length; i++) {
                     setTimeout(() => {
-                        setStreamedText((prevText) => prevText + words[i] + " ");
+                        setStreamedText((prevState) => ({
+                            ...prevState,
+                            text: prevState.text + words[i] + " "
+                        }));
                     }, i * 300);
                 }
 
                 buffer = "";
-
 
             } catch (error) {
                 console.error('Error processing data chunk:', error);
@@ -136,14 +159,15 @@ const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPoint
     useEffect(() => {
         async function saveChunk() {
             const userId = await getToken({ template: "UserToken" });
-            const payload = {
+
+            let payload = {
                 "cur_chunk": {
                     "metadata": {
                         "topic_mapping": {
                             "topic_id": doneEventData.meta_data.cur_topic_id,
                             "topic_point_id": doneEventData.meta_data.cur_topic_point_id
                         },
-                        "chunk_type": "leader",
+                        "chunk_type": doneEventData.meta_data.chunk_type,
                         "generate_from": "ai"
                     },
                     "chunk_content": fullStreamedText
@@ -151,6 +175,26 @@ const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPoint
 
 
             }
+
+            if (doneEventData.meta_data.chunk_type === 'follower') {
+                payload = {
+                    "prev_chunk": {
+                        "id": latestChunk?.id,
+                        "metadata": {
+                            "topic_mapping": {
+                                "topic_id": latestChunk?.metadata?.topic_mapping?.topic_id,
+                                "topic_point_id": latestChunk?.metadata?.topic_mapping?.topic_point_id
+                            },
+                            "chunk_type": latestChunk?.metadata.chunk_type,
+                            "generate_from": latestChunk?.metadata.generate_from
+                        }
+                    },
+                    ...payload
+                };
+            }
+
+
+
             const response = await fetch(
                 `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/${chapterKey}/chunk`,
                 {
@@ -158,14 +202,19 @@ const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPoint
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${userId}`,
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Credentials': 'true'
                     },
                     body: JSON.stringify(payload),
                 }
             );
             if (response.ok) {
                 const responseData = await response.json();
+                console.log(responseData.data, 'saave data');
+                // router.refresh();
+                customRevalidateTag('chapterInfo')
+                setSaveChunkInformation(responseData.data)
 
-                console.log(responseData.data);
             } else {
                 console.error("Failed to save changes");
             }
@@ -175,7 +224,7 @@ const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPoint
             saveChunk()
             setIsFirstChunk(false);
         }
-    }, [chapterKey, doneEventData, fullStreamedText, getToken])
+    }, [chapterKey, doneEventData, fullStreamedText, getToken, router])
 
 
 

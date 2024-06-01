@@ -1,5 +1,4 @@
-'use client';
-import { useAppSelector } from "@/lib/hooks";
+'use client';;
 import SimpleBar from "simplebar-react";
 
 interface TopicDetails {
@@ -32,10 +31,16 @@ interface TopicRoadMapUiProps {
 }
 
 const TopicRoadMapUi = ({ topicDetails }: TopicRoadMapUiProps) => {
-    const allChunkData = useAppSelector((state: any) => state.chunkData.allChunkData);
+
+
+    // const allChunkData = useAppSelector((state: any) => state.chunkData.allChunkData);
+    console.log(topicDetails, 'from roadmap');
     const getTopicPointColor = (topicId: string, pointId: string) => {
-        const activatedPoint = allChunkData.find(
-            (data: any) => data.meta_data.cur_topic_id === topicId && data.meta_data.cur_topic_point_id === pointId
+        console.log(pointId);
+        const activatedPoint = topicDetails?.details?.chapter_chunks.find(
+            (data: any) =>
+                data?.metadata?.topic_mapping?.topic_id === topicId &&
+                data?.metadata?.topic_mapping?.topic_point_id === pointId
         );
         return activatedPoint ? 'bg-purple-500 text-white' : '';
     };
@@ -43,8 +48,10 @@ const TopicRoadMapUi = ({ topicDetails }: TopicRoadMapUiProps) => {
     const getTopicColor = (topicId: string, topicPoints: any[]) => {
         const isAnyTopicPointActivated = topicPoints.some(
             (point) =>
-                allChunkData.find(
-                    (data: any) => data.meta_data.cur_topic_id === topicId && data.meta_data.cur_topic_point_id === point.id
+                topicDetails?.details?.chapter_chunks.find(
+                    (data: any) =>
+                        data?.metadata?.topic_mapping?.topic_id === topicId &&
+                        data?.metadata?.topic_mapping?.topic_point_id === point.id
                 ) !== undefined
         );
         return isAnyTopicPointActivated ? 'bg-purple-500 text-white' : '';
