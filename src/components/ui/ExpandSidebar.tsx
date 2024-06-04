@@ -111,7 +111,7 @@ const ExpandSidebar = () => {
                                                 <div
                                                     onClick={() => handleNavigate(item.id)}
                                                     key={item.id}
-                                                    className={`font-medium text-[1.1rem] capitalize cursor-pointer p-3 rounded-lg ${pathname.includes(item.id) ? 'bg-[#0f0b2565]' : 'bg-[#16112f65]'
+                                                    className={`font-medium text-[1.1rem] capitalize cursor-pointer p-3 rounded-lg ${pathname.includes(item.id) ? 'bg-[#05020ca3]' : 'bg-[#16112f65]'
                                                         }`}
                                                 >
                                                     {item.metadata.name}
