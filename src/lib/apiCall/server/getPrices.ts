@@ -1,22 +1,22 @@
 "use server";
 
-import { auth } from "@clerk/nextjs";
+import { GET, TResponseDto } from "@/lib/http";
 
-export async function getPrices() {
-  const { getToken } = auth();
-  const userId = await getToken({ template: "UserToken" });
+export type TSubscriptionPlan = {
+  price_name: string;
+  price_description: string;
+  amount: string;
+  currency: string;
+  stripe_price_id: string;
+  type: string;
+  interval: string;
+  id: string;
+  services: string[];
+  in_active: boolean;
+};
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/payment/get_prices`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userId}`,
-      },
-    }
-  );
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-  return res.json();
-}
+export const getPrices = async (): Promise<
+  TResponseDto<TSubscriptionPlan[]>
+> => {
+  return await GET<TResponseDto<TSubscriptionPlan[]>>("/payment/get_prices");
+};
