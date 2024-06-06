@@ -33,10 +33,9 @@ interface TopicRoadMapUiProps {
 const TopicRoadMapUi = ({ topicDetails }: TopicRoadMapUiProps) => {
 
 
-    // const allChunkData = useAppSelector((state: any) => state.chunkData.allChunkData);
-    console.log(topicDetails, 'from roadmap');
+
     const getTopicPointColor = (topicId: string, pointId: string) => {
-        console.log(pointId);
+
         const activatedPoint = topicDetails?.details?.chapter_chunks.find(
             (data: any) =>
                 data?.metadata?.topic_mapping?.topic_id === topicId &&
