@@ -8,6 +8,8 @@ import { IoMdEye } from 'react-icons/io';
 import { Checkbox } from "@/components/ui/checkbox";
 import SimpleBar from 'simplebar-react';
 import { useAuth } from "@clerk/nextjs";
+import { updateHumanFirstChunk } from '@/lib/store/features/chunkSlice';
+import { useAppDispatch } from '@/lib/hooks';
 
 const debounce = (func, delay) => {
     let debounceTimer;
@@ -36,7 +38,7 @@ const Terminal = ({ chapterKey, topicDetails }) => {
             return 'inherit';
         }
     };
-
+    const dispatch = useAppDispatch();
     const concatenatedContent = topicDetails?.details?.chapter_chunks.map((chunk) => {
         const { chunk_content, metadata } = chunk;
         const { chunk_type } = metadata || {};
@@ -109,7 +111,10 @@ const Terminal = ({ chapterKey, topicDetails }) => {
     const handleContentChange = (e) => {
         const newText = e.target.innerText;
 
+        if (!selectedChunkId && !editableContent) {
+            dispatch(updateHumanFirstChunk(true))
 
+        }
 
         saveContent(newText);
     };

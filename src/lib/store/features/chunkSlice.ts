@@ -12,10 +12,12 @@ interface ChunkData {
 
 interface ChunkDataState {
   allChunkData: ChunkData[];
+  humanFirstChunk: boolean;
 }
 
 const initialState: ChunkDataState = {
   allChunkData: [],
+  humanFirstChunk: false,
 };
 
 const chunkDataSlice = createSlice({
@@ -28,8 +30,11 @@ const chunkDataSlice = createSlice({
     clearChunkData: (state) => {
       state.allChunkData = [];
     },
+    updateHumanFirstChunk: (state, action) => {
+      state.humanFirstChunk = action.payload;
+    },
   },
 });
 
-export const { addChunkData, clearChunkData } = chunkDataSlice.actions;
+export const { addChunkData, clearChunkData,updateHumanFirstChunk } = chunkDataSlice.actions;
 export default chunkDataSlice.reducer;
