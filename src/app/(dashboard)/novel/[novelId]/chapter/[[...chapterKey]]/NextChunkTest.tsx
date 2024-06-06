@@ -26,7 +26,7 @@ interface NextChunkTestProps {
 
 
 
-const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPointChecked, nextPointChecked, selectedChunkId, userFeedback, replaceChunkText, topicDetails }: NextChunkTestProps) => {
+const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setRemoveCureentChunk, setNextPointChecked, nextPointChecked, selectedChunkId, userFeedback, replaceChunkText, topicDetails }: NextChunkTestProps) => {
     const [isStreaming, setIsStreaming] = useState(false);
     const [fullStreamedText, setFullStreamedText] = useState('');
     const [regenerateLoading, setRegenrateLoading] = useState(false);
@@ -146,7 +146,9 @@ const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPoint
                             );
                             if (saveResponse.ok) {
                                 const responseData = await saveResponse.json();
-                                customRevalidateTag('chapterInfo');
+
+
+
                             } else {
                                 console.error("Failed to save changes");
                             }
@@ -160,12 +162,15 @@ const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setNextPoint
 
                 const words = buffer.split(/\s+/);
                 for (let i = 0; i < words.length; i++) {
+
                     setTimeout(() => {
                         setStreamedText((prevState) => ({
                             ...prevState,
                             text: prevState.text + words[i] + " "
                         }));
                     }, i * 300);
+
+
                 }
 
                 buffer = "";
