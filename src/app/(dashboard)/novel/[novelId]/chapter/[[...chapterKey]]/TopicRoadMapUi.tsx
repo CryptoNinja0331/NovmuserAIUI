@@ -32,7 +32,7 @@ interface TopicRoadMapUiProps {
 
 const TopicRoadMapUi = ({ topicDetails }: TopicRoadMapUiProps) => {
     const isHumanFirstChunk = useAppSelector(state => state.chunkData.humanFirstChunk);
-
+    console.log(topicDetails, 'details');
     const getTopicPointColor = (topicId: string, pointId: string) => {
         const activatedPoint = topicDetails?.details?.chapter_chunks.find(
             (data: any) =>
