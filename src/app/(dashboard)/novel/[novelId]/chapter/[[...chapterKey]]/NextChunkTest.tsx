@@ -252,7 +252,7 @@ const NextChunkTest = ({ chapterKey, setStreamedText, streamedText, setRemoveCur
                     chunk_content: newText
                 };
                 fetch(
-                    `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/${chapterKey}/chunk`,
+                    `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/${chapterKey}/update/chunk`,
                     {
                         method: "PATCH",
                         headers: {

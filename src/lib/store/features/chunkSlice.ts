@@ -36,5 +36,6 @@ const chunkDataSlice = createSlice({
   },
 });
 
-export const { addChunkData, clearChunkData,updateHumanFirstChunk } = chunkDataSlice.actions;
+export const { addChunkData, clearChunkData, updateHumanFirstChunk } =
+  chunkDataSlice.actions;
 export default chunkDataSlice.reducer;

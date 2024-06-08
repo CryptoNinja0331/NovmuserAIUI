@@ -10,6 +10,7 @@ import SimpleBar from 'simplebar-react';
 import { useAuth } from "@clerk/nextjs";
 import { updateHumanFirstChunk } from '@/lib/store/features/chunkSlice';
 import { useAppDispatch } from '@/lib/hooks';
+import { customRevalidateTag } from '@/lib/actions/revalidateTag';
 
 const debounce = (func, delay) => {
     let debounceTimer;
@@ -27,6 +28,10 @@ const Terminal = ({ chapterKey, topicDetails }) => {
     const [selectedChunkId, setSelectedChunkId] = useState(null);
     const [generatedChunks, setGeneratedChunks] = useState({});
     const [removeCurrentChunk, setRemoveCurrentChunk] = useState(false);
+    const [leaderChunkExists, setLeaderChunkExists] = useState(false)
+
+
+
     const { getToken } = useAuth();
     const contentEditableRef = useRef(null);
     const getColor = (chunkType) => {
@@ -52,9 +57,7 @@ const Terminal = ({ chapterKey, topicDetails }) => {
         };
     });
 
-    const editableContent = concatenatedContent.map(chunk => chunk.text).join(' ');
-
-
+    const editableContent = concatenatedContent?.map(chunk => chunk.text).join(' ');
 
     const handleTextSelection = () => {
         const selection = window.getSelection();
@@ -100,38 +103,96 @@ const Terminal = ({ chapterKey, topicDetails }) => {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${userId}`,
-
                     },
                     body: JSON.stringify(savePayload),
                 }
             );
-        }, 2000), [selectedChunkId, getToken, chapterKey]
+        }, 60000), // 60000 milliseconds = 1 minute
+        [selectedChunkId, getToken, chapterKey]
+    );
+
+    const debouncedSaveContent = useCallback(
+        debounce(async (newText, userId, chapterKey, topicDetails, leaderChunkExists) => {
+            if (!selectedChunkId && !editableContent) {
+                dispatch(updateHumanFirstChunk(true));
+
+                const payload = {
+                    "cur_chunk": {
+                        "metadata": {
+                            "topic_mapping": {
+                                "topic_id": topicDetails?.details?.chapter_topics?.topics[0].id,
+                                "topic_point_id": topicDetails?.details?.chapter_topics?.topics[0]?.topic_points[0]?.id
+                            },
+                            "chunk_type": "leader",
+                            "generate_from": "human"
+                        },
+                        "chunk_content": newText
+                    },
+                    "is_first_chunk": true
+                };
+                if (!leaderChunkExists) {
+                    const saveResponse = await fetch(
+                        `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/${chapterKey}/chunk`,
+                        {
+                            method: "PATCH",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${userId}`,
+                            },
+                            body: JSON.stringify(payload),
+                        }
+                    );
+                    if (saveResponse.ok) {
+                        const responseData = await saveResponse.json();
+                        setLeaderChunkExists(true);
+                        customRevalidateTag('chapterInfo');
+                    } else {
+                        console.error("Failed to save changes");
+                    }
+                } else {
+                    const updatePayload = {
+                        chunk_id: topicDetails?.details?.chapter_topics?.topics[0].id,
+                        chunk_content: newText
+                    };
+                    fetch(
+                        `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/${chapterKey}/update/chunk`,
+                        {
+                            method: "PATCH",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${userId}`,
+                            },
+                            body: JSON.stringify(updatePayload),
+                        }
+                    ).then(saveResponse => {
+                        if (saveResponse.ok) {
+                            saveResponse.json().then(responseData => {
+                                customRevalidateTag('chapterInfo');
+                            });
+                        } else {
+                            console.error("Failed to save changes");
+                        }
+                    });
+                }
+            } else {
+                saveContent(newText);
+            }
+        }, 500), // 60000 milliseconds = 1 minute
+        [selectedChunkId, editableContent, leaderChunkExists, getToken, dispatch, chapterKey, topicDetails]
     );
 
     const handleContentChange = (e) => {
         const newText = e.target.innerText;
-
-        if (!selectedChunkId && !editableContent) {
-            dispatch(updateHumanFirstChunk(true))
-
-        }
-
-        saveContent(newText);
+        getToken({ template: "UserToken" }).then(userId => {
+            debouncedSaveContent(newText, userId, chapterKey, topicDetails, leaderChunkExists);
+        });
     };
-
-
-
-
-
-
-
 
     return (
         <div className="w-full relative h-full border-r border-input p-3">
             <SimpleBar style={{ maxHeight: '60vh' }}>
                 <div>
                     <div
-
                         contentEditable
                         onInput={handleContentChange}
                         suppressContentEditableWarning={true}
@@ -142,7 +203,7 @@ const Terminal = ({ chapterKey, topicDetails }) => {
                             outline: 'none'
                         }}
                     >
-                        {concatenatedContent.map((chunk, index) => (
+                        {concatenatedContent?.map((chunk, index) => (
                             <span
                                 key={index}
                                 data-chunk-id={chunk.chunkId}
