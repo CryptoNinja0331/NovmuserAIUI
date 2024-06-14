@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 export interface HttpConfig extends RequestInit {
   headers?: { [key: string]: string };
 }
@@ -22,6 +23,7 @@ const doFetchData = async <T>(
     "Content-Type": "application/json",
     ...config.headers,
   };
+
   if (token) {
     defaultHeaders["Authorization"] = `Bearer ${token}`;
   }
@@ -37,8 +39,14 @@ const doFetchData = async <T>(
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "An error occurred");
+    if (response.status === 401) {
+      redirect("/login");
+    } else if (response.status === 403) {
+      redirect("/subscription");
+    } else {
+      const error = await response.json();
+      throw new Error(error.message || "An error occurred");
+    }
   }
 
   const data = await response.json();
