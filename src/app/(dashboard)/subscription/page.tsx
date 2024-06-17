@@ -24,13 +24,10 @@ const SubscriptionServiceItem: FC<{
 
 const page = async () => {
   const maxFeatureLength = 50; // Set the maximum length for feature text
-  //   let prices = await getPrices();
-
   const [prices, userSubscriptionList] = await Promise.all([
     getPrices(),
     getUserSubscriptionList(),
   ]);
-
   const priceIdUserSubscriptionRecord: Record<string, TSubscriptionInfo> =
     userSubscriptionList?.data?.reduce(
       (acc: Record<string, TSubscriptionInfo>, item: TSubscriptionInfo) => {

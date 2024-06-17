@@ -15,8 +15,8 @@ export type TSubscriptionInfo = {
 export const getUserSubscriptionList = async (): Promise<
   TResponseDto<TSubscriptionInfo[]>
 > => {
-  return await GET<TResponseDto<TSubscriptionInfo[]>>(
-    "/payment/get_user_subscription_list",
-    (await getToken())!
-  );
+  return await GET<TResponseDto<TSubscriptionInfo[]>>({
+    url: "/payment/get_user_subscription_list",
+    token: (await getToken())!,
+  });
 };
