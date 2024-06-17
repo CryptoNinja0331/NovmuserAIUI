@@ -5,6 +5,8 @@ import { useAuth } from "@clerk/nextjs";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import React from "react";
+import useClientHttp from "@/hooks/useClientHttp";
+import { TResponseDto } from "@/lib/http";
 
 const CreatePayment = ({
   priceId,
@@ -17,6 +19,7 @@ const CreatePayment = ({
   disable?: boolean;
   disableButtonText?: string | null;
 }) => {
+  const { post } = useClientHttp();
   const [loading, setLoading] = useState(false);
 
   const { getToken } = useAuth();
@@ -25,25 +28,21 @@ const CreatePayment = ({
 
     const userToken = await getToken({ template: "UserToken" });
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/payment/create?price_id=${priceId}`,
-        {
-          method: "POST",
+      const response = await post<TResponseDto<any>>({
+        url: `/payment/create?price_id=${priceId}`,
+        token: userToken,
+        config: {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${userToken}`,
           },
-        }
-      );
-
-      if (response.ok) {
-        const responseData = await response.json();
+        },
+      });
+      if (response.success) {
         setLoading(false);
-
-        window.location.assign(responseData.data.url);
+        window.location.assign(response.data.url);
       }
     } catch (e) {
-      console.log(e);
+      console.log("🚀 ~ handleCreatePayment ~ e:", e);
       throw new Error("Failed to fetch data");
     }
   };

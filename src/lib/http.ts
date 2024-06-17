@@ -13,15 +13,37 @@ export type TResponseDto<T> = {
   business_code?: string;
 };
 
-const doFetchData = async <T>(
-  url: string,
-  token?: string,
-  params?: Record<string, string>,
-  config: HttpConfig = {}
-): Promise<T> => {
+export type TDoFetchDataProps = {
+  url: string;
+  token?: string | null | undefined;
+  params?: Record<string, string>;
+  data?: any;
+  config?: HttpConfig;
+  onClientRedirect?: (url: string) => void;
+};
+
+const doFetchData = async <T>({
+  url,
+  token,
+  params,
+  config = {},
+  onClientRedirect,
+}: TDoFetchDataProps): Promise<T> => {
   const defaultHeaders: HeadersInit = {
     "Content-Type": "application/json",
     ...config.headers,
+  };
+
+  const handleRedirect = (url: string): void => {
+    if (typeof window !== "undefined" && onClientRedirect) {
+      // For client component
+      console.log("🚀 ~ handleRedirect", "client redirect");
+      onClientRedirect(url);
+    } else {
+      // For server component
+      console.log("🚀 ~ handleRedirect", "server redirect");
+      redirect(url);
+    }
   };
 
   if (token) {
@@ -38,88 +60,127 @@ const doFetchData = async <T>(
     headers: defaultHeaders,
   });
 
+  console.log("🚀 ~ response:", response);
+
   if (!response.ok) {
+    console.log("🚀 ~ status:", response.status);
     if (response.status === 401) {
-      redirect("/login");
+      handleRedirect("/login");
     } else if (response.status === 403) {
-      redirect("/subscription");
+      handleRedirect("/subscription");
     } else {
       const error = await response.json();
       throw new Error(error.message || "An error occurred");
     }
   }
 
-  const data = await response.json();
-  return data;
+  return await response.json();
 };
 
 // GET method
-export const GET = <T>(
-  url: string,
-  token?: string,
-  params?: Record<string, string>,
-  config?: HttpConfig
-): Promise<T> => {
-  return doFetchData<T>(url, token, params, {
-    ...config,
-    method: "GET",
+export const GET = <T>({
+  url,
+  token,
+  params,
+  config = {},
+  onClientRedirect,
+}: TDoFetchDataProps): Promise<T> => {
+  return doFetchData<T>({
+    url,
+    token,
+    params,
+    config: {
+      ...config,
+      method: "GET",
+    },
+    onClientRedirect,
   });
 };
 
 // POST method
-export const POST = <T>(
-  url: string,
-  token?: string,
-  params?: Record<string, string>,
-  data?: any,
-  config?: HttpConfig
-): Promise<T> => {
-  return doFetchData<T>(url, token, params, {
-    ...config,
-    method: "POST",
-    body: JSON.stringify(data),
+export const POST = <T>({
+  url,
+  token,
+  params,
+  data,
+  config,
+  onClientRedirect,
+}: TDoFetchDataProps): Promise<T> => {
+  return doFetchData<T>({
+    url,
+    token,
+    params,
+    config: {
+      ...config,
+      method: "POST",
+      body: data && JSON.stringify(data),
+    },
+    onClientRedirect,
   });
 };
 
 // PUT method
-export const PUT = <T>(
-  url: string,
-  token?: string,
-  params?: Record<string, string>,
-  data?: any,
-  config?: HttpConfig
-): Promise<T> => {
-  return doFetchData<T>(url, token, params, {
-    ...config,
-    method: "PUT",
-    body: JSON.stringify(data),
+export const PUT = <T>({
+  url,
+  token,
+  params,
+  data,
+  config,
+  onClientRedirect,
+}: TDoFetchDataProps): Promise<T> => {
+  return doFetchData<T>({
+    url,
+    token,
+    params,
+    config: {
+      ...config,
+      method: "PUT",
+      body: data && JSON.stringify(data),
+    },
+    onClientRedirect,
   });
 };
 
 // PATCH method
-export const PATCH = <T>(
-  url: string,
-  token?: string,
-  params?: Record<string, string>,
-  data?: any,
-  config?: HttpConfig
-): Promise<T> => {
-  return doFetchData<T>(url, token, params, {
-    ...config,
-    method: "PATCH",
-    body: JSON.stringify(data),
+export const PATCH = <T>({
+  url,
+  token,
+  params,
+  data,
+  config,
+  onClientRedirect,
+}: TDoFetchDataProps): Promise<T> => {
+  return doFetchData<T>({
+    url,
+    token,
+    params,
+    config: {
+      ...config,
+      method: "PATCH",
+      body: data && JSON.stringify(data),
+    },
+    onClientRedirect,
   });
 };
 
 // DELETE method
-export const DELETE = <T>(
-  url: string,
-  token?: string,
-  params?: Record<string, string>,
-  config?: HttpConfig
-): Promise<T> => {
-  return doFetchData<T>(url, token, params, {
-    ...config,
-    method: "DELETE",
+export const DELETE = <T>({
+  url,
+  token,
+  params,
+  data,
+  config,
+  onClientRedirect,
+}: TDoFetchDataProps): Promise<T> => {
+  return doFetchData<T>({
+    url,
+    token,
+    params,
+    config: {
+      ...config,
+      method: "DELETE",
+      body: data && JSON.stringify(data),
+    },
+    onClientRedirect,
   });
 };

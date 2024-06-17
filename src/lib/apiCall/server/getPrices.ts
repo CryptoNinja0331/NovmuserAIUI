@@ -18,5 +18,7 @@ export type TSubscriptionPlan = {
 export const getPrices = async (): Promise<
   TResponseDto<TSubscriptionPlan[]>
 > => {
-  return await GET<TResponseDto<TSubscriptionPlan[]>>("/payment/get_prices");
+  return await GET<TResponseDto<TSubscriptionPlan[]>>({
+    url: "/payment/get_prices",
+  });
 };
