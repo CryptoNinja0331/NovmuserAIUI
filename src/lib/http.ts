@@ -33,6 +33,8 @@ const doFetchData = async <T>({
   onClientRedirect,
   ...rest
 }: TDoFetchDataProps): Promise<T> => {
+  console.log("🚀 ~ baseURL:", baseURL);
+
   const defaultHeaders: HeadersInit = {
     "Content-Type": "application/json",
     ...config.headers,
