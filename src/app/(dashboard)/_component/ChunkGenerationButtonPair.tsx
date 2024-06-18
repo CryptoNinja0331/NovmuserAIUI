@@ -403,12 +403,11 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
               return;
             }
             const chunkSavePayload = getSaveChunkPayload(chunkStreamEventDto);
-            await PATCH(
-              `/chapter/${chapterKey}/chunk`,
+            await PATCH({
+              url: `/chapter/${chapterKey}/chunk`,
               token,
-              undefined,
-              chunkSavePayload
-            );
+              data: chunkSavePayload,
+            });
             await refreshChapterInfo();
           }
         },

@@ -27,8 +27,8 @@ import { getToken } from "./getToken";
 export const getChapterInfo = async (
   chapterKey: string
 ): Promise<TResponseDto<TChapterInfo>> => {
-  return await GET<TResponseDto<TChapterInfo>>(
-    `/chapter/${chapterKey}/chapterInfo`,
-    (await getToken())!
-  );
+  return await GET<TResponseDto<TChapterInfo>>({
+    url: `/chapter/${chapterKey}/chapterInfo`,
+    token: await getToken(),
+  });
 };
