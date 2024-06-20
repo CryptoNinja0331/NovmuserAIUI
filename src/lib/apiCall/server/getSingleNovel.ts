@@ -1,21 +1,15 @@
 "use server";
-import { auth } from "@clerk/nextjs";
+import { GET, TResponseDto } from "@/lib/http";
+import { getToken } from "./getToken";
 
 export async function getSingleNovel(id: string) {
-  const { getToken } = auth();
-  const userId = await getToken({ template: "UserToken" });
-
-  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/novel/${id}`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${userId}`,
+  return await GET<TResponseDto<any>>({
+    url: `/novel/${id}`,
+    token: await getToken(),
+    config: {
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-    next: { tags: ["singleNovels"] },
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-
-  return res.json();
 }
