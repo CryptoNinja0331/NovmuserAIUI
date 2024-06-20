@@ -15,7 +15,7 @@ export const clientApi = createApi({
       query: (arg) => {
         const { page_number, page_size, userId } = arg;
         return {
-          url: `/novel/page?page_number=${page_number}&page_size=${page_size}`,
+          url: `novel/page?page_number=${page_number}&page_size=${page_size}`,
           headers: { Authorization: `Bearer ${userId}` },
         };
       },

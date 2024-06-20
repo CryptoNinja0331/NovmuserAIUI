@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import useUserInfoStore from "./store/user/userInfoStore";
 export interface HttpConfig extends RequestInit {
   headers?: { [key: string]: string };
 }
@@ -19,6 +20,7 @@ export type TDoFetchDataProps = {
   params?: Record<string, string>;
   data?: any;
   config?: HttpConfig;
+  next?: NextFetchRequestConfig | undefined;
   onClientRedirect?: (url: string) => void;
 };
 
@@ -28,6 +30,7 @@ const doFetchData = async <T>({
   params,
   config = {},
   onClientRedirect,
+  ...rest
 }: TDoFetchDataProps): Promise<T> => {
   const defaultHeaders: HeadersInit = {
     "Content-Type": "application/json",
@@ -55,26 +58,43 @@ const doFetchData = async <T>({
     url = `${url}?${queryString}`;
   }
 
-  const response = await fetch(`${baseURL}${url}`, {
-    ...config,
-    headers: defaultHeaders,
-  });
+  const fetchUrl = `${baseURL}${url}`;
 
-  console.log("🚀 ~ response:", response);
+  console.log("🚀 ~ fetchUrl:", fetchUrl);
 
-  if (!response.ok) {
-    console.log("🚀 ~ status:", response.status);
-    if (response.status === 401) {
-      handleRedirect("/login");
-    } else if (response.status === 403) {
-      handleRedirect("/subscription");
-    } else {
-      const error = await response.json();
-      throw new Error(error.message || "An error occurred");
+  try {
+    const response = await fetch(fetchUrl, {
+      ...config,
+      headers: defaultHeaders,
+      ...rest,
+    });
+
+    if (!response.ok) {
+      console.log("🚀 ~ status:", response.status);
+      if (response.status === 401) {
+        handleRedirect("/login");
+      } else if (response.status === 403) {
+        handleRedirect("/subscription");
+      } else {
+        const error = await response.json();
+        throw new Error(error.message || "An error occurred");
+      }
     }
-  }
 
-  return await response.json();
+    const headers = response.headers;
+    console.log("🚀 ~ headers:", JSON.stringify(headers));
+    // TODO 2024-06-20 Create a general handler to handle custom headers
+    const costs = headers.get("X-Costs") ?? "0";
+    if (Number(costs) > 0) {
+      console.log("🚀 ~ 💰💰💰 costs:", costs);
+      useUserInfoStore.getState().decrementCredit(Number(costs));
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.log("🚀 ~ doFetchData ~ error:", error);
+    throw error;
+  }
 };
 
 // GET method
@@ -84,6 +104,7 @@ export const GET = <T>({
   params,
   config = {},
   onClientRedirect,
+  ...rest
 }: TDoFetchDataProps): Promise<T> => {
   return doFetchData<T>({
     url,
@@ -94,6 +115,7 @@ export const GET = <T>({
       method: "GET",
     },
     onClientRedirect,
+    ...rest,
   });
 };
 
@@ -105,6 +127,7 @@ export const POST = <T>({
   data,
   config,
   onClientRedirect,
+  ...rest
 }: TDoFetchDataProps): Promise<T> => {
   return doFetchData<T>({
     url,
@@ -116,6 +139,7 @@ export const POST = <T>({
       body: data && JSON.stringify(data),
     },
     onClientRedirect,
+    ...rest,
   });
 };
 
@@ -127,6 +151,7 @@ export const PUT = <T>({
   data,
   config,
   onClientRedirect,
+  ...rest
 }: TDoFetchDataProps): Promise<T> => {
   return doFetchData<T>({
     url,
@@ -138,6 +163,7 @@ export const PUT = <T>({
       body: data && JSON.stringify(data),
     },
     onClientRedirect,
+    ...rest,
   });
 };
 
@@ -149,6 +175,7 @@ export const PATCH = <T>({
   data,
   config,
   onClientRedirect,
+  ...rest
 }: TDoFetchDataProps): Promise<T> => {
   return doFetchData<T>({
     url,
@@ -160,6 +187,7 @@ export const PATCH = <T>({
       body: data && JSON.stringify(data),
     },
     onClientRedirect,
+    ...rest,
   });
 };
 
@@ -171,6 +199,7 @@ export const DELETE = <T>({
   data,
   config,
   onClientRedirect,
+  ...rest
 }: TDoFetchDataProps): Promise<T> => {
   return doFetchData<T>({
     url,
@@ -182,5 +211,6 @@ export const DELETE = <T>({
       body: data && JSON.stringify(data),
     },
     onClientRedirect,
+    ...rest,
   });
 };

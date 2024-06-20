@@ -1,13 +1,9 @@
+"use client";
 
+import React from "react";
 
-export default async function Home() {
-  // const userId = await getToken();
-  // // console.log(userId);
-  // let data = await getData()
-  // console.log(data);
-  return (
-    <div className='text-white m-10'>
+const Home = () => {
+  return <div className="text-white m-10"></div>;
+};
 
-    </div>
-  );
-}
+export default React.memo(Home);
