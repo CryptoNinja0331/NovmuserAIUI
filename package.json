@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev-local": "dotenv -e .env.local next dev --turbo",
-    "dev": "dotenv -e .env next dev --turbo",
+    "dev": "cross-env NODE_ENV=development next dev -p 43000",
+    "dev-test": "cross-env NODE_ENV=test next dev -p 43000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
