@@ -7,6 +7,7 @@ import { useState } from "react";
 import React from "react";
 import useClientHttp from "@/hooks/useClientHttp";
 import { TResponseDto } from "@/lib/http";
+import useUserInfoStore from "@/lib/store/user/userInfoStore";
 
 const CreatePayment = ({
   priceId,
@@ -39,6 +40,8 @@ const CreatePayment = ({
       });
       if (response.success) {
         setLoading(false);
+        useUserInfoStore.setState({ userInfo: undefined });
+        console.log("Reset userInfo and ready to jump to payment page");
         window.location.assign(response.data.url);
       }
     } catch (e) {

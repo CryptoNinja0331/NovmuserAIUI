@@ -1,5 +1,5 @@
 import CreatePayment from "@/components/CreatePayment";
-import { TSubscriptionPlan, getPrices } from "@/lib/apiCall/server/getPrices";
+import { getPrices } from "@/lib/apiCall/server/getPrices";
 import {
   TSubscriptionInfo,
   getUserSubscriptionList,
@@ -8,6 +8,7 @@ import { FC } from "react";
 import { FaLock } from "react-icons/fa";
 import { TiTick } from "react-icons/ti";
 import { BiSolidCrown } from "react-icons/bi";
+import { TSubscriptionPlan } from "@/lib/types/api/payment";
 
 const SubscriptionServiceItem: FC<{
   svc: string;
@@ -38,9 +39,10 @@ const page = async () => {
     ) ?? {};
 
   const subscriptionArray: TSubscriptionPlan[] =
-    prices.data?.filter(
-      (item: TSubscriptionPlan) => item.type === "recurring"
-    ) ?? [];
+    prices.data
+      ?.filter((item: TSubscriptionPlan) => item.type === "recurring")
+      ?.sort((item1, item2) => Number(item1?.amount) - Number(item2?.amount)) ??
+    [];
 
   return (
     <div>

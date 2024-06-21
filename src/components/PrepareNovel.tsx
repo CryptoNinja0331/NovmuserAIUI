@@ -59,7 +59,7 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
 
       newWebsocket.onopen = () => {
         console.log("WebSocket connection opened");
-        setFinishedPrepare(true);
+        setFinishedPrepare(false);
       };
 
       newWebsocket.onmessage = (event) => {
@@ -73,7 +73,7 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
 
       newWebsocket.onclose = () => {
         console.log("WebSocket connection closed");
-        setFinishedPrepare(false);
+        setFinishedPrepare(true);
       };
     }
 
