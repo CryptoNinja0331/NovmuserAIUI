@@ -1,8 +1,7 @@
 "use client";
 import { AppStore, makeStore } from "@/lib/store/store";
 import useUserInfoStore from "@/lib/store/user/userInfoStore";
-import React from "react";
-import { useRef } from "react";
+import React, { useRef } from "react";
 import { Provider } from "react-redux";
 import { shallow } from "zustand/shallow";
 
@@ -46,5 +45,9 @@ export default function StoreProvider({
     // storeRef.current.dispatch(incrementByAmount(7))
   }
 
-  return <Provider store={storeRef.current}>{children}</Provider>;
+  return (
+    <Provider store={storeRef.current}>
+      <>{children}</>
+    </Provider>
+  );
 }

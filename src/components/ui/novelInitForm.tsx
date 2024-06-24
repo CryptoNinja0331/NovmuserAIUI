@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "./button";
 import {
   Dialog,
   DialogContent,
@@ -9,10 +8,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "./textarea";
-import { useFormState } from "react-dom";
 import { handleInitNovel } from "@/lib/actions/novel.init";
-import { useFormStatus } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
+import { Button } from "./button";
+import { Textarea } from "./textarea";
 
 import PrepareNovel from "../PrepareNovel";
 

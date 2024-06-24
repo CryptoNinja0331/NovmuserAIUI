@@ -1,18 +1,20 @@
 "use client";
 
-import { Button } from "./ui/button";
-import Image from "next/image";
-import prepareImage from "../assets/images/writter.svg";
-import { useEffect, useState } from "react";
-import AgentUi from "./AgentUi";
-import { useAuth } from "@clerk/nextjs";
 import { clientApi } from "@/lib/apiCall/client/clientAPi";
+import { useAuth } from "@clerk/nextjs";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import prepareImage from "../assets/images/writter.svg";
+import AgentUi from "./AgentUi";
+import { Button } from "./ui/button";
 
-import { useDispatch } from "react-redux";
-import React from "react";
 import useClientHttp from "@/hooks/useClientHttp";
 import { TResponseDto } from "@/lib/http";
-import { TNovelPreparingTask } from "@/lib/types/api/novel";
+import React from "react";
+import { useDispatch } from "react-redux";
+import Swal from "sweetalert2";
+import { createPortal } from "react-dom";
+import BalanceNotEnoughAlert from "./alert/BalanceNotEnoughAlert";
 
 interface PrepareNovelResponse {
   success: boolean;
@@ -106,6 +108,7 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
           </div>
         </div>
       )}
+      <BalanceNotEnoughAlert />
     </div>
   );
 };
@@ -150,9 +153,11 @@ const PrepareButton: React.FC<{
   console.log("🚀 ~ PrepareButton:", "rendering");
 
   return (
-    <Button className="bg-bluish" onClick={handlePrepareNovel}>
-      Prepare Novel
-    </Button>
+    <>
+      <Button className="bg-bluish" onClick={handlePrepareNovel}>
+        Prepare Novel
+      </Button>
+    </>
   );
 };
 

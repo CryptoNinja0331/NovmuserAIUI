@@ -1,20 +1,17 @@
 "use client";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { useDeleteNovelMutation } from "@/lib/apiCall/client/clientAPi";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { BiSolidLeftArrow } from "react-icons/bi";
 import { IoMdSettings } from "react-icons/io";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { useState } from "react";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import Swal from "sweetalert2";
-import { useDeleteNovelMutation } from "@/lib/apiCall/client/clientAPi";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
-import { Button } from "../ui/button";
-import { HiCurrencyDollar } from "react-icons/hi2";
-import { HiOutlineUpload } from "react-icons/hi";
 
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import NovelDetailsItem from "./NovelDetailsItem";
+import TopUpDialog from "@/app/(dashboard)/_components/TopUpDialog/TopUpDialog";
 import UserCredits from "../userInfo/UserCredits";
+import NovelDetailsItem from "./NovelDetailsItem";
 
 const NovelSidebar = ({ novelDetails }: { novelDetails: any }) => {
   const [openNOvelSheet, setNovelSheet] = useState(true);
@@ -90,36 +87,10 @@ const NovelSidebar = ({ novelDetails }: { novelDetails: any }) => {
             />
           </div>
           <div className="p-2 border-b border-input text-center tracking-wider">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="mx-auto bg-bluish flex gap-2 mt-1 hover:bg-background hover:text-white"
-                >
-                  <UserCredits />
-                </Button>
-              </DialogTrigger>
-
-              <DialogContent className="bg-[#150f2d] text-white flex justify-center items-center">
-                <div>
-                  <div className="text-xl font-medium ">
-                    <h1 className="flex flex-row heading-color !text-xl gap-1">
-                      <span>Balance :</span>
-                      <UserCredits showIcon={false} />
-                    </h1>
-                  </div>
-
-                  <Button
-                    onClick={() => router.push(`/payment`, { scroll: false })}
-                    variant="outline"
-                    className="mx-auto flex bg-bluish gap-2 mt-8 hover:bg-background hover:text-white"
-                  >
-                    <HiOutlineUpload className="text-xl" />
-                    Top Up
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <div className="p-2 bg-violet-950">
+              <UserCredits />
+            </div>
+            <TopUpDialog />
           </div>
           <div className="p-2 space-y-3">
             {Object.keys(novelDetails?.details).map((name) => (
