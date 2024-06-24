@@ -1,16 +1,18 @@
+import Navbar from "@/components/ui/Navbar";
+import Sidebar from "@/components/ui/Sidebar";
+import { Toaster } from "@/components/ui/sonner";
+import { ClerkLoading, ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
+import type { Metadata } from "next";
 import "../globals.css";
 import style from "../style.module.css";
-import { ClerkLoading, ClerkProvider } from "@clerk/nextjs";
-import type { Metadata } from "next";
-import Sidebar from "@/components/ui/Sidebar";
+import { ReactQueryClientProvider } from "./ReactQueryClientProvider";
 import StoreProvider from "./StoreProvider";
-import Navbar from "@/components/ui/Navbar";
-import { dark } from "@clerk/themes";
-import { Toaster } from "@/components/ui/sonner";
 export const metadata: Metadata = {
   title: "Your Personal AI Novel Writer",
   description: "Your Personal AI Novel Writer",
 };
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -31,16 +33,18 @@ export default function RootLayout({
               </ClerkLoading>
             </div>
             <div className={`h-screen w-full ${style.dashboard}`}>
-              <StoreProvider>
-                <div className="flex h-full">
-                  <Sidebar />
-                  <main className="flex-1  z-[49] relative">
-                    <Navbar />
-                    {children}
-                  </main>
-                  <Toaster />
-                </div>
-              </StoreProvider>
+              <ReactQueryClientProvider>
+                <StoreProvider>
+                  <div className="flex h-full">
+                    <Sidebar />
+                    <main className="flex-1  z-[49] relative">
+                      <Navbar />
+                      {children}
+                    </main>
+                    <Toaster />
+                  </div>
+                </StoreProvider>
+              </ReactQueryClientProvider>
             </div>
           </div>
         </body>

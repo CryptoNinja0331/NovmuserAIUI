@@ -12,6 +12,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "./button";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import React from "react";
+import Swal from "sweetalert2";
 
 interface NovelDetails {
   brain_storming: null;

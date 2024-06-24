@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background:240, 4%, 5%;
+    --background: 240, 4%, 5%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -28,8 +28,8 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border:0, 0%, 20%;
-    --input:260, 100%, 99%;
+    --border: 0, 0%, 20%;
+    --input: 260, 100%, 99%;
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
@@ -75,96 +75,89 @@
   }
 }
 
-.gird-row{
+.gird-row {
   grid-row: 1 / -1;
 }
 
-.gradient-bg{
+.gradient-bg {
   background-repeat: no-repeat;
   background-size: cover;
-  background-image: url('../assets/images/section-bg.png')
-
+  background-image: url("../assets/images/section-bg.png");
 }
 
 /* clerk ui design overwrite  */
-.cl-internal-105jsc1{
+.cl-internal-105jsc1 {
   background-color: #151522 !important;
 }
 
-.cl-formFieldInput{
+.cl-formFieldInput {
   background-color: transparent !important;
 }
 
-.cl-formFieldInput:focus{
+.cl-formFieldInput:focus {
   box-shadow: none !important;
 }
- /* overwrite css end  */
+/* overwrite css end  */
 
-
-.button-gradient{
-  background-image:  linear-gradient(94.4deg, #7000ff, #0c65c2);
+.button-gradient {
+  background-image: linear-gradient(94.4deg, #7000ff, #0c65c2);
 }
 
 /* .button-gradient-2{
   background:linear-gradient(90deg, #9064da 0, #2171e0 49.37%, #844eb4 101.93%) !important;
 } */
 
-
-
-.button-gradient-2{
-letter-spacing: 1px;
-  background: linear-gradient(136.85deg, #ff37f2 -15.82%, #405aff 99.57%) !important;
+.button-gradient-2 {
+  letter-spacing: 1px;
+  background: linear-gradient(
+    136.85deg,
+    #ff37f2 -15.82%,
+    #405aff 99.57%
+  ) !important;
   color: #fff !important;
-
 }
-
 
 .border-imaged-element {
   border-width: 4px;
   border-style: solid;
   border-radius: 10px;
-  border-image: 
-    linear-gradient(
-      to right, #13a338 0%, #1f3876 100%
-    ) 4 4 4 4 stretch; /* Adjust the slice values to apply to all sides */
+  border-image: linear-gradient(to right, #13a338 0%, #1f3876 100%) 4 4 4 4
+    stretch; /* Adjust the slice values to apply to all sides */
 }
-
 
 .border-gradient-rounded {
   /* Border */
   border: 2px solid transparent;
   border-radius: 20px;
-  background: 
-    linear-gradient(to right, #140E2D, rgb(22, 21, 21)), 
-    linear-gradient(136.85deg, #ff37f2 -15.82%, #405aff 99.57%); 
+  background: linear-gradient(to right, #140e2d, rgb(22, 21, 21)),
+    linear-gradient(136.85deg, #ff37f2 -15.82%, #405aff 99.57%);
   background-clip: padding-box, border-box;
   background-origin: padding-box, border-box;
-  
 }
 
 .bg-black\/80 {
   background-color: rgb(0 0 0 / 0.5);
 }
 
-
-
-.text-violet-gradient{
-  background: linear-gradient(90deg, rgb(232, 85, 222) -26.01%, rgb(84, 0, 238) 121.7%) text;
+.text-violet-gradient {
+  background: linear-gradient(
+      90deg,
+      rgb(232, 85, 222) -26.01%,
+      rgb(84, 0, 238) 121.7%
+    )
+    text;
   font-weight: 700;
   -webkit-text-fill-color: transparent;
 }
 
-
-
 .bubble {
   position: relative;
- 
-  /* background: red; */
 
+  /* background: red; */
 }
 
-.bubble::before{
-  content: '';
+.bubble::before {
+  content: "";
   position: absolute;
   width: 0;
   height: 0;
@@ -173,42 +166,42 @@ letter-spacing: 1px;
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
   border-right: 15px solid #441760;
-   
 }
 
-.agent-sidebar-item{
+.agent-sidebar-item {
   align-items: center;
-    font-weight: 400;
+  font-weight: 400;
 
-   line-height: 24px; 
-   text-decoration: none;
-    border-radius: 8px;
-    color: #817691 !important;
-    padding: 10px 14px;
-font-weight: 600;
-    font-style: normal;
-    box-shadow: 0 20px 50px 0 transparent !important;
+  line-height: 24px;
+  text-decoration: none;
+  border-radius: 8px;
+  color: #817691 !important;
+  padding: 10px 14px;
+  font-weight: 600;
+  font-style: normal;
+  box-shadow: 0 20px 50px 0 transparent !important;
 }
 
-.active-tab{
+.active-tab {
   position: relative;
-    overflow: hidden;
-    background: linear-gradient(90deg, hsla(0, 0%, 100%, .05), transparent) !important;
-    box-shadow: 0 20px 50px 0 rgba(191, 21, 108, .05) !important;
-    color: #fff !important;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    hsla(0, 0%, 100%, 0.05),
+    transparent
+  ) !important;
+  box-shadow: 0 20px 50px 0 rgba(191, 21, 108, 0.05) !important;
+  color: #fff !important;
 }
 
-.active-tab .item-name{
+.active-tab .item-name {
   background: linear-gradient(136.85deg, #ff37f2 -15.82%, #405aff 99.57%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-
 }
 
-
-
-.active-tab  .item-icon-conatiner{
+.active-tab .item-icon-conatiner {
   color: #fff;
   border-radius: 100%;
   width: 30px;
@@ -218,11 +211,9 @@ font-weight: 600;
   justify-content: center;
   align-items: center;
   background: linear-gradient(136.85deg, #ff37f2 -15.82%, #405aff 99.57%);
-
 }
 
-
-.active-tab::before{
+.active-tab::before {
   content: "";
   position: absolute;
   top: 0;
@@ -235,14 +226,13 @@ font-weight: 600;
   border-bottom-left-radius: 5px;
 }
 
-.charecter textarea{
+.charecter textarea {
   resize: none;
 }
 
-.vertical-timeline--animate .vertical-timeline-element-icon.is-hidden{
+.vertical-timeline--animate .vertical-timeline-element-icon.is-hidden {
   visibility: visible !important;
 }
-
 
 .timeline {
   position: relative;
@@ -266,7 +256,7 @@ font-weight: 600;
 }
 
 .timeline-event {
-width: 100%;
+  width: 100%;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -318,11 +308,13 @@ width: 100%;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
-
-.EZDrawer .EZDrawer__container{
-  background-image: linear-gradient(to top, rgba(16, 28, 39, 0.08), #101C27) !important;
+.EZDrawer .EZDrawer__container {
+  background-image: linear-gradient(
+    to top,
+    rgba(16, 28, 39, 0.08),
+    #101c27
+  ) !important;
 }
-
 
 /* .bg-black\/80{
  display: none;
@@ -332,15 +324,21 @@ width: 100%;
 .swal2-modal {
   background-color: #150f2d !important;
   color: white !important;
+  z-index: 99999 !important;
 }
 
-.heading-color{
+.heading-color {
   font-size: 1.1rem;
-    background: linear-gradient(98deg, rgb(234, 170, 255) 15.56%, rgb(181, 172, 255) 92.85%) text;
-    font-weight: 700;
-    -webkit-text-fill-color: transparent;
+  background: linear-gradient(
+      98deg,
+      rgb(234, 170, 255) 15.56%,
+      rgb(181, 172, 255) 92.85%
+    )
+    text;
+  font-weight: 700;
+  -webkit-text-fill-color: transparent;
 }
 
-.bg-bluish{
-background: linear-gradient(90deg,#a993fe,0%,#7e61e7) !important; 
+.bg-bluish {
+  background: linear-gradient(90deg, #a993fe, 0%, #7e61e7) !important;
 }

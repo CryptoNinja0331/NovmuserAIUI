@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import useUserInfoStore from "./store/user/userInfoStore";
+import emitter from "./emitters";
 export interface HttpConfig extends RequestInit {
   headers?: { [key: string]: string };
 }
@@ -73,6 +74,9 @@ const doFetchData = async <T>({
       console.log("🚀 ~ status:", response.status);
       if (response.status === 401) {
         handleRedirect("/login");
+      } else if (response.status === 402) {
+        emitter.emit("402-error", "Credits not enough");
+        console.log("🚀 ~ emitter.emit 402 error");
       } else if (response.status === 403) {
         handleRedirect("/subscription");
       } else {
