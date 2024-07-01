@@ -1,26 +1,38 @@
 import NovelSidebar from "@/components/singleNovel/NovelSidebar";
-import ChapterDetails from "./ChapterDetails";
+import { getOrInitChapterInfo } from "@/lib/apiCall/server/getOrInitChapterInfo";
 import { getSingleNovel } from "@/lib/apiCall/server/getSingleNovel";
-import Terminal from "./Terminal";
-import { getChapterInfo } from "@/lib/apiCall/server/getChapterInfo";
+import ChapterDetails from "./_components/ChapterDetails";
+import Terminal from "./_components/Terminal";
 const page = async ({
   params,
 }: {
-  params: { chapterKey: string; novelId: string };
+  params: { chapterKey: string[]; novelId: string };
 }) => {
+  console.log("🚀 ~ chapterKey:", params.chapterKey);
   const response = await getSingleNovel(params.novelId);
-  const chapterKey = params.chapterKey[0];
+  const chapterKeySegments: string[] = params.chapterKey;
+  const chapterKey = chapterKeySegments[0];
 
-  let topicsData = await getChapterInfo(chapterKey);
+  const chapterInfo = await getOrInitChapterInfo({
+    novelId: params.novelId,
+    chapterKey,
+  });
 
   return (
     <div className="h-[calc(100%-50px)] relative">
       <div className="text-white relative h-full flex justify-between ">
         <div className="inline-block w-[16rem] h-full border-r border-input p-3">
-          <ChapterDetails params={params} />
+          <ChapterDetails
+            {...{
+              novelId: params.novelId,
+              chapterKey,
+              chapterNumber: chapterKeySegments[1],
+              chapterTitle: chapterKeySegments[2],
+            }}
+          />
         </div>
 
-        <Terminal topicDetails={topicsData.data} chapterKey={chapterKey} />
+        <Terminal chapterInfo={chapterInfo.data!} chapterKey={chapterKey} />
 
         <div className="relative mt-2">
           <NovelSidebar novelDetails={response.data} />

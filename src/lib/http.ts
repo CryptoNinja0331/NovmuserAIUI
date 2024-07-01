@@ -81,7 +81,9 @@ const doFetchData = async <T>({
         handleRedirect("/subscription");
       } else {
         const error = await response.json();
-        throw new Error(error.message || "An error occurred");
+        throw new Error(error.message || "An error occurred", {
+          cause: response.status,
+        });
       }
     }
 
