@@ -12,6 +12,7 @@
   "dependencies": {
     "@clerk/nextjs": "^4.29.10",
     "@clerk/themes": "^1.7.14",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dialog": "^1.0.5",
