@@ -60,19 +60,29 @@ const ExpandSidebar = () => {
       fetchUserId();
     }
   }, [isLoaded, getToken]);
+  let novelQuery: any = {
+    isLoading: true,
+    data: {},
+    error: {}
+  }
+  if (userId) {
+    novelQuery = useGetCreatedNovelQuery({
+      page_number: "1",
+      page_size: "8",
+      userId: userId,
+    });
 
-  const { isLoading, data, error } = useGetCreatedNovelQuery({
-    page_number: "1",
-    page_size: "8",
-    userId: userId,
-  });
-
+  }
+  const {
+    isLoading = true,
+    data,
+    error = {}
+  } = novelQuery
   useEffect(() => {
     if (!isLoading && isLoaded && data?.data?.records) {
       setNovelData(data.data.records);
     }
   }, [isLoading, isLoaded, data?.data?.records]);
-
   const router = useRouter();
   const pathname = usePathname();
   console.log(pathname);
