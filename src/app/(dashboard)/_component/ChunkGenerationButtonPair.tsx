@@ -1,23 +1,14 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { customRevalidateTag } from "@/lib/actions/revalidateTag";
-import { useAppDispatch, useGetClientToken } from "@/lib/hooks";
-import { addChunkData } from "@/lib/store/features/chunkSlice";
-import { useAuth } from "@clerk/nextjs";
-import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React, { FC } from "react";
-import { useState } from "react";
-import { FaRobot } from "react-icons/fa6";
-import { GrPowerReset } from "react-icons/gr";
-import { toast } from "sonner";
-import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { todo } from "node:test";
+import { useGetClientToken } from "@/lib/hooks";
+import { PATCH } from "@/lib/http";
 import useStreamedChunksStore from "@/lib/store/chapterChunks/streamedChunksStore";
 import {
   TChapterChunkDoc,
   TChapterInfo,
   TChapterTopic,
+  TChapterTopicDoc,
   TChunkStreamEventDto,
   TChunkType,
 } from "@/lib/types/api/chapter";
@@ -26,7 +17,13 @@ import {
   TChunkReqDto,
   TChunkSaveDto,
 } from "@/lib/types/api/request/chapterRequest";
-import { PATCH } from "@/lib/http";
+import { useAuth } from "@clerk/nextjs";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
+import { Loader2 } from "lucide-react";
+import React, { FC, useState } from "react";
+import { FaRobot } from "react-icons/fa6";
+import { GrPowerReset } from "react-icons/gr";
+import { toast } from "sonner";
 
 export type TChunkGenerationButtonPairProps = {
   chapterKey: string;
@@ -242,7 +239,9 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
   //     await streamProcessor();
   //   };
 
-  const chapterTopics: TChapterTopic[] = React.useMemo<TChapterTopic[]>(() => {
+  const chapterTopics: TChapterTopicDoc[] = React.useMemo<
+    TChapterTopicDoc[]
+  >(() => {
     return chapterInfo.details?.chapter_topics?.topics ?? [];
   }, [chapterInfo.details?.chapter_topics?.topics]);
 
