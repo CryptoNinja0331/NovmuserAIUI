@@ -13,7 +13,7 @@ import { Button } from "./button";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import React from "react";
-import Swal from "sweetalert2";
+import { useToken } from '@/lib/hooks'
 
 interface NovelDetails {
   brain_storming: null;
@@ -40,52 +40,30 @@ interface Novel {
 }
 
 const ExpandSidebar = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
   const [novelData, setNovelData] = useState<Novel[]>([]);
 
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
   };
 
-  const { isLoaded, sessionId, getToken } = useAuth();
-
-  useEffect(() => {
-    const fetchUserId = async () => {
-      const token = await getToken({ template: "UserToken" });
-      setUserId(token);
-    };
-
-    if (isLoaded) {
-      fetchUserId();
-    }
-  }, [isLoaded, getToken]);
-  let novelQuery: any = {
-    isLoading: true,
-    data: {},
-    error: {}
-  }
-  if (userId) {
-    novelQuery = useGetCreatedNovelQuery({
-      page_number: "1",
-      page_size: "8",
-      userId: userId,
-    });
-
-  }
+  const {token} = useToken()
   const {
     isLoading = true,
     data,
     error = {}
-  } = novelQuery
+  } = useGetCreatedNovelQuery({
+      page_number: "1",
+      page_size: "8",
+      userId: token,
+    });
   useEffect(() => {
-    if (!isLoading && isLoaded && data?.data?.records) {
+    if (!isLoading && data?.data?.records) {
       setNovelData(data.data.records);
     }
-  }, [isLoading, isLoaded, data?.data?.records]);
-  const router = useRouter();
-  const pathname = usePathname();
-  console.log(pathname);
+  }, [isLoading, data?.data?.records]);
 
   const handleNavigate = (id: string) => {
     router.push(`/novel/${id}`, { scroll: false });
