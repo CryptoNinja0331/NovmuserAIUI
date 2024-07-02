@@ -15,7 +15,7 @@ import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { todo } from "node:test";
 import useStreamedChunksStore from "@/lib/store/chapterChunks/streamedChunksStore";
 import {
-  TChapterChunk,
+  TChapterChunkDoc,
   TChapterInfo,
   TChapterTopic,
   TChunkStreamEventDto,
@@ -74,7 +74,7 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
 
   const chapterChunks = chapterInfo.details?.chapter_chunks ?? [];
 
-  let prevChunk: TChapterChunk | undefined;
+  let prevChunk: TChapterChunkDoc | undefined;
   if (selectedChunkId) {
     prevChunk = chapterChunks.find((chunk) => chunk.id === selectedChunkId);
   } else if (chapterChunks.length > 0) {
