@@ -1,9 +1,8 @@
+import NovelEditingArea from "@/app/(dashboard)/_component/ChapterEditingArea";
 import NovelSidebar from "@/components/singleNovel/NovelSidebar";
 import { getOrInitChapterInfo } from "@/lib/apiCall/server/getOrInitChapterInfo";
 import { getSingleNovel } from "@/lib/apiCall/server/getSingleNovel";
 import ChapterDetails from "./_components/ChapterDetails";
-import Terminal from "./_components/Terminal";
-import NovelEditingArea from "@/app/(dashboard)/_component/ChapterEditingArea";
 const page = async ({
   params,
 }: {
@@ -33,8 +32,10 @@ const page = async ({
           />
         </div>
 
-        <NovelEditingArea chapterInfo={chapterInfo.data!} />
-        <Terminal chapterInfo={chapterInfo.data!} chapterKey={chapterKey} />
+        <NovelEditingArea
+          novelId={params.novelId}
+          chapterInfo={chapterInfo.data!}
+        />
 
         <div className="relative mt-2">
           <NovelSidebar novelDetails={response.data} />
