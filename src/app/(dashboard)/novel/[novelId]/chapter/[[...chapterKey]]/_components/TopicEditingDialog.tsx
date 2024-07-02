@@ -1,7 +1,5 @@
 "use client";
 
-import { FC } from "react";
-
 import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css";
 
@@ -10,10 +8,10 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import BalanceNotEnoughAlert from "@/components/alert/BalanceNotEnoughAlert";
 import { Button } from "@/components/ui/button";
 import { TChapterInfo } from "@/lib/types/api/chapter";
-import TopicEditingTree, { TTopicEditingTreeHandle } from "./TopicEditingTree";
-import React from "react";
 import { Loader2 } from "lucide-react";
+import React from "react";
 import { FaSave } from "react-icons/fa";
+import TopicEditingTree, { TTopicEditingTreeHandle } from "./TopicEditingTree";
 
 export type TTopicEditingDialogProps = {
   chapterInfo: TChapterInfo;
