@@ -1,15 +1,17 @@
-import { TChapterChunk } from "./chapterChunk";
-import { TChapterTopics } from "./chapterTopic";
+import { TResourceEditingTypes } from "./common";
+
+export type TChapterInfoMetaData = {
+  novel_id: string;
+  author_id: string;
+};
 
 export type TChapterInfo = {
   id: string;
   chapter_key: string;
-  metadata: {
-    novel_id: string;
-  };
+  metadata: TChapterChunkMetaData;
   details: {
-    chapter_topics?: TChapterTopics;
-    chapter_chunks?: TChapterChunk[];
+    chapter_topics: TChapterTopicsDoc;
+    chapter_chunks?: TChapterChunkDoc[];
   };
 };
 
@@ -28,7 +30,7 @@ export type TChapterChunkMetaData = {
   generate_from: TChunkGenerateFrom;
 };
 
-export type TChapterChunk = {
+export type TChapterChunkDoc = {
   id: string;
   metadata: TChapterChunkMetaData;
   chunk_content: string;
@@ -40,10 +42,9 @@ export type TChapterTopicPoint = {
 };
 
 export type TChapterTopic = {
-  id: string;
   name: string;
   abstract: string;
-  topic_points: TChapterTopicPoint[];
+  topic_points: string[];
 };
 
 export type TChapterTopics = {
@@ -51,6 +52,22 @@ export type TChapterTopics = {
 };
 
 export type TChapterTopicPoint = {
+  id: string;
+  point_content: string;
+};
+
+export type TChapterTopicDoc = {
+  id: string;
+  name: string;
+  abstract: string;
+  topic_points: TChapterTopicPointDoc[];
+};
+
+export type TChapterTopicsDoc = {
+  topics: TChapterTopicDoc[];
+};
+
+export type TChapterTopicPointDoc = {
   id: string;
   point_content: string;
 };
@@ -74,4 +91,28 @@ export type TChunkStreamEventDto = {
     whole_content?: string;
   };
   is_final: boolean;
+};
+
+export type TChapterTopicPointEditDto = {
+  // When update the topic point, this field must be non-none
+  id?: string;
+  point_content?: string;
+  edit_type: TResourceEditingTypes;
+  //   When add topic point, this field must be non-none
+  add_index?: number;
+};
+
+export type TChapterTopicEditDto = {
+  // When update the topic, this field must be non-none
+  id?: string;
+  name?: string;
+  abstract?: string;
+  edit_type: TResourceEditingTypes;
+  //   When add topic, this field must be non-none
+  add_index?: number;
+  topic_points?: TChapterTopicPointEditDto[];
+};
+
+export type TChapterTopicsEditDto = {
+  topics?: TChapterTopicEditDto[];
 };
