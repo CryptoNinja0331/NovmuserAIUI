@@ -1,7 +1,7 @@
 import NovelName from "@/components/NovelName";
 import NovelSidebar from "@/components/singleNovel/NovelSidebar";
 import { getSingleNovel } from "@/lib/apiCall/server/getSingleNovel";
-import ChapterDetailsWrapper from "./ChapterDetailsWrapper";
+import ChapterDetailsWrapper from "./_components/ChapterDetailsWrapper";
 
 interface NovelDetails {
   brain_storming: null;
