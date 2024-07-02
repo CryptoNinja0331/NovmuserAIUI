@@ -1,42 +1,17 @@
 "use client";
-import { useAppSelector } from "@/lib/hooks";
+import { TChapterInfo } from "@/lib/types/api/chapter";
 import SimpleBar from "simplebar-react";
 
-interface TopicDetails {
-  details: {
-    chapter_chunks: any[];
-    chapter_topics: {
-      topics: {
-        id: string;
-        name: string;
-        abstract: string;
-        topic_points: {
-          id: string;
-          point_content: string;
-        }[];
-      }[];
-    };
-  };
-  id: string;
-  metadata: {
-    author_id: string;
-    created_at: string;
-    novel_id: string;
-    updated_at: string;
-  };
-}
-
 interface TopicRoadMapUiProps {
-  topicDetails: TopicDetails;
+  chapterInfo: TChapterInfo;
 }
 
-const TopicRoadMapUi = ({ topicDetails }: TopicRoadMapUiProps) => {
-  const isHumanFirstChunk = useAppSelector(
-    (state) => state.chunkData.humanFirstChunk
-  );
-  console.log(topicDetails, "details");
+const TopicRoadMapUi = ({ chapterInfo }: TopicRoadMapUiProps) => {
+  // const allChunkData = useAppSelector((state: any) => state.chunkData.allChunkData);
+  console.log(chapterInfo, "from roadmap");
   const getTopicPointColor = (topicId: string, pointId: string) => {
-    const activatedPoint = topicDetails?.details?.chapter_chunks.find(
+    console.log(pointId);
+    const activatedPoint = chapterInfo?.details?.chapter_chunks?.find(
       (data: any) =>
         data?.metadata?.topic_mapping?.topic_id === topicId &&
         data?.metadata?.topic_mapping?.topic_point_id === pointId
@@ -47,7 +22,7 @@ const TopicRoadMapUi = ({ topicDetails }: TopicRoadMapUiProps) => {
   const getTopicColor = (topicId: string, topicPoints: any[]) => {
     const isAnyTopicPointActivated = topicPoints.some(
       (point) =>
-        topicDetails?.details?.chapter_chunks.find(
+        chapterInfo?.details?.chapter_chunks?.find(
           (data: any) =>
             data?.metadata?.topic_mapping?.topic_id === topicId &&
             data?.metadata?.topic_mapping?.topic_point_id === point.id
@@ -59,35 +34,31 @@ const TopicRoadMapUi = ({ topicDetails }: TopicRoadMapUiProps) => {
   return (
     <SimpleBar style={{ maxHeight: "74vh" }}>
       <div
-        className={
-          topicDetails?.details?.chapter_chunks ? "text-slate-500" : ""
-        }
+        className={chapterInfo?.details?.chapter_chunks ? "text-slate-500" : ""}
       >
-        {topicDetails?.details?.chapter_topics?.topics.map((item, index) => (
+        {chapterInfo?.details?.chapter_topics?.topics.map((item) => (
           <div key={item.id}>
             <div
-              className={`${getTopicColor(item.id, item.topic_points)} ${
-                isHumanFirstChunk && index === 0
-                  ? "bg-purple-500 text-white"
-                  : ""
-              } bg-[#0C0C0D] my-2 border relative border-input rounded-md p-1`}
+              className={`${getTopicColor(
+                item.id,
+                item.topic_points
+              )} bg-[#0C0C0D] my-2 border relative border-input rounded-md p-1`}
             >
               <div className="flex items-center justify-between">
                 <h1>Topic: </h1>
                 <h1 className="truncate">{item.name}</h1>
               </div>
             </div>
-            {item.topic_points.map((point, pointIndex) => (
+            {item.topic_points.map((point) => (
               <div
                 key={point.id}
                 className="flex mb-2 justify-end items-center"
               >
                 <div
-                  className={`${getTopicPointColor(item.id, point.id)} ${
-                    isHumanFirstChunk && index === 0 && pointIndex === 0
-                      ? "bg-purple-500 text-white"
-                      : ""
-                  } bg-[#0C0C0D] w-[70%] point border relative topics-point border-input rounded-md p-2`}
+                  className={`${getTopicPointColor(
+                    item.id,
+                    point.id
+                  )} bg-[#0C0C0D] w-[70%] point border relative topics-point border-input rounded-md p-2`}
                 >
                   <div className="text-center">
                     <h1 className="font-medium ">Topics point</h1>

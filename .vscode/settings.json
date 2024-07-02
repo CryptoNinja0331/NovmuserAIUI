@@ -1,10 +1,12 @@
 {
-    "editor.formatOnSave": true,
-    "editor.quickSuggestions": {
-      "strings": "on"
-    },
-    "files.associations": {
-      "*.css": "tailwindcss"
-    }
+  "editor.formatOnSave": true,
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
   }
-  
+}
