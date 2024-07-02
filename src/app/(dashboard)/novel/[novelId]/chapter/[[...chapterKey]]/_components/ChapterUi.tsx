@@ -16,6 +16,10 @@ import { Button } from "@/components/ui/button";
 import { FaEdit, FaSave } from "react-icons/fa";
 import { toast } from "sonner";
 import { TChapterInfo } from "@/lib/types/api/chapter";
+import TopicEditingDialog, {
+  TTopicEditingDialogHandle,
+} from "./TopicEditingDialog";
+import React from "react";
 
 interface Topic {
   id?: string;
@@ -52,13 +56,15 @@ interface ChapterUiProps {
 const ChapterUi = ({ novelId, chapterKey, chapterInfo }: ChapterUiProps) => {
   const { getToken } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [openTopicsModal, setOpenTopicsModal] = useState(false);
+  // const [openTopicsModal, setOpenTopicsModal] = useState(false);
   const [submitLoader, setSubmitLoader] = useState(false);
   const [topicsData, setTopicsData] = useState<{ topics: Topic[] } | null>(
     null
   );
   const { control, handleSubmit, reset } = useForm<FormValues>();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const topicEditingDialogRef = React.useRef<TTopicEditingDialogHandle>(null);
 
   useEffect(() => {
     if (chapterInfo?.details) {
@@ -228,11 +234,12 @@ const ChapterUi = ({ novelId, chapterKey, chapterInfo }: ChapterUiProps) => {
         {chapterInfo?.details?.chapter_topics && (
           <FaEdit
             className="cursor-pointer"
-            onClick={() => setOpenTopicsModal(true)}
+            // onClick={() => setOpenTopicsModal(true)}
+            onClick={() => topicEditingDialogRef.current?.openDialog()}
           />
         )}
       </h1>
-      <Dialog open={openTopicsModal} onOpenChange={setOpenTopicsModal}>
+      {/* <Dialog open={openTopicsModal} onOpenChange={setOpenTopicsModal}>
         <DialogTrigger asChild>
           {!chapterInfo?.details?.chapter_topics && (
             <Button className="bg-bluish text-center flex gap-2 mx-auto mt-3 hover:bg-background hover:text-white">
@@ -384,10 +391,13 @@ const ChapterUi = ({ novelId, chapterKey, chapterInfo }: ChapterUiProps) => {
             </div>
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
 
       {/* // TODO 2024-07-02 not finished below */}
-      {/* <TopicEditingDialog ref={topicEditingDialogRef} {...{ chapterInfo }} /> */}
+      <TopicEditingDialog
+        ref={topicEditingDialogRef}
+        {...{ novelId, chapterInfo }}
+      />
     </div>
   );
 };
