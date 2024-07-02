@@ -1,7 +1,8 @@
 import { useDispatch, useSelector, useStore } from "react-redux";
 import { AppDispatch, AppStore, RootState } from "./store/store";
 import { useAuth } from "@clerk/nextjs";
-import React from "react";
+import React, { useEffect, useState } from 'react';
+import { getToken } from './apiCall/server/getToken';
 // import type { RootState, AppDispatch, AppStore } from "./store";
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
@@ -23,3 +24,15 @@ export const useGetClientToken = (): {
     getClientToken,
   };
 };
+
+export const useToken = () => {
+  const { getToken } = useAuth();
+  const [token ,setToken ] = useState<String|null>( null)
+  useEffect(() => {
+     getToken({ template: 'UserToken'}).then((userId) => {
+      setToken(userId)
+    })
+
+  }, [getToken])
+  return { token }
+}
