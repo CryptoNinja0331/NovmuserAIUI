@@ -1,29 +1,41 @@
-import NovelSidebar from "@/components/singleNovel/NovelSidebar";
-import ChapterDetails from "./ChapterDetails";
-import { getSingleNovel } from "@/lib/apiCall/server/getSingleNovel";
-import Terminal from "../../../../_component/Terminal";
-import { getChapterInfo } from "@/lib/apiCall/server/getChapterInfo";
 import NovelEditingArea from "@/app/(dashboard)/_component/ChapterEditingArea";
+import NovelSidebar from "@/components/singleNovel/NovelSidebar";
+import { getOrInitChapterInfo } from "@/lib/apiCall/server/getOrInitChapterInfo";
+import { getSingleNovel } from "@/lib/apiCall/server/getSingleNovel";
+import ChapterDetails from "./_components/ChapterDetails";
 const page = async ({
   params,
 }: {
-  params: { chapterKey: string; novelId: string };
+  params: { chapterKey: string[]; novelId: string };
 }) => {
+  console.log("🚀 ~ chapterKey:", params.chapterKey);
   const response = await getSingleNovel(params.novelId);
-  const chapterKey = params.chapterKey[0];
+  const chapterKeySegments: string[] = params.chapterKey;
+  const chapterKey = chapterKeySegments[0];
 
-  const chapterInfo = await getChapterInfo(chapterKey);
+  const chapterInfo = await getOrInitChapterInfo({
+    novelId: params.novelId,
+    chapterKey,
+  });
 
   return (
     <div className="h-[calc(100%-50px)] relative">
       <div className="text-white relative h-full flex justify-between ">
         <div className="inline-block w-[16rem] h-full border-r border-input p-3">
-          <ChapterDetails params={params} />
+          <ChapterDetails
+            {...{
+              novelId: params.novelId,
+              chapterKey,
+              chapterNumber: chapterKeySegments[1],
+              chapterTitle: chapterKeySegments[2],
+            }}
+          />
         </div>
 
-        <NovelEditingArea chapterInfo={chapterInfo.data!} />
-
-        {/* <Terminal chapterInfo={chapterInfo.data!} chapterKey={chapterKey} /> */}
+        <NovelEditingArea
+          novelId={params.novelId}
+          chapterInfo={chapterInfo.data!}
+        />
 
         <div className="relative mt-2">
           <NovelSidebar novelDetails={response.data} />

@@ -1,22 +1,24 @@
 "use client";
 
+import { getOrInitChapterInfo } from "@/lib/apiCall/server/getOrInitChapterInfo";
 import useStreamedChunksStore, {
   TStreamedChunk,
 } from "@/lib/store/chapterChunks/streamedChunksStore";
 import { TChapterInfo } from "@/lib/types/api/chapter";
 import React, { FC } from "react";
+import SimpleBar from "simplebar-react";
 import { shallow } from "zustand/shallow";
 import StreamedChunk from "./StreamedChunk";
 import Terminal from "./Terminal";
-import SimpleBar from "simplebar-react";
-import { getChapterInfo } from "@/lib/apiCall/server/getChapterInfo";
 
 export type TNovelEditingAreaProps = {
+  novelId: string;
   chapterInfo: TChapterInfo;
   // fetchChapterInfo: () => Promise<TChapterInfo>;
 };
 
 const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
+  novelId,
   chapterInfo,
   // fetchChapterInfo,
 }) => {
@@ -65,13 +67,17 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
   }, [streamedChunks]);
 
   const refreshChapterInfo = React.useCallback(async () => {
-    const updatedChapterInfo = (await getChapterInfo(chapterInfo.chapter_key))
-      ?.data;
+    const updatedChapterInfo = (
+      await getOrInitChapterInfo({
+        novelId,
+        chapterKey: chapterInfo.chapter_key,
+      })
+    )?.data;
     if (updatedChapterInfo) {
       setCurChapterInfo(updatedChapterInfo);
       console.log("refreshed and set current chapter info");
     }
-  }, [chapterInfo.chapter_key]);
+  }, [chapterInfo.chapter_key, novelId]);
 
   return (
     <div className="w-full h-full relative px-1">
@@ -95,7 +101,7 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
         // chapterInfo={chapterInfo}
         chapterInfo={curChapterInfo}
         chapterKey={chapterInfo.chapter_key}
-        className="absolute bottom-1"
+        className="fixed bottom-1"
         refreshChapterInfo={refreshChapterInfo}
       />
     </div>

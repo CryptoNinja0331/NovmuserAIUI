@@ -15,6 +15,11 @@ import { IoAddCircle } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
 import { FaEdit, FaSave } from "react-icons/fa";
 import { toast } from "sonner";
+import { TChapterInfo } from "@/lib/types/api/chapter";
+import TopicEditingDialog, {
+  TTopicEditingDialogHandle,
+} from "./TopicEditingDialog";
+import React from "react";
 
 interface Topic {
   id?: string;
@@ -45,13 +50,13 @@ interface FormValues {
 interface ChapterUiProps {
   novelId: string;
   chapterKey: string;
-  topicDetails: any;
+  chapterInfo: TChapterInfo;
 }
 
-const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
+const ChapterUi = ({ novelId, chapterKey, chapterInfo }: ChapterUiProps) => {
   const { getToken } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [openTopicsModal, setOpenTopicsModal] = useState(false);
+  // const [openTopicsModal, setOpenTopicsModal] = useState(false);
   const [submitLoader, setSubmitLoader] = useState(false);
   const [topicsData, setTopicsData] = useState<{ topics: Topic[] } | null>(
     null
@@ -59,10 +64,12 @@ const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
   const { control, handleSubmit, reset } = useForm<FormValues>();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const topicEditingDialogRef = React.useRef<TTopicEditingDialogHandle>(null);
+
   useEffect(() => {
-    if (topicDetails?.details) {
+    if (chapterInfo?.details) {
       const topics_from_resp: Topic[] =
-        topicDetails.details.chapter_topics.topics;
+        chapterInfo.details?.chapter_topics?.topics ?? [];
       const topics: FormValues["topics"] = topics_from_resp.map(
         (topic, idx) => ({
           id: topic.id,
@@ -81,14 +88,14 @@ const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
       reset({ topics });
       setTopicsData({ topics: topics_from_resp });
     }
-  }, [reset, topicDetails]);
+  }, [chapterInfo.details, reset]);
 
   const handleAiGeneration = async () => {
     setLoading(true);
     const token = await getToken({ template: "UserToken" });
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/topic/${novelId}/${chapterKey[0]}`,
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/topic/${novelId}/${chapterKey}`,
       {
         method: "POST",
         headers: {
@@ -194,7 +201,7 @@ const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
       setSubmitLoader(true);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/edit/${chapterKey[0]}/topics`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/edit/${chapterKey}/topics`,
         {
           method: "PUT",
           headers: {
@@ -224,16 +231,17 @@ const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
     <div>
       <h1 className="p-2 flex gap-1 items-center font-medium border-b border-input">
         Topic Roadmap
-        {topicDetails?.details && (
+        {chapterInfo?.details?.chapter_topics && (
           <FaEdit
             className="cursor-pointer"
-            onClick={() => setOpenTopicsModal(true)}
+            // onClick={() => setOpenTopicsModal(true)}
+            onClick={() => topicEditingDialogRef.current?.openDialog()}
           />
         )}
       </h1>
-      <Dialog open={openTopicsModal} onOpenChange={setOpenTopicsModal}>
+      {/* <Dialog open={openTopicsModal} onOpenChange={setOpenTopicsModal}>
         <DialogTrigger asChild>
-          {!topicDetails?.details && (
+          {!chapterInfo?.details?.chapter_topics && (
             <Button className="bg-bluish text-center flex gap-2 mx-auto mt-3 hover:bg-background hover:text-white">
               Initialize Topics
             </Button>
@@ -383,7 +391,13 @@ const ChapterUi = ({ novelId, chapterKey, topicDetails }: ChapterUiProps) => {
             </div>
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
+
+      {/* // TODO 2024-07-02 not finished below */}
+      <TopicEditingDialog
+        ref={topicEditingDialogRef}
+        {...{ novelId, chapterInfo }}
+      />
     </div>
   );
 };
