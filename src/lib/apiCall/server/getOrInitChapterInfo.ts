@@ -20,6 +20,11 @@ export const getOrInitChapterInfo = async ({
       return await POST<TResponseDto<TChapterInfo>>({
         url: `/chapter/init/${novelId}/${chapterKey}`,
         token: await getToken(),
+        config: {
+          next: {
+            tags: ["chapterInfo"],
+          },
+        },
       });
     } else {
       console.error("🚀 getOrInitChapterInfo ~ error:", e);

@@ -2,34 +2,25 @@ import { IoArrowBackCircleOutline } from "react-icons/io5";
 
 import Link from "next/link";
 
-import { getOrInitChapterInfo } from "@/lib/apiCall/server/getOrInitChapterInfo";
 import ChapterUi from "./ChapterUi";
 import TopicRoadMapUi from "../ChapterTopic/TopicRoadMapUi";
+import { TChapterInfo } from "@/lib/types/api/chapter";
 
 export type TChapterDetailsProps = {
   novelId: string;
-  chapterKey: string;
   chapterNumber: string;
   chapterTitle: string;
+  chapterInfo: TChapterInfo;
 };
 
 const ChapterDetails = async ({
   novelId,
-  chapterKey,
   chapterNumber,
   chapterTitle,
+  chapterInfo,
 }: TChapterDetailsProps) => {
   console.log("🚀 ~ novelId:", novelId);
-  console.log("🚀 ~ ChapterDetails ~ chapterKey:", chapterKey);
-
-  const chapterInfo = (
-    await getOrInitChapterInfo({
-      novelId,
-      chapterKey,
-    })
-  ).data!;
-
-  console.log("🚀 ~ chapterInfo:", chapterInfo);
+  console.log("🚀 ~ ChapterDetails ~ chapterKey:", chapterInfo.chapter_key);
 
   return (
     <div className="text-white relative h-full flex justify-between">
