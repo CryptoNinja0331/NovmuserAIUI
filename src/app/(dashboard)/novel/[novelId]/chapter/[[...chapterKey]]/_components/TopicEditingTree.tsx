@@ -24,10 +24,16 @@ import {
   TChapterTopicDoc,
   TChapterTopicEditDto,
   TChapterTopicPointEditDto,
+  TChapterTopics,
   TChapterTopicsEditDto,
 } from "@/lib/types/api/chapter";
 import { TFormEditingMode } from "@/lib/types/api/common";
 import { cloneDeep } from "lodash";
+import { showErrorAlert } from "@/lib/alerts";
+import useClientToken from "@/hooks/useClientToken";
+import useClientHttp from "@/hooks/useClientHttp";
+import { todo } from "node:test";
+import { Input } from "@/components/ui/input";
 
 type TTopicTreeNodeType = "topic" | "topicPoint";
 
@@ -116,6 +122,47 @@ const AddTopicTreeNodeButtonPair: FC<TAddTopicTreeNodeButtonPairProps> = ({
   );
 };
 
+const NodeEditingToggleButton = ({
+  node,
+  tree,
+  onConfirm,
+}: {
+  node: NodeApi<TTopicTreeNodeData>;
+  tree: TreeApi<TTopicTreeNodeData>;
+  onConfirm: () => void;
+}) => {
+  const couldStartEdit = React.useMemo<boolean>(() => {
+    if (tree.isEditing && tree.editingId !== node.id) {
+      // Means other nodes are being edited
+      return false;
+    }
+    return true;
+  }, [node.id, tree.editingId, tree.isEditing]);
+
+  if (node.isEditing) {
+    return (
+      <FaCheck
+        className="text-violet-400 text-2xl mx-3 cursor-pointer"
+        onClick={onConfirm}
+      />
+    );
+  }
+  return (
+    <FaEdit
+      className={cn("text-white text-2xl mx-3", {
+        "cursor-pointer": couldStartEdit,
+        "text-gray-500 opacity-50 cursor-not-allowed": !couldStartEdit,
+      })}
+      onClick={() => {
+        if (couldStartEdit) {
+          // Only one node could be edited at one time
+          node.edit();
+        }
+      }}
+    />
+  );
+};
+
 type TTopicTreeNodeInternalProps = NodeRendererProps<TTopicTreeNodeData> & {
   onOuterClick: MouseEventHandler | undefined;
   handleToggleExpand: MouseEventHandler | undefined;
@@ -127,6 +174,7 @@ const TopicTreeNodeInternal = React.memo(
   ({
     style,
     node,
+    tree,
     onOuterClick,
     handleToggleExpand,
     onEditingAreaFocus,
@@ -181,7 +229,7 @@ const TopicTreeNodeInternal = React.memo(
           abstract: abstractCurrent,
         };
         const submitValue = JSON.stringify(updatedNodeNameJsonObj);
-        node.submit(JSON.stringify(submitValue));
+        node.submit(submitValue);
         console.log("🚀 ~ handleEditingConfirm ~ submitValue:", submitValue);
       }
     }, [abstractOriginal, nameOriginal, node]);
@@ -201,28 +249,18 @@ const TopicTreeNodeInternal = React.memo(
                 <span>Topic</span>
                 {expandableIconRenderer}
               </div>
-              <input
+              <Input
                 defaultValue={nameOriginal}
                 placeholder="Please enter the topic name"
                 onFocus={onEditingAreaFocus}
                 disabled={!node.isEditing}
                 onChange={handleTopicNameChange}
-                className="bg-[#0C0C0D] focus:outline-0 rounded-sm text-white w-full"
+                className="p-2 rounded-sm text-lg text-white w-full flex-1 resize-none"
               />
               <div className="flex flex-row justify-end items-center">
-                {node.isEditing ? (
-                  <FaCheck
-                    className="text-violet-400 text-2xl mx-3 cursor-pointer"
-                    onClick={handleEditingConfirm}
-                  />
-                ) : (
-                  <FaEdit
-                    className="text-white text-2xl mx-3 cursor-pointer"
-                    onClick={() => {
-                      node.edit();
-                    }}
-                  />
-                )}
+                <NodeEditingToggleButton
+                  {...{ node, tree, onConfirm: handleEditingConfirm }}
+                />
                 <RxCross2
                   className="cursor-pointer text-3xl mx-1"
                   onClick={onDelete}
@@ -259,6 +297,7 @@ const TopicPointTreeNodeInternal = React.memo(
   ({
     style,
     node,
+    tree,
     onOuterClick,
     onEditingAreaFocus,
     onDelete,
@@ -297,19 +336,9 @@ const TopicPointTreeNodeInternal = React.memo(
                 Topic Point
               </h1>
               <div className="flex flex-row justify-end items-center">
-                {node.isEditing ? (
-                  <FaCheck
-                    className="text-violet-400 text-2xl mx-3 cursor-pointer"
-                    onClick={handleEditingConfirm}
-                  />
-                ) : (
-                  <FaEdit
-                    className="text-white text-2xl mx-3 cursor-pointer"
-                    onClick={() => {
-                      node.edit();
-                    }}
-                  />
-                )}
+                <NodeEditingToggleButton
+                  {...{ node, tree, onConfirm: handleEditingConfirm }}
+                />
                 <RxCross2
                   className="cursor-pointer text-xl mx-1"
                   onClick={onDelete}
@@ -522,10 +551,15 @@ type TTopicEditingTreeProps = {
   className?: string;
 };
 
-const TopicEditingTree: FC<TTopicEditingTreeProps> = ({
-  chapterInfo,
-  className,
-}) => {
+export type TTopicEditingTreeHandle = {
+  submitForm: () => Promise<void> | void;
+  fillChapterTopics: (chapterTopics: TChapterTopics) => void;
+};
+
+const TopicEditingTree = React.forwardRef<
+  TTopicEditingTreeHandle,
+  TTopicEditingTreeProps
+>(({ chapterInfo, className }, ref) => {
   const treeRef = React.useRef<TreeApi<TTopicTreeNodeData>>(null);
 
   const editingMode = React.useMemo<TFormEditingMode>(() => {
@@ -542,19 +576,25 @@ const TopicEditingTree: FC<TTopicEditingTreeProps> = ({
     } else if (editingMode === "edit") {
       const chapterTopicDocs: TChapterTopicDoc[] =
         chapterInfo?.details.chapter_topics.topics ?? [];
-      initTreeData = chapterTopicDocs.map((topic) => ({
-        id: topic.id,
-        name: topic.name,
-        abstract: topic.abstract,
-        hasPersisted: true,
-        nodeType: "topic",
-        children: topic.topic_points.map((point) => ({
-          id: point.id,
-          name: point.point_content,
+      initTreeData = chapterTopicDocs.map((topic) => {
+        // Encoding as node name json string
+        const name = JSON.stringify({
+          name: topic.name,
+          abstract: topic.abstract,
+        } as TNodeNameValue);
+        return {
+          id: topic.id,
+          name,
           hasPersisted: true,
-          nodeType: "topicPoint",
-        })),
-      }));
+          nodeType: "topic",
+          children: topic.topic_points.map((point) => ({
+            id: point.id,
+            name: point.point_content,
+            hasPersisted: true,
+            nodeType: "topicPoint",
+          })),
+        } as TTopicTreeNodeData;
+      });
     }
     return initTreeData;
   }, [chapterInfo?.details?.chapter_topics.topics, editingMode]);
@@ -600,6 +640,72 @@ const TopicEditingTree: FC<TTopicEditingTreeProps> = ({
     initChapterTopicsEditDto
   );
 
+  const { getClientToken } = useClientToken();
+  const { put } = useClientHttp();
+
+  const handleFillChapterTopics = React.useCallback(
+    (chapterTopics: TChapterTopics) => {
+      if (editingMode !== "add") {
+        console.warn("Only support in 'add' mode");
+        return;
+      }
+      const updateFormData = {
+        topics: chapterTopics.topics?.map((topic, topicIndex) => ({
+          id: getUUid(),
+          name: topic.name,
+          abstract: topic.abstract,
+          edit_type: "A",
+          add_index: topicIndex,
+          topic_points: topic.topic_points?.map((point, topicPointIndex) => ({
+            id: getUUid(),
+            point_content: point,
+            edit_type: "A",
+            add_index: topicPointIndex,
+          })),
+        })),
+      } as TChapterTopicsEditDto;
+      const updatedTopicTreeData: TTopicTreeNodeData[] =
+        updateFormData.topics?.map((topic) => {
+          const name = JSON.stringify({
+            name: topic.name,
+            abstract: topic.abstract,
+          } as TNodeNameValue);
+          return {
+            id: topic.id!,
+            name,
+            hasPersisted: false,
+            nodeType: "topic",
+            children: topic.topic_points?.map((point) => ({
+              id: point.id!,
+              name: point.point_content!,
+              hasPersisted: false,
+              nodeType: "topicPoint",
+            })),
+          };
+        }) ?? [];
+      setTopicTreeData(updatedTopicTreeData);
+      chapterTopicsEditDtoFormRef.current = updateFormData;
+    },
+    [editingMode]
+  );
+
+  React.useImperativeHandle(
+    ref,
+    () => ({
+      submitForm: async () => {
+        const formData = chapterTopicsEditDtoFormRef.current;
+        console.log("🚀 ~ formData:", formData);
+        await put({
+          url: `/chapter/edit/${chapterInfo.chapter_key}/topics`,
+          token: await getClientToken(),
+          data: formData,
+        });
+      },
+      fillChapterTopics: handleFillChapterTopics,
+    }),
+    [chapterInfo.chapter_key, getClientToken, handleFillChapterTopics, put]
+  );
+
   const handleTreeNodeCreate = React.useCallback<
     CreateHandler<TTopicTreeNodeData>
   >(
@@ -615,133 +721,139 @@ const TopicEditingTree: FC<TTopicEditingTreeProps> = ({
         type=${type}
         `
       );
-      // TODO 2024-06-27
-      // Update state
+
       const updatedTreedata = cloneDeep(topicTreeData);
       let insertData: TTopicTreeNodeData | undefined = undefined;
       let insertInternalIdx = 0;
       let insertLeafIdx = 0;
 
-      if (type === "internal") {
-        // Create internal node (create chapter topic)
-        let globalIdx = 0;
-        let relativeIdx = 0;
-        if (index === -1) {
-          relativeIdx = -1;
+      const updateState = () => {
+        if (type === "internal") {
+          // Create internal node (create chapter topic)
+          let globalIdx = 0;
+          let relativeIdx = 0;
+          if (index === -1) {
+            relativeIdx = -1;
+          } else {
+            for (const nodeData of topicTreeData) {
+              if (globalIdx === index) {
+                break;
+              }
+              const childrenLen = nodeData.children?.length ?? 0;
+              globalIdx += childrenLen + 1;
+              relativeIdx++;
+            }
+          }
+          const insertIdx = relativeIdx + 1;
+          insertInternalIdx = insertIdx;
+          console.log("🚀 ~ internal ~ insertIdx:", insertIdx);
+          insertData = generateDefaultTopicTreeData();
+          updatedTreedata.splice(insertIdx, 0, insertData);
+          console.log("🚀 ~ setTopicTreeData ~ spliced");
+          console.log(
+            "🚀 ~ setTopicTreeData ~ updatedTreedata:",
+            updatedTreedata
+          );
         } else {
-          for (const nodeData of topicTreeData) {
-            if (globalIdx === index) {
+          // Create leaf node (create chapter topic point)
+          const parentId = parent.id;
+          let globalParentIdx = 0;
+          for (const nodeData of updatedTreedata) {
+            if (nodeData.id === parentId) {
+              const relativeIndex =
+                index === -1 ? -1 : index - globalParentIdx - 1;
+              const insertIdx = relativeIndex + 1;
+              console.log("🚀 ~ leaf ~ insertIdx:", insertIdx);
+              insertData = generateDefaultTopicPointTreeData();
+              if (!nodeData.children) {
+                nodeData.children = [insertData];
+              } else {
+                nodeData.children.splice(insertIdx, 0, insertData);
+              }
+              insertLeafIdx = insertIdx;
               break;
             }
             const childrenLen = nodeData.children?.length ?? 0;
-            globalIdx += childrenLen + 1;
-            relativeIdx++;
+            globalParentIdx += childrenLen + 1;
+            insertInternalIdx++;
           }
         }
-        const insertIdx = relativeIdx + 1;
-        insertInternalIdx = insertIdx;
-        console.log("🚀 ~ internal ~ insertIdx:", insertIdx);
-        insertData = generateDefaultTopicTreeData();
-        updatedTreedata.splice(insertIdx, 0, insertData);
-        console.log("🚀 ~ setTopicTreeData ~ spliced");
-        console.log(
-          "🚀 ~ setTopicTreeData ~ updatedTreedata:",
-          updatedTreedata
+        setTopicTreeData(updatedTreedata);
+        console.log("🚀 ~ insertInternalIdx:", insertInternalIdx);
+        console.log("🚀 ~ insertLeafIdx:", insertLeafIdx);
+      };
+
+      const updateFormData = () => {
+        // Update form data
+        const chapterTopicEditDtoList: TChapterTopicEditDto[] = cloneDeep(
+          chapterTopicsEditDtoFormRef.current?.topics ?? []
         );
-      } else {
-        // Create leaf node (create chapter topic point)
-        const parentId = parent.id;
-        let globalParentIdx = 0;
-        for (const nodeData of updatedTreedata) {
-          if (nodeData.id === parentId) {
-            const relativeIndex =
-              index === -1 ? -1 : index - globalParentIdx - 1;
-            const insertIdx = relativeIndex + 1;
-            console.log("🚀 ~ leaf ~ insertIdx:", insertIdx);
-            insertData = generateDefaultTopicPointTreeData();
-            if (!nodeData.children) {
-              nodeData.children = [insertData];
-            } else {
-              nodeData.children.splice(insertIdx, 0, insertData);
-            }
-            insertLeafIdx = insertIdx;
-            break;
-          }
-          const childrenLen = nodeData.children?.length ?? 0;
-          globalParentIdx += childrenLen + 1;
-          insertInternalIdx++;
-        }
-      }
-      setTopicTreeData(updatedTreedata);
-      // TODO Update form data
-      console.log("🚀 ~ insertInternalIdx:", insertInternalIdx);
-      console.log("🚀 ~ insertLeafIdx:", insertLeafIdx);
-      const chapterTopicEditDtoList: TChapterTopicEditDto[] = cloneDeep(
-        chapterTopicsEditDtoFormRef.current?.topics ?? []
-      );
-      if (type === "internal") {
-        // Create internal node (create chapter topic)
-        // insertData.name
-        const nodeNameJsonStr = insertData!.name;
-        // // Decoding node name
-        const nodeNameJsonObj: TNodeNameValue = JSON.parse(nodeNameJsonStr);
-        const { name, abstract } = nodeNameJsonObj;
-        chapterTopicEditDtoList.push({
-          id: insertData!.id,
-          name,
-          abstract,
-          edit_type: "A",
-          add_index: insertInternalIdx,
-          topic_points: (insertData!.children ?? []).map((item, index) => ({
-            id: item.id,
-            point_content: item.name,
-            edit_type: "A",
-            add_index: index,
-          })),
-        });
-      } else {
-        // Create leaf node (create chapter topic point)
-        const targetTopicData = topicTreeData[insertInternalIdx];
-        const targetTopicEditDto: TChapterTopicEditDto | undefined =
-          chapterTopicEditDtoList.find(
-            (item) => item.id === targetTopicData.id
-          );
-        // insertData.name
-        const nodeNameJsonStr = targetTopicData.name;
-        // // Decoding node name
-        const nodeNameJsonObj: TNodeNameValue = JSON.parse(nodeNameJsonStr);
-        const { name, abstract } = nodeNameJsonObj;
-        const insertTopicPoint: TChapterTopicPointEditDto = {
-          id: insertData?.id,
-          point_content: insertData?.name,
-          edit_type: "A",
-          add_index: insertLeafIdx,
-        };
-        if (!targetTopicEditDto) {
+        if (type === "internal") {
+          // Create internal node (create chapter topic)
+          // insertData.name
+          const nodeNameJsonStr = insertData!.name;
+          // Decoding node name
+          const nodeNameJsonObj: TNodeNameValue = JSON.parse(nodeNameJsonStr);
+          const { name, abstract } = nodeNameJsonObj;
           chapterTopicEditDtoList.push({
-            id: targetTopicData.id,
+            id: insertData!.id,
             name,
             abstract,
-            edit_type: targetTopicData.hasPersisted ? "U" : "A",
+            edit_type: "A",
             add_index: insertInternalIdx,
-            topic_points: [insertTopicPoint],
+            topic_points: (insertData!.children ?? []).map((item, index) => ({
+              id: item.id,
+              point_content: item.name,
+              edit_type: "A",
+              add_index: index,
+            })),
           });
         } else {
-          if (targetTopicEditDto.topic_points) {
-            targetTopicEditDto.topic_points.push(insertTopicPoint);
+          // Create leaf node (create chapter topic point)
+          const targetTopicData = topicTreeData[insertInternalIdx];
+          const targetTopicEditDto: TChapterTopicEditDto | undefined =
+            chapterTopicEditDtoList.find(
+              (item) => item.id === targetTopicData.id
+            );
+          // insertData.name
+          const nodeNameJsonStr = targetTopicData.name;
+          // Decoding node name
+          const nodeNameJsonObj: TNodeNameValue = JSON.parse(nodeNameJsonStr);
+          const { name, abstract } = nodeNameJsonObj;
+          const insertTopicPoint: TChapterTopicPointEditDto = {
+            id: insertData?.id,
+            point_content: insertData?.name,
+            edit_type: "A",
+            add_index: insertLeafIdx,
+          };
+          if (!targetTopicEditDto) {
+            chapterTopicEditDtoList.push({
+              id: targetTopicData.id,
+              name,
+              abstract,
+              edit_type: targetTopicData.hasPersisted ? "U" : "A",
+              add_index: insertInternalIdx,
+              topic_points: [insertTopicPoint],
+            });
           } else {
-            targetTopicEditDto.topic_points = [insertTopicPoint];
+            if (targetTopicEditDto.topic_points) {
+              targetTopicEditDto.topic_points.push(insertTopicPoint);
+            } else {
+              targetTopicEditDto.topic_points = [insertTopicPoint];
+            }
           }
         }
-      }
-      //   Update form data
-      chapterTopicsEditDtoFormRef.current = {
-        topics: chapterTopicEditDtoList,
+        chapterTopicsEditDtoFormRef.current = {
+          topics: chapterTopicEditDtoList,
+        };
+        console.log(
+          "🚀 ~ handleTreeNodeCreate ~ chapterTopicsEditDtoFormRef.current:",
+          JSON.stringify(chapterTopicsEditDtoFormRef.current)
+        );
       };
-      console.log(
-        "🚀 ~ chapterTopicsEditDtoFormRef.current:",
-        JSON.stringify(chapterTopicsEditDtoFormRef.current)
-      );
+
+      updateState();
+      updateFormData();
       return null;
     },
     [topicTreeData]
@@ -749,63 +861,305 @@ const TopicEditingTree: FC<TTopicEditingTreeProps> = ({
 
   const handleTreeNodeRename = React.useCallback<
     RenameHandler<TTopicTreeNodeData>
-  >(({ name, node }) => {
-    console.log("🚀 ~ onRename ~ name:", name, " ~ node:", node);
-    const chapterTopicEditDtoList: TChapterTopicEditDto[] = cloneDeep(
-      chapterTopicsEditDtoFormRef.current?.topics ?? []
-    );
-    const nodeId = node.id;
-    const nodeType = node.data.nodeType;
-    if (nodeType === "topic") {
-      const nameJsonObj: TNodeNameValue = JSON.parse(name);
-      const { name: updatedName, abstract: updatedAbstract } = nameJsonObj;
-      const targetTopicEditDto: TChapterTopicEditDto | undefined =
-        chapterTopicEditDtoList.find((topicItem) => topicItem.id === nodeId);
-      if (targetTopicEditDto) {
-        targetTopicEditDto.name = updatedName;
-        targetTopicEditDto.abstract = updatedAbstract;
-      } else {
-        chapterTopicEditDtoList.push({
-          id: nodeId,
-          name: updatedName,
-          abstract: updatedAbstract,
-          edit_type: "U",
-        });
-      }
-    } else {
-      const parentNode = node.parent;
-      if (!parentNode) {
-        return;
-      }
-      const parentNodeId = parentNode.id;
-      const targetTopicEditDto: TChapterTopicEditDto | undefined =
-        chapterTopicEditDtoList.find(
-          (topicItem) => topicItem.id === parentNodeId
-        );
-      if (targetTopicEditDto) {
-        const targetTopicPointEditDto: TChapterTopicPointEditDto | undefined = (
-          targetTopicEditDto.topic_points ?? []
-        ).find((topicPointItem) => topicPointItem.id === nodeId);
-        if (targetTopicPointEditDto) {
-          targetTopicPointEditDto.point_content = name;
+  >(
+    ({ name, node }) => {
+      console.log("🚀 ~ onRename ~ name:", name, " ~ node:", node);
+      const nodeId = node.id;
+      const nodeType = node.data.nodeType;
+
+      const updateState = () => {
+        const updatedTreedata = cloneDeep(topicTreeData);
+        let needToUpdate = false;
+        if (nodeType === "topic") {
+          const targetTreeData = updatedTreedata.find(
+            (item) => item.id === nodeId
+          );
+          if (targetTreeData && targetTreeData.name !== name) {
+            targetTreeData.name = name;
+            needToUpdate = true;
+          }
         } else {
-          targetTopicEditDto;
+          const parentNode = node.parent;
+          if (!parentNode) {
+            return;
+          }
+          const parentNodeId = parentNode.id;
+          const targetParentTreeData = updatedTreedata.find(
+            (item) => item.id === parentNodeId
+          );
+          if (!targetParentTreeData) {
+            return;
+          }
+          const targetTreeData = targetParentTreeData.children?.find(
+            (item) => item.id === nodeId
+          );
+          if (targetTreeData && targetTreeData.name !== name) {
+            targetTreeData.name = name;
+            needToUpdate = true;
+          }
         }
-      } else {
-      }
-    }
-    // TODO 2024-06-27
-    //   Update form data
-    chapterTopicsEditDtoFormRef.current = {
-      topics: chapterTopicEditDtoList,
-    };
-  }, []);
+        if (needToUpdate) {
+          console.log(
+            "🚀 ~ handleTreeNodeRename ~ updateState ~ updatedTreedata:",
+            updatedTreedata
+          );
+          setTopicTreeData(updatedTreedata);
+        }
+      };
+      const updateFormData = () => {
+        const chapterTopicEditDtoList: TChapterTopicEditDto[] = cloneDeep(
+          chapterTopicsEditDtoFormRef.current?.topics ?? []
+        );
+        if (nodeType === "topic") {
+          // Update chapter topic information
+          const nameJsonObj: TNodeNameValue = JSON.parse(name);
+          console.log("🚀 ~ nameJsonObj:", nameJsonObj);
+          const targetTopicEditDto: TChapterTopicEditDto | undefined =
+            chapterTopicEditDtoList.find(
+              (topicItem) => topicItem.id === nodeId
+            );
+          if (targetTopicEditDto) {
+            targetTopicEditDto.name = nameJsonObj.name;
+            targetTopicEditDto.abstract = nameJsonObj.abstract;
+          } else {
+            chapterTopicEditDtoList.push({
+              id: nodeId,
+              name: nameJsonObj.name,
+              abstract: nameJsonObj.abstract,
+              edit_type: "U",
+            });
+          }
+        } else {
+          // Update chapter topic point information
+          const parentNode = node.parent;
+          if (!parentNode) {
+            return;
+          }
+          const parentNodeId = parentNode.id;
+          let targetTopicEditDto: TChapterTopicEditDto | undefined =
+            chapterTopicEditDtoList.find(
+              (topicItem) => topicItem.id === parentNodeId
+            );
+          if (targetTopicEditDto) {
+            let targetTopicPointEditDto: TChapterTopicPointEditDto | undefined =
+              (targetTopicEditDto.topic_points ?? []).find(
+                (topicPointItem) => topicPointItem.id === nodeId
+              );
+            if (targetTopicPointEditDto) {
+              targetTopicPointEditDto.point_content = name;
+            } else {
+              targetTopicPointEditDto = {
+                id: nodeId,
+                point_content: name,
+                edit_type: "U",
+              };
+              if (targetTopicEditDto.topic_points) {
+                targetTopicEditDto.topic_points.push(targetTopicPointEditDto);
+              } else {
+                targetTopicEditDto.topic_points = [targetTopicPointEditDto];
+              }
+            }
+          } else {
+            const nameJsonObj: TNodeNameValue = JSON.parse(
+              parentNode.data.name
+            );
+            targetTopicEditDto = {
+              id: parentNode.id,
+              name: nameJsonObj.name,
+              abstract: nameJsonObj.abstract,
+              edit_type: "U",
+              topic_points: [
+                {
+                  id: nodeId,
+                  point_content: name,
+                  edit_type: "U",
+                },
+              ],
+            };
+            chapterTopicEditDtoList.push(targetTopicEditDto);
+          }
+        }
+        //   Update form data
+        chapterTopicsEditDtoFormRef.current = {
+          topics: chapterTopicEditDtoList,
+        };
+        console.log(
+          "🚀 ~ handleTreeNodeRename ~ chapterTopicsEditDtoFormRef.current:",
+          JSON.stringify(chapterTopicsEditDtoFormRef.current)
+        );
+      };
+
+      updateState();
+      updateFormData();
+    },
+    [topicTreeData]
+  );
 
   const handleTreeNodeDelete = React.useCallback<
     DeleteHandler<TTopicTreeNodeData>
-  >((idx, nodes) => {
-    // TODO 2024-06-27
-  }, []);
+  >(
+    ({ nodes }) => {
+      console.log("🚀 ~ topicTreeData:", topicTreeData);
+      console.log("🚀 ~ handleTreeNodeDelete ~ nodes:", nodes);
+      if (!nodes || nodes.length === 0) {
+        return;
+      }
+      const deleteNode = nodes[0];
+      const parentNode = deleteNode.parent;
+
+      const nodeType = deleteNode.data.nodeType;
+      const deleteNodeId = deleteNode.id;
+
+      const checkDeletion = (): boolean => {
+        if (nodeType === "topic") {
+          if (topicTreeData.length <= 1) {
+            showErrorAlert({
+              title: "Deletion Failed",
+              text: "At least one topic is required.",
+              target: "#topicEditingTree",
+            });
+            return false;
+          }
+        } else {
+          if (!parentNode) {
+            return true;
+          }
+          if ((parentNode?.data?.children?.length ?? 0) <= 1) {
+            showErrorAlert({
+              title: "Deletion Failed",
+              text: "At least one topic point is required for each topic.",
+              target: "#topicEditingTree",
+            });
+            return false;
+          }
+        }
+        return true;
+      };
+
+      const updateState = () => {
+        let topicTreeDataClone = cloneDeep(topicTreeData ?? []);
+        if (nodeType === "topic") {
+          // Remove from topicTreeData
+          topicTreeDataClone = topicTreeDataClone.filter(
+            (item) => item.id !== deleteNodeId
+          );
+        } else {
+          topicTreeDataClone = topicTreeData.map((item) => {
+            if (item.id === parentNode?.id) {
+              return {
+                ...item,
+                children: item.children?.filter(
+                  (child) => child.id !== deleteNodeId
+                ),
+              };
+            }
+            return item;
+          });
+        }
+        // Update state
+        setTopicTreeData(topicTreeDataClone);
+      };
+
+      const updateFormData = () => {
+        const chapterTopicEditDtoList: TChapterTopicEditDto[] = cloneDeep(
+          chapterTopicsEditDtoFormRef.current?.topics ?? []
+        );
+        if (nodeType === "topic") {
+          // Delete chapter topic
+          const targetDeleteTopicEditDto: TChapterTopicEditDto | undefined =
+            chapterTopicEditDtoList.find(
+              (topicItem) => topicItem.id === deleteNodeId
+            );
+          if (targetDeleteTopicEditDto) {
+            if (targetDeleteTopicEditDto.edit_type === "A") {
+              // Remove from the chapterTopicEditDtoList
+              chapterTopicEditDtoList.splice(
+                chapterTopicEditDtoList.indexOf(targetDeleteTopicEditDto),
+                1
+              );
+            } else {
+              // Mark as deleted
+              targetDeleteTopicEditDto.edit_type = "D";
+            }
+          } else {
+            if (deleteNode.data.hasPersisted) {
+              chapterTopicEditDtoList.push({
+                id: deleteNodeId,
+                edit_type: "D",
+              });
+            }
+          }
+        } else {
+          // Delete chapter topic point
+          const parentNodeId = parentNode?.id;
+          const targetTopicEditDto: TChapterTopicEditDto | undefined =
+            chapterTopicEditDtoList.find((item) => item.id === parentNodeId);
+          const deleteTopicPointEditDto: TChapterTopicPointEditDto = {
+            id: deleteNodeId,
+            edit_type: "D",
+          };
+          if (targetTopicEditDto) {
+            const targetTopicPointEditDto = (
+              targetTopicEditDto.topic_points ?? []
+            ).find((item) => item.id === deleteNodeId);
+            if (targetTopicPointEditDto) {
+              if (targetTopicPointEditDto.edit_type === "A") {
+                // Remove from the topic_points
+                (targetTopicEditDto.topic_points ?? []).splice(
+                  (targetTopicEditDto.topic_points ?? []).indexOf(
+                    targetTopicPointEditDto
+                  ),
+                  1
+                );
+              } else {
+                // Mark as deleted
+                targetTopicPointEditDto.edit_type = "D";
+              }
+            } else {
+              if (!targetTopicEditDto.topic_points) {
+                targetTopicEditDto.topic_points = [deleteTopicPointEditDto];
+              } else {
+                targetTopicEditDto.topic_points.push(deleteTopicPointEditDto);
+              }
+            }
+          } else {
+            const parentTreeData = topicTreeData.find(
+              (item) => item.id === parentNodeId
+            );
+            if (parentTreeData) {
+              // Need to get name and abstract of the topic needs to be updated
+              const parentNodeValueJsonStr = parentTreeData.name;
+              const parentNodeValueJsonObj: TNodeNameValue = JSON.parse(
+                parentNodeValueJsonStr
+              );
+              chapterTopicEditDtoList.push({
+                id: parentNodeId,
+                edit_type: "U",
+                name: parentNodeValueJsonObj.name,
+                abstract: parentNodeValueJsonObj.abstract,
+                topic_points: [deleteTopicPointEditDto],
+              });
+            }
+          }
+        }
+
+        //   Update form data
+        chapterTopicsEditDtoFormRef.current = {
+          topics: chapterTopicEditDtoList,
+        };
+        console.log(
+          "🚀 ~ handleTreeNodeDelete ~ chapterTopicsEditDtoFormRef.current:",
+          JSON.stringify(chapterTopicsEditDtoFormRef.current)
+        );
+      };
+
+      if (checkDeletion()) {
+        updateState();
+        updateFormData();
+      }
+    },
+    [topicTreeData]
+  );
 
   const treeContainerHeight = React.useMemo(() => {
     let nodeCount = 0;
@@ -826,8 +1180,15 @@ const TopicEditingTree: FC<TTopicEditingTreeProps> = ({
   console.log("🚀 ~ TopicEditingDialog:", "rendering...");
   console.log("🚀 ~ topicTreeData:", topicTreeData);
 
+  console.log(
+    "🚀 ~ TopicEditingDialog ~ chapterTopicsEditDtoFormRef:",
+    chapterTopicsEditDtoFormRef,
+    " ~ topicTreeData:",
+    topicTreeData
+  );
+
   return (
-    <div className={cn("flex justify-center", className)}>
+    <div className={cn("flex justify-center", className)} id="topicEditingTree">
       <Tree
         ref={treeRef}
         data={topicTreeData}
@@ -847,6 +1208,8 @@ const TopicEditingTree: FC<TTopicEditingTreeProps> = ({
       </Tree>
     </div>
   );
-};
+});
 
-export default TopicEditingTree;
+TopicEditingTree.displayName = "TopicEditingTree";
+
+export default React.memo(TopicEditingTree);

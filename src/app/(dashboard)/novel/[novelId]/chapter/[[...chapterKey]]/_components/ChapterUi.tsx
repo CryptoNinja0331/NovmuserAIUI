@@ -15,17 +15,11 @@ import { IoAddCircle } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
 import { FaEdit, FaSave } from "react-icons/fa";
 import { toast } from "sonner";
-import BalanceNotEnoughAlert from "@/components/alert/BalanceNotEnoughAlert";
-import useClientHttp from "@/hooks/useClientHttp";
-import { TResponseDto } from "@/lib/http";
-import {
-  TChapterInfo,
-  TChapterTopic,
-  TChapterTopicDoc,
-  TChapterTopics,
-} from "@/lib/types/api/chapter";
-import useClientToken from "@/hooks/useClientToken";
-import TopicEditingDialog from "./TopicEditingDialog";
+import { TChapterInfo } from "@/lib/types/api/chapter";
+import TopicEditingDialog, {
+  TTopicEditingDialogHandle,
+} from "./TopicEditingDialog";
+import React from "react";
 
 interface Topic {
   id?: string;
@@ -61,23 +55,22 @@ interface ChapterUiProps {
 
 const ChapterUi = ({ novelId, chapterKey, chapterInfo }: ChapterUiProps) => {
   const { getToken } = useAuth();
-  const { getClientToken } = useClientToken();
   const [loading, setLoading] = useState(false);
-  const [openTopicsModal, setOpenTopicsModal] = useState(false);
+  // const [openTopicsModal, setOpenTopicsModal] = useState(false);
   const [submitLoader, setSubmitLoader] = useState(false);
-  const [chapterTopics, setChapterTopics] = useState<
-    TChapterTopicDoc[] | undefined
-  >(undefined);
+  const [topicsData, setTopicsData] = useState<{ topics: Topic[] } | null>(
+    null
+  );
   const { control, handleSubmit, reset } = useForm<FormValues>();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const { post } = useClientHttp();
+  const topicEditingDialogRef = React.useRef<TTopicEditingDialogHandle>(null);
 
   useEffect(() => {
-    if (chapterInfo?.details?.chapter_topics) {
-      const topicsFromGivenChapterInfo: TChapterTopicDoc[] =
-        chapterInfo.details.chapter_topics.topics;
-      const topics: FormValues["topics"] = topicsFromGivenChapterInfo.map(
+    if (chapterInfo?.details) {
+      const topics_from_resp: Topic[] =
+        chapterInfo.details?.chapter_topics?.topics ?? [];
+      const topics: FormValues["topics"] = topics_from_resp.map(
         (topic, idx) => ({
           id: topic.id,
           name: topic.name,
@@ -93,38 +86,46 @@ const ChapterUi = ({ novelId, chapterKey, chapterInfo }: ChapterUiProps) => {
         })
       );
       reset({ topics });
-      setChapterTopics(topicsFromGivenChapterInfo);
+      setTopicsData({ topics: topics_from_resp });
     }
-  }, [chapterInfo?.details?.chapter_topics, reset]);
+  }, [chapterInfo.details, reset]);
 
   const handleAiGeneration = async () => {
     setLoading(true);
+    const token = await getToken({ template: "UserToken" });
 
-    const response = await post<TResponseDto<TChapterTopics>>({
-      url: `/chapter/topic/${novelId}/${chapterKey}`,
-      token: await getClientToken(),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/chapter/topic/${novelId}/${chapterKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-    if (response.success) {
-      const chapterTopicsFromResp = response.data?.topics ?? [];
+    if (response.ok) {
+      const responseData = await response.json();
       setLoading(false);
-      // setChapterTopics(chapterTopicsFromResp);
+      setTopicsData(responseData.data);
 
-      const topics: FormValues["topics"] = chapterTopicsFromResp.map(
+      const topics_from_resp: Topic[] = responseData.data.topics;
+      const topics: FormValues["topics"] = topics_from_resp.map(
         (topic, idx) => ({
+          id: topic.id,
           name: topic.name,
           abstract: topic.abstract,
           edit_type: "A",
           add_index: idx,
-          topic_points: topic.topic_points.map((pointContent, pointIdx) => ({
-            point_content: pointContent,
+          topic_points: topic.topic_points.map((point, pointIdx) => ({
+            id: point.id,
+            point_content: point.point_content,
             edit_type: "A",
             add_index: pointIdx,
           })),
         })
       );
-      console.log("🚀 ~ handleAiGeneration ~ topics:", topics);
-
       reset({ topics });
     } else {
       console.error("Failed to initialize novel");
@@ -134,8 +135,8 @@ const ChapterUi = ({ novelId, chapterKey, chapterInfo }: ChapterUiProps) => {
 
   const handleDeleteTopic = (index: number) => {
     const updatedTopics =
-      chapterTopics?.topics.filter((_, i) => i !== index) || [];
-    setChapterTopics({ topics: updatedTopics });
+      topicsData?.topics.filter((_, i) => i !== index) || [];
+    setTopicsData({ topics: updatedTopics });
     reset({
       topics: updatedTopics.map((topic, idx) => ({
         ...topic,
@@ -153,7 +154,7 @@ const ChapterUi = ({ novelId, chapterKey, chapterInfo }: ChapterUiProps) => {
 
   const handleDeleteTopicPoint = (topicIndex: number, pointIndex: number) => {
     const updatedTopics =
-      chapterTopics?.topics.map((topic, i) => {
+      topicsData?.topics.map((topic, i) => {
         if (i === topicIndex) {
           const updatedPoints = topic.topic_points.filter(
             (_, j) => j !== pointIndex
@@ -162,7 +163,7 @@ const ChapterUi = ({ novelId, chapterKey, chapterInfo }: ChapterUiProps) => {
         }
         return topic;
       }) || [];
-    setChapterTopics({ topics: updatedTopics });
+    setTopicsData({ topics: updatedTopics });
     reset({
       topics: updatedTopics.map((topic, idx) => ({
         ...topic,
@@ -230,16 +231,17 @@ const ChapterUi = ({ novelId, chapterKey, chapterInfo }: ChapterUiProps) => {
     <div>
       <h1 className="p-2 flex gap-1 items-center font-medium border-b border-input">
         Topic Roadmap
-        {chapterInfo?.details && (
+        {chapterInfo?.details?.chapter_topics && (
           <FaEdit
             className="cursor-pointer"
-            onClick={() => setOpenTopicsModal(true)}
+            // onClick={() => setOpenTopicsModal(true)}
+            onClick={() => topicEditingDialogRef.current?.openDialog()}
           />
         )}
       </h1>
       {/* <Dialog open={openTopicsModal} onOpenChange={setOpenTopicsModal}>
         <DialogTrigger asChild>
-          {!chapterInfo?.details && (
+          {!chapterInfo?.details?.chapter_topics && (
             <Button className="bg-bluish text-center flex gap-2 mx-auto mt-3 hover:bg-background hover:text-white">
               Initialize Topics
             </Button>
@@ -252,8 +254,8 @@ const ChapterUi = ({ novelId, chapterKey, chapterInfo }: ChapterUiProps) => {
               onSubmit={handleSubmit(onSubmit)}
               className="space-y-4 w-1/2 relative p-[2.5rem]"
             >
-              {chapterTopics ? (
-                chapterTopics.map((topic, topicIndex) => (
+              {topicsData ? (
+                topicsData.topics.map((topic, topicIndex) => (
                   <div key={topicIndex}>
                     <div className="bg-[#0C0C0D] border relative border-input rounded-md p-4">
                       <IoAddCircle className="text-white text-2xl absolute top-[50%] left-[-30px]" />
@@ -279,14 +281,12 @@ const ChapterUi = ({ novelId, chapterKey, chapterInfo }: ChapterUiProps) => {
                         <Controller
                           name={`topics.${topicIndex}.abstract`}
                           control={control}
-                          render={({ field }) => {
-                            return (
-                              <textarea
-                                {...field}
-                                className="bg-[#150F2D] p-2 rounded-sm text-white w-full"
-                              />
-                            );
-                          }}
+                          render={({ field }) => (
+                            <textarea
+                              {...field}
+                              className="bg-[#150F2D] p-2 rounded-sm text-white w-full"
+                            />
+                          )}
                         />
                       </div>
                     </div>
@@ -308,18 +308,12 @@ const ChapterUi = ({ novelId, chapterKey, chapterInfo }: ChapterUiProps) => {
                               <Controller
                                 name={`topics.${topicIndex}.topic_points.${pointIndex}.point_content`}
                                 control={control}
-                                render={({ field }) => {
-                                  console.log(
-                                    "🚀 ~ ChapterUi ~ field ~ point_content",
-                                    field
-                                  );
-                                  return (
-                                    <input
-                                      {...field}
-                                      className="bg-[#150F2D] p-2 rounded-sm text-white w-full"
-                                    />
-                                  );
-                                }}
+                                render={({ field }) => (
+                                  <input
+                                    {...field}
+                                    className="bg-[#150F2D] p-2 rounded-sm text-white w-full"
+                                  />
+                                )}
                               />
                             </div>
                           </div>
@@ -396,11 +390,13 @@ const ChapterUi = ({ novelId, chapterKey, chapterInfo }: ChapterUiProps) => {
               </Button>
             </div>
           </div>
-          <BalanceNotEnoughAlert />
         </DialogContent>
       </Dialog> */}
+
+      {/* // TODO 2024-07-02 not finished below */}
       <TopicEditingDialog
-        {...{ chapterInfo, openTopicsModal, setOpenTopicsModal }}
+        ref={topicEditingDialogRef}
+        {...{ novelId, chapterInfo }}
       />
     </div>
   );

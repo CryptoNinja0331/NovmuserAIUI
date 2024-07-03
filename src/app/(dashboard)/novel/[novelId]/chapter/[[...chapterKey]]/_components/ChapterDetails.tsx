@@ -22,10 +22,14 @@ const ChapterDetails = async ({
   console.log("🚀 ~ novelId:", novelId);
   console.log("🚀 ~ ChapterDetails ~ chapterKey:", chapterKey);
 
-  const chapterInfo = await getOrInitChapterInfo({
-    novelId,
-    chapterKey: chapterKey[0],
-  });
+  const chapterInfo = (
+    await getOrInitChapterInfo({
+      novelId,
+      chapterKey,
+    })
+  ).data!;
+
+  console.log("🚀 ~ chapterInfo:", chapterInfo);
 
   return (
     <div className="text-white relative h-full flex justify-between">
@@ -43,14 +47,14 @@ const ChapterDetails = async ({
           </div>
           <div>
             <ChapterUi
-              chapterInfo={chapterInfo.data!}
+              chapterInfo={chapterInfo}
               novelId={novelId}
               chapterKey={chapterKey}
             />
           </div>
 
           <div>
-            <TopicRoadMapUi chapterInfo={chapterInfo.data!} />
+            <TopicRoadMapUi chapterInfo={chapterInfo} />
           </div>
         </div>
       </div>
