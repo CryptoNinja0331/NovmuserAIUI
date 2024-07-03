@@ -1,8 +1,8 @@
-import NovelEditingArea from "@/app/(dashboard)/_component/ChapterEditingArea";
 import NovelSidebar from "@/components/singleNovel/NovelSidebar";
 import { getOrInitChapterInfo } from "@/lib/apiCall/server/getOrInitChapterInfo";
 import { getSingleNovel } from "@/lib/apiCall/server/getSingleNovel";
-import ChapterDetails from "./_components/ChapterDetails";
+import ChapterDetails from "./_components/Chapter/ChapterDetails";
+import NovelEditingArea from "./_components/Chapter/ChapterEditingArea";
 const page = async ({
   params,
 }: {

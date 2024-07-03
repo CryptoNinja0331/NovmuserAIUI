@@ -1,4 +1,4 @@
-import { TChapterChunk, TChapterInfo } from "@/lib/types/api/chapter";
+import { TChapterChunkDoc, TChapterInfo } from "@/lib/types/api/chapter";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
@@ -34,7 +34,7 @@ const useStreamedChunksStore = create(
         ) {
           return;
         }
-        const chapterChunks: TChapterChunk[] =
+        const chapterChunks: TChapterChunkDoc[] =
           chapterInfo.details.chapter_chunks;
         // Convert chapterChunks to streamedChunks
         const streamedChunks = chapterChunks.map((chunk) => ({

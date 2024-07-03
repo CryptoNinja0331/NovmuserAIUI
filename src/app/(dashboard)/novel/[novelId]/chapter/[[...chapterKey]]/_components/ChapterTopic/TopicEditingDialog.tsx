@@ -14,7 +14,11 @@ import { TChapterInfo, TChapterTopics } from "@/lib/types/api/chapter";
 import { Loader2 } from "lucide-react";
 import React, { MouseEventHandler } from "react";
 import { FaRobot, FaSave } from "react-icons/fa";
-import TopicEditingTree, { TTopicEditingTreeHandle } from "./TopicEditingTree";
+import TopicEditingTree, {
+  TOPIC_EDITING_TREE_ID,
+  TTopicEditingTreeHandle,
+} from "./TopicEditingTree";
+import { showErrorAlert } from "@/lib/alerts";
 
 export type TTopicEditingDialogProps = {
   novelId: string;
@@ -84,8 +88,18 @@ const TopicAiGenerationButton = ({
       e.preventDefault();
       setLoading(true);
       setTimeout(async () => {
-        await onClickGeneration?.();
-        setLoading(false);
+        try {
+          await onClickGeneration?.();
+        } catch (e) {
+          console.error("🚀 ~ handleAiGeneration ~ e:", e);
+          showErrorAlert({
+            title: "Failed to generate topics from AI",
+            text: "Please try again.",
+            target: `#${TOPIC_EDITING_TREE_ID}`,
+          });
+        } finally {
+          setLoading(false);
+        }
       }, timeout);
     },
     [onClickGeneration, timeout]
@@ -168,17 +182,15 @@ const TopicEditingDialog = React.forwardRef<
             chapterInfo={chapterInfo}
           />
         </SimpleBar>
-        <div className="">
-          <div className="flex items-center justify-end gap-4">
-            <SubmitButton onClick={handleSubmit} timeout={600} />
-            {/* Only support topics ai generation at the initialization step */}
-            {showTopicsInitialization && (
-              <TopicAiGenerationButton
-                onClickGeneration={handleAiGeneration}
-                timeout={600}
-              />
-            )}
-          </div>
+        <div className="flex items-center justify-end gap-4">
+          <SubmitButton onClick={handleSubmit} timeout={600} />
+          {/* Only support topics ai generation at the initialization step */}
+          {showTopicsInitialization && (
+            <TopicAiGenerationButton
+              onClickGeneration={handleAiGeneration}
+              timeout={600}
+            />
+          )}
         </div>
         <BalanceNotEnoughAlert />
       </DialogContent>
