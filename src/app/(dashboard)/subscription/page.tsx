@@ -1,14 +1,12 @@
 import CreatePayment from "@/components/CreatePayment";
 import { getPrices } from "@/lib/apiCall/server/getPrices";
-import {
-  TSubscriptionInfo,
-  getUserSubscriptionList,
-} from "@/lib/apiCall/server/getUserSubscriptionList";
+import { getUserSubscriptionList } from "@/lib/apiCall/server/getUserSubscriptionList";
 import { FC } from "react";
 import { FaLock } from "react-icons/fa";
 import { TiTick } from "react-icons/ti";
 import { BiSolidCrown } from "react-icons/bi";
 import { TSubscriptionPlan } from "@/lib/types/api/payment";
+import { TSubscriptionInfo } from "@/lib/types/api/subscription";
 
 const SubscriptionServiceItem: FC<{
   svc: string;

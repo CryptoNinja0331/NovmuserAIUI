@@ -8,8 +8,8 @@ import { TChapterInfo } from "@/lib/types/api/chapter";
 import React, { FC } from "react";
 import SimpleBar from "simplebar-react";
 import { shallow } from "zustand/shallow";
-import StreamedChunk from "./StreamedChunk";
-import Terminal from "./Terminal";
+import StreamedChunk from "../ChapterChunk/StreamedChunk";
+import Terminal from "../ChapterChunk/Terminal";
 
 export type TNovelEditingAreaProps = {
   novelId: string;
