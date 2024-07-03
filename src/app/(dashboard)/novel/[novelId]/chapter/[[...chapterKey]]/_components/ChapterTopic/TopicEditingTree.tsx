@@ -556,6 +556,8 @@ export type TTopicEditingTreeHandle = {
   fillChapterTopics: (chapterTopics: TChapterTopics) => void;
 };
 
+export const TOPIC_EDITING_TREE_ID = "topicEditingTree";
+
 const TopicEditingTree = React.forwardRef<
   TTopicEditingTreeHandle,
   TTopicEditingTreeProps
@@ -597,7 +599,7 @@ const TopicEditingTree = React.forwardRef<
       });
     }
     return initTreeData;
-  }, [chapterInfo?.details?.chapter_topics.topics, editingMode]);
+  }, [chapterInfo?.details?.chapter_topics?.topics, editingMode]);
 
   const initChapterTopicsEditDto = React.useMemo<TChapterTopicsEditDto>(() => {
     if (editingMode === "add") {
@@ -1016,7 +1018,7 @@ const TopicEditingTree = React.forwardRef<
             showErrorAlert({
               title: "Deletion Failed",
               text: "At least one topic is required.",
-              target: "#topicEditingTree",
+              target: `#${TOPIC_EDITING_TREE_ID}`,
             });
             return false;
           }
@@ -1028,7 +1030,7 @@ const TopicEditingTree = React.forwardRef<
             showErrorAlert({
               title: "Deletion Failed",
               text: "At least one topic point is required for each topic.",
-              target: "#topicEditingTree",
+              target: `#${TOPIC_EDITING_TREE_ID}`,
             });
             return false;
           }
@@ -1188,7 +1190,10 @@ const TopicEditingTree = React.forwardRef<
   );
 
   return (
-    <div className={cn("flex justify-center", className)} id="topicEditingTree">
+    <div
+      className={cn("flex justify-center", className)}
+      id={TOPIC_EDITING_TREE_ID}
+    >
       <Tree
         ref={treeRef}
         data={topicTreeData}

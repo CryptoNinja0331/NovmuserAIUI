@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { getOrInitChapterInfo } from "@/lib/apiCall/server/getOrInitChapterInfo";
 import ChapterUi from "./ChapterUi";
-import TopicRoadMapUi from "./TopicRoadMapUi";
+import TopicRoadMapUi from "../ChapterTopic/TopicRoadMapUi";
 
 export type TChapterDetailsProps = {
   novelId: string;
@@ -46,11 +46,7 @@ const ChapterDetails = async ({
             {decodeURIComponent(chapterTitle)}
           </div>
           <div>
-            <ChapterUi
-              chapterInfo={chapterInfo}
-              novelId={novelId}
-              chapterKey={chapterKey}
-            />
+            <ChapterUi chapterInfo={chapterInfo} novelId={novelId} />
           </div>
 
           <div>
