@@ -1,10 +1,12 @@
+'use client'
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 
 import Link from "next/link";
 
 import ChapterUi from "./ChapterUi";
 import TopicRoadMapUi from "../ChapterTopic/TopicRoadMapUi";
-import { TChapterInfo } from "@/lib/types/api/chapter";
+import React, { useEffect } from 'react';
+import { TChapterInfo } from '@/lib/types/api/chapter';
 
 export type TChapterDetailsProps = {
   novelId: string;
@@ -13,15 +15,31 @@ export type TChapterDetailsProps = {
   chapterInfo: TChapterInfo;
 };
 
-const ChapterDetails = async ({
+const ChapterDetails = ({
   novelId,
+  chapterKey,
   chapterNumber,
   chapterTitle,
-  chapterInfo,
+  chapterInfo
 }: TChapterDetailsProps) => {
   console.log("🚀 ~ novelId:", novelId);
-  console.log("🚀 ~ ChapterDetails ~ chapterKey:", chapterInfo.chapter_key);
-
+  console.log("🚀 ~ ChapterDetails ~ chapterKey:", chapterKey);
+  console.log("🚀 ~ ChapterDetails ~ chapterInfo:", chapterInfo);
+  const [currentTopicId, updateCurrentTopicId ] = React.useState('')
+  const [currentPointerId, updateCurrentPointerId ] = React.useState('')
+  console.log("🚀 ~ chapterInfo:", chapterInfo);
+  const updateCurrentId = (topicId, pointerId) => {
+    console.log(topicId, pointerId)
+    updateCurrentPointerId(pointerId)
+    updateCurrentTopicId(topicId)
+  }
+  useEffect(() => {
+    if (chapterInfo) {
+      console.log(chapterInfo, 'chapterInfo?.metadata?.topic_mapping?.topic_point_id')
+      updateCurrentTopicId(chapterInfo?.metadata?.topic_mapping?.topic_point_id)
+      updateCurrentPointerId(chapterInfo?.metadata?.topic_mapping?.topic_id)
+    }
+  }, [chapterInfo])
   return (
     <div className="text-white relative h-full flex justify-between">
       <div className=" inline-block w-[16rem] h-full p-3">
@@ -37,11 +55,22 @@ const ChapterDetails = async ({
             {decodeURIComponent(chapterTitle)}
           </div>
           <div>
-            <ChapterUi chapterInfo={chapterInfo} novelId={novelId} />
+            <ChapterUi
+              chapterInfo={chapterInfo}
+              novelId={novelId}
+              currentTopicId={currentTopicId}
+              currentPointerId={currentPointerId}
+              updateCurrentId={updateCurrentId}
+            />
           </div>
 
-          <div>
-            <TopicRoadMapUi chapterInfo={chapterInfo} />
+          <div className="test" pointer={currentPointerId} topicId={currentTopicId}>
+            <TopicRoadMapUi
+              chapterInfo={chapterInfo}
+              currentTopicId={currentTopicId}
+              currentPointerId={currentPointerId}
+              updateCurrentId={updateCurrentId}
+            />
           </div>
         </div>
       </div>

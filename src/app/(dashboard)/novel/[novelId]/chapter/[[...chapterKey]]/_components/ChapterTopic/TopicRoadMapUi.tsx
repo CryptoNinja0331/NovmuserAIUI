@@ -4,30 +4,22 @@ import SimpleBar from "simplebar-react";
 
 interface TopicRoadMapUiProps {
   chapterInfo: TChapterInfo;
+  currentTopicId: string;
+  currentPointerId: string;
+  updateCurrentId: (topicId: string, pointerId: string) => void
 }
 
-const TopicRoadMapUi = ({ chapterInfo }: TopicRoadMapUiProps) => {
+const TopicRoadMapUi = ({ chapterInfo, currentPointerId, currentTopicId, updateCurrentId }: TopicRoadMapUiProps) => {
   // const allChunkData = useAppSelector((state: any) => state.chunkData.allChunkData);
-  console.log(chapterInfo, "from roadmap");
+  console.log(chapterInfo, currentPointerId, currentTopicId, "from roadmap");
   const getTopicPointColor = (topicId: string, pointId: string) => {
     console.log(pointId);
-    const activatedPoint = chapterInfo?.details?.chapter_chunks?.find(
-      (data: any) =>
-        data?.metadata?.topic_mapping?.topic_id === topicId &&
-        data?.metadata?.topic_mapping?.topic_point_id === pointId
-    );
+    const activatedPoint = topicId == currentTopicId && pointId == currentPointerId
     return activatedPoint ? "bg-purple-500 text-white" : "";
   };
 
   const getTopicColor = (topicId: string, topicPoints: any[]) => {
-    const isAnyTopicPointActivated = topicPoints.some(
-      (point) =>
-        chapterInfo?.details?.chapter_chunks?.find(
-          (data: any) =>
-            data?.metadata?.topic_mapping?.topic_id === topicId &&
-            data?.metadata?.topic_mapping?.topic_point_id === point.id
-        ) !== undefined
-    );
+    const isAnyTopicPointActivated = topicId == currentTopicId;
     return isAnyTopicPointActivated ? "bg-purple-500 text-white" : "";
   };
 
@@ -51,6 +43,7 @@ const TopicRoadMapUi = ({ chapterInfo }: TopicRoadMapUiProps) => {
             </div>
             {item.topic_points.map((point) => (
               <div
+                onClick={() => updateCurrentId(item.id, point.id)}
                 key={point.id}
                 className="flex mb-2 justify-end items-center"
               >
@@ -58,7 +51,7 @@ const TopicRoadMapUi = ({ chapterInfo }: TopicRoadMapUiProps) => {
                   className={`${getTopicPointColor(
                     item.id,
                     point.id
-                  )} bg-[#0C0C0D] w-[70%] point border relative topics-point border-input rounded-md p-2`}
+                  )} bg-[#0C0C0D] w-[70%] cursor-pointer border relative topics-point border-input rounded-md p-2`}
                 >
                   <div className="text-center">
                     <h1 className="font-medium ">Topics point</h1>
