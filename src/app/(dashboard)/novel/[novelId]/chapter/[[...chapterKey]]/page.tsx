@@ -36,8 +36,4 @@ const page = async ({
   );
 };
 
-export const refreshChapterInfo = () => {
-  revalidateTag("chapterInfo");
-};
-
 export default page;
