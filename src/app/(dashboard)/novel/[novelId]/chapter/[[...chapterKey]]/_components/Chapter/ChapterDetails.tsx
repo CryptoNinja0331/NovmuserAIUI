@@ -1,13 +1,13 @@
-'use client'
+"use client";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 
 import Link from "next/link";
 
 import ChapterUi from "./ChapterUi";
 import TopicRoadMapUi from "../ChapterTopic/TopicRoadMapUi";
-import React, { useEffect } from 'react';
-import { TChapterInfo } from '@/lib/types/api/chapter';
-import { ChapterContext } from '../../context/useChapterContext'
+import React, { useEffect } from "react";
+import { TChapterInfo } from "@/lib/types/api/chapter";
+import { ChapterContext } from "../../context/useChapterContext";
 export type TChapterDetailsProps = {
   novelId: string;
   chapterNumber: string;
@@ -17,21 +17,23 @@ export type TChapterDetailsProps = {
 
 const ChapterDetails = ({
   novelId,
-  chapterKey,
   chapterNumber,
   chapterTitle,
-  chapterInfo
+  chapterInfo,
 }: TChapterDetailsProps) => {
   // console.log("🚀 ~ novelId:", novelId);
   // console.log("🚀 ~ ChapterDetails ~ chapterKey:", chapterKey);
   // console.log("🚀 ~ ChapterDetails ~ chapterInfo:", chapterInfo);
-  const { updateCurrentId } = React.useContext(ChapterContext)
+  const { updateCurrentId } = React.useContext(ChapterContext);
 
   useEffect(() => {
     if (chapterInfo) {
-      updateCurrentId(chapterInfo?.metadata?.topic_mapping?.topic_id, chapterInfo?.metadata?.topic_mapping?.topic_point_id)
+      updateCurrentId(
+        chapterInfo?.metadata?.topic_mapping?.topic_id,
+        chapterInfo?.metadata?.topic_mapping?.topic_point_id
+      );
     }
-  }, [chapterInfo])
+  }, [chapterInfo]);
   return (
     <div className="text-white relative h-full flex justify-between">
       <div className=" inline-block w-[16rem] h-full p-3">
@@ -47,16 +49,11 @@ const ChapterDetails = ({
             {decodeURIComponent(chapterTitle)}
           </div>
           <div>
-            <ChapterUi
-              chapterInfo={chapterInfo}
-              novelId={novelId}
-            />
+            <ChapterUi chapterInfo={chapterInfo} novelId={novelId} />
           </div>
 
           <div>
-            <TopicRoadMapUi
-              chapterInfo={chapterInfo}
-            />
+            <TopicRoadMapUi chapterInfo={chapterInfo} />
           </div>
         </div>
       </div>
