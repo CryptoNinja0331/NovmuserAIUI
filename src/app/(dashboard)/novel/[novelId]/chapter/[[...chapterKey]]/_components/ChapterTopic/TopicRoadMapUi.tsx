@@ -6,9 +6,6 @@ import { ChapterContext } from '../../context/useChapterContext';
 
 interface TopicRoadMapUiProps {
   chapterInfo: TChapterInfo;
-  currentTopicId: string;
-  currentPointerId: string;
-  updateCurrentId: (topicId: string, pointerId: string) => void
 }
 
 const TopicRoadMapUi = ({ chapterInfo}: TopicRoadMapUiProps) => {
