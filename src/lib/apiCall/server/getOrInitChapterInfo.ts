@@ -4,6 +4,9 @@ import { POST, TResponseDto } from "@/lib/http";
 import { TChapterInfo } from "@/lib/types/api/chapter";
 import { getChapterInfo } from "./getChapterInfo";
 import { getToken } from "./getToken";
+import { revalidateTag } from "next/cache";
+
+const CHAPTER_INFO_CACHE_TAG = "chapterInfo";
 
 export const getOrInitChapterInfo = async ({
   novelId,
@@ -22,7 +25,7 @@ export const getOrInitChapterInfo = async ({
         token: await getToken(),
         config: {
           next: {
-            tags: ["chapterInfo"],
+            tags: [CHAPTER_INFO_CACHE_TAG],
           },
         },
       });
@@ -31,4 +34,8 @@ export const getOrInitChapterInfo = async ({
       throw e;
     }
   }
+};
+
+export const refreshChapterInfo = async () => {
+  revalidateTag(CHAPTER_INFO_CACHE_TAG);
 };
