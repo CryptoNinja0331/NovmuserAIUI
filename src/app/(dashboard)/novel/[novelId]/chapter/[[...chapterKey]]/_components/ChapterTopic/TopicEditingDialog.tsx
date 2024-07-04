@@ -19,6 +19,7 @@ import TopicEditingTree, {
   TTopicEditingTreeHandle,
 } from "./TopicEditingTree";
 import { showErrorAlert } from "@/lib/alerts";
+import { refreshChapterInfo } from "@/lib/apiCall/server/getOrInitChapterInfo";
 
 export type TTopicEditingDialogProps = {
   novelId: string;
@@ -32,7 +33,7 @@ export type TTopicEditingDialogHandle = {
 
 type TSubmitButtonProps = {
   timeout?: number | undefined;
-  onClick: MouseEventHandler | undefined;
+  onClick: () => Promise<void>;
 };
 const SubmitButton = ({ timeout, onClick }: TSubmitButtonProps) => {
   const [submitted, setSubmitted] = React.useState<boolean>(false);
@@ -41,8 +42,8 @@ const SubmitButton = ({ timeout, onClick }: TSubmitButtonProps) => {
     (e) => {
       e.preventDefault();
       setSubmitted(true);
-      setTimeout(() => {
-        onClick?.(e);
+      setTimeout(async () => {
+        await onClick?.();
         setSubmitted(false);
       }, timeout);
     },
@@ -145,9 +146,9 @@ const TopicEditingDialog = React.forwardRef<
     []
   );
 
-  const handleSubmit = React.useCallback(() => {
+  const handleSubmit = React.useCallback(async () => {
     if (topicEditingTreeRef.current) {
-      topicEditingTreeRef.current?.submitForm();
+      await topicEditingTreeRef.current?.submitForm();
       setOpen(false);
     }
   }, []);
