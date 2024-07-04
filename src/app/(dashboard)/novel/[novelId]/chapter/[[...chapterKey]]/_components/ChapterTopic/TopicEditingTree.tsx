@@ -32,8 +32,8 @@ import { cloneDeep } from "lodash";
 import { showErrorAlert } from "@/lib/alerts";
 import useClientToken from "@/hooks/useClientToken";
 import useClientHttp from "@/hooks/useClientHttp";
-import { todo } from "node:test";
 import { Input } from "@/components/ui/input";
+import { refreshChapterInfo } from "@/lib/apiCall/server/getOrInitChapterInfo";
 
 type TTopicTreeNodeType = "topic" | "topicPoint";
 
@@ -552,7 +552,7 @@ type TTopicEditingTreeProps = {
 };
 
 export type TTopicEditingTreeHandle = {
-  submitForm: () => Promise<void> | void;
+  submitForm: () => Promise<void>;
   fillChapterTopics: (chapterTopics: TChapterTopics) => void;
 };
 
@@ -696,12 +696,13 @@ const TopicEditingTree = React.forwardRef<
     () => ({
       submitForm: async () => {
         const formData = chapterTopicsEditDtoFormRef.current;
-        console.log("🚀 ~ formData:", formData);
+        console.log("🚀 submitForm ~ formData:", formData);
         await put({
           url: `/chapter/edit/${chapterInfo.chapter_key}/topics`,
           token: await getClientToken(),
           data: formData,
         });
+        await refreshChapterInfo();
       },
       fillChapterTopics: handleFillChapterTopics,
     }),
