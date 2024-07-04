@@ -1,6 +1,8 @@
 "use client";
+import React from 'react';
 import { TChapterInfo } from "@/lib/types/api/chapter";
 import SimpleBar from "simplebar-react";
+import { ChapterContext } from '../../context/useChapterContext';
 
 interface TopicRoadMapUiProps {
   chapterInfo: TChapterInfo;
@@ -9,11 +11,10 @@ interface TopicRoadMapUiProps {
   updateCurrentId: (topicId: string, pointerId: string) => void
 }
 
-const TopicRoadMapUi = ({ chapterInfo, currentPointerId, currentTopicId, updateCurrentId }: TopicRoadMapUiProps) => {
-  // const allChunkData = useAppSelector((state: any) => state.chunkData.allChunkData);
+const TopicRoadMapUi = ({ chapterInfo}: TopicRoadMapUiProps) => {
+  const { currentPointerId, currentTopicId, updateCurrentId } = React.useContext(ChapterContext)
   console.log(chapterInfo, currentPointerId, currentTopicId, "from roadmap");
   const getTopicPointColor = (topicId: string, pointId: string) => {
-    console.log(pointId);
     const activatedPoint = topicId == currentTopicId && pointId == currentPointerId
     return activatedPoint ? "bg-purple-500 text-white" : "";
   };
