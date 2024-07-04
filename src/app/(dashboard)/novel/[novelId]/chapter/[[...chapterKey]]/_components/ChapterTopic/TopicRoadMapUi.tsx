@@ -1,18 +1,21 @@
 "use client";
-import React from 'react';
+import React from "react";
 import { TChapterInfo } from "@/lib/types/api/chapter";
 import SimpleBar from "simplebar-react";
-import { ChapterContext } from '../../context/useChapterContext';
+import { ChapterContext } from "../../context/useChapterContext";
+import TopicRoadMapTree from "./TopicRoadMapTree";
 
 interface TopicRoadMapUiProps {
   chapterInfo: TChapterInfo;
 }
 
-const TopicRoadMapUi = ({ chapterInfo}: TopicRoadMapUiProps) => {
-  const { currentPointerId, currentTopicId, updateCurrentId } = React.useContext(ChapterContext)
+const TopicRoadMapUi = ({ chapterInfo }: TopicRoadMapUiProps) => {
+  const { currentPointerId, currentTopicId, updateCurrentId } =
+    React.useContext(ChapterContext);
   console.log(chapterInfo, currentPointerId, currentTopicId, "from roadmap");
   const getTopicPointColor = (topicId: string, pointId: string) => {
-    const activatedPoint = topicId == currentTopicId && pointId == currentPointerId
+    const activatedPoint =
+      topicId == currentTopicId && pointId == currentPointerId;
     return activatedPoint ? "bg-purple-500 text-white" : "";
   };
 
@@ -61,6 +64,7 @@ const TopicRoadMapUi = ({ chapterInfo}: TopicRoadMapUiProps) => {
           </div>
         ))}
       </div>
+      <TopicRoadMapTree />
     </SimpleBar>
   );
 };
