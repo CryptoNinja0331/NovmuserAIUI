@@ -1,9 +1,8 @@
 import NovelSidebar from "@/components/singleNovel/NovelSidebar";
 import { getOrInitChapterInfo } from "@/lib/apiCall/server/getOrInitChapterInfo";
 import { getSingleNovel } from "@/lib/apiCall/server/getSingleNovel";
-import ChapterDetails from "./_components/Chapter/ChapterDetails";
-import NovelEditingArea from "./_components/Chapter/ChapterEditingArea";
 import { revalidatePath, revalidateTag } from "next/cache";
+import ChapterWrapper from './_components/chapterWrapper';
 const page = async ({
   params,
 }: {
@@ -24,19 +23,11 @@ const page = async ({
   return (
     <div className="h-[calc(100%-50px)] relative">
       <div className="text-white relative h-full flex justify-between ">
-        <div className="inline-block w-[16rem] h-full border-r border-input p-3">
-          <ChapterDetails
-            {...{
-              novelId: params.novelId,
-              chapterNumber: chapterKeySegments[1],
-              chapterTitle: chapterKeySegments[2],
-              chapterInfo,
-            }}
-          />
-        </div>
-
-        <NovelEditingArea novelId={params.novelId} chapterInfo={chapterInfo} />
-
+        <ChapterWrapper
+          chapterInfo={chapterInfo}
+          chapterKey={params.chapterKey}
+          novelId={params.novelId}
+        />
         <div className="relative mt-2">
           <NovelSidebar novelDetails={response.data} />
         </div>

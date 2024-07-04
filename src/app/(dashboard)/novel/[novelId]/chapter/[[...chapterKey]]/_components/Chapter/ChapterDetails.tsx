@@ -7,7 +7,7 @@ import ChapterUi from "./ChapterUi";
 import TopicRoadMapUi from "../ChapterTopic/TopicRoadMapUi";
 import React, { useEffect } from 'react';
 import { TChapterInfo } from '@/lib/types/api/chapter';
-
+import { ChapterContext } from '../../context/useChapterContext'
 export type TChapterDetailsProps = {
   novelId: string;
   chapterNumber: string;
@@ -22,22 +22,14 @@ const ChapterDetails = ({
   chapterTitle,
   chapterInfo
 }: TChapterDetailsProps) => {
-  console.log("🚀 ~ novelId:", novelId);
-  console.log("🚀 ~ ChapterDetails ~ chapterKey:", chapterKey);
-  console.log("🚀 ~ ChapterDetails ~ chapterInfo:", chapterInfo);
-  const [currentTopicId, updateCurrentTopicId ] = React.useState('')
-  const [currentPointerId, updateCurrentPointerId ] = React.useState('')
-  console.log("🚀 ~ chapterInfo:", chapterInfo);
-  const updateCurrentId = (topicId, pointerId) => {
-    console.log(topicId, pointerId)
-    updateCurrentPointerId(pointerId)
-    updateCurrentTopicId(topicId)
-  }
+  // console.log("🚀 ~ novelId:", novelId);
+  // console.log("🚀 ~ ChapterDetails ~ chapterKey:", chapterKey);
+  // console.log("🚀 ~ ChapterDetails ~ chapterInfo:", chapterInfo);
+  const { updateCurrentId } = React.useContext(ChapterContext)
+
   useEffect(() => {
     if (chapterInfo) {
-      console.log(chapterInfo, 'chapterInfo?.metadata?.topic_mapping?.topic_point_id')
-      updateCurrentTopicId(chapterInfo?.metadata?.topic_mapping?.topic_point_id)
-      updateCurrentPointerId(chapterInfo?.metadata?.topic_mapping?.topic_id)
+      updateCurrentId(chapterInfo?.metadata?.topic_mapping?.topic_id, chapterInfo?.metadata?.topic_mapping?.topic_point_id)
     }
   }, [chapterInfo])
   return (
@@ -58,18 +50,12 @@ const ChapterDetails = ({
             <ChapterUi
               chapterInfo={chapterInfo}
               novelId={novelId}
-              currentTopicId={currentTopicId}
-              currentPointerId={currentPointerId}
-              updateCurrentId={updateCurrentId}
             />
           </div>
 
-          <div className="test" pointer={currentPointerId} topicId={currentTopicId}>
+          <div>
             <TopicRoadMapUi
               chapterInfo={chapterInfo}
-              currentTopicId={currentTopicId}
-              currentPointerId={currentPointerId}
-              updateCurrentId={updateCurrentId}
             />
           </div>
         </div>
