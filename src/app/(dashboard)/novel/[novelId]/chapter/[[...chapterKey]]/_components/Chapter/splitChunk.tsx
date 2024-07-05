@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { TTopicMapping } from "@/lib/types/api/chapter";
 import useStreamedChunksStore from '@/lib/store/chapterChunks/streamedChunksStore';
 import { TStreamedChunk } from '@/lib/store/chapterChunks/streamedChunksStore';
 import { getUUid } from '@/lib/utils';
+import { ChapterContext } from '../../context/useChapterContext';
 interface ISplitChunkProps {
 	mapping: TTopicMapping;
 	index: number; // current chunk isAfter chunk index
@@ -16,9 +17,10 @@ interface ISplitChunkProps {
  */
 const SplitChunk = ({ mapping = {}, index }: ISplitChunkProps) => {
 	const [editable, updateEditable] = useState(false)
-	const { topic_id = '', topic_point_id = ''} = mapping
+	const { topic_id = '', topic_point_id = ''} = mapping.topic_mapping
 	const [chunkContent, updateChunkContent ] = useState('')
 	const { appendChunkWithContent } = useStreamedChunksStore()
+	const { updateCurrentId } = useContext(ChapterContext)
 	const uuid = getUUid()
 	const addChunk = () => {
 		updateEditable(true)
@@ -41,6 +43,8 @@ const SplitChunk = ({ mapping = {}, index }: ISplitChunkProps) => {
 		appendChunkWithContent(chunk, index)
 		updateChunkContent('')
 		document.getElementById(uuid).innerHTML = ''
+		console.log(topic_id, topic_point_id, 'ssss')
+		updateCurrentId(topic_id, topic_point_id)
 	}
 
 	const onInput = e => {
