@@ -10,17 +10,16 @@ import SimpleBar from "simplebar-react";
 import { shallow } from "zustand/shallow";
 import StreamedChunk from "../ChapterChunk/StreamedChunk";
 import Terminal from "../ChapterChunk/Terminal";
+import SplitChunk from './splitChunk';
 
 export type TNovelEditingAreaProps = {
   novelId: string;
   chapterInfo: TChapterInfo;
-  // fetchChapterInfo: () => Promise<TChapterInfo>;
 };
 
 const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
   novelId,
   chapterInfo,
-  // fetchChapterInfo,
 }) => {
   const [curChapterInfo, setCurChapterInfo] =
     React.useState<TChapterInfo>(chapterInfo);
@@ -44,6 +43,7 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
   }, [initChunksFromChapterInfo, curChapterInfo]);
 
   React.useEffect(() => {
+    console.log(streamedChunks, 'streamedChunks')
     const simpleBarCur: any = simpleBarRef.current;
     const unSub = useStreamedChunksStore.subscribe(
       (state) => state.currentIndex,
@@ -87,18 +87,28 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
       >
         <div className="overflow-auto">
           <div className="py-2 px-4">
-            {streamedChunks.map((chunk, index) => (
-              <StreamedChunk
-                key={index}
-                index={index}
-                content={chunk.content}
-              />
-            ))}
+            {streamedChunks.map((chunk, index) => {
+              console.log(chunk, '-----')
+              return (
+                <React.Fragment>
+                  <StreamedChunk
+                    mapping={chunk.metadata}
+                    key={index}
+                    index={index}
+                    content={chunk.content}
+                  />
+                  <SplitChunk
+                    mapping={chunk.metadata}
+                    key={index}
+                    index={index}
+                  />
+                </React.Fragment>
+              )
+            })}
           </div>
         </div>
       </SimpleBar>
       <Terminal
-        // chapterInfo={chapterInfo}
         chapterInfo={curChapterInfo}
         chapterKey={chapterInfo.chapter_key}
         className="fixed bottom-1"
