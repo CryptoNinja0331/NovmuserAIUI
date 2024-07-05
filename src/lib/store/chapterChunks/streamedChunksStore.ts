@@ -1,10 +1,12 @@
 import { TChapterChunkDoc, TChapterInfo } from "@/lib/types/api/chapter";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-
+import { TChapterChunkMetaData } from '@/types/api/chapter';
+import { cloneDeep } from '../../utils';
 export type TStreamedChunk = {
   content: string;
-  isStreaming: boolean;
+  isStreaming: boolean; // 判断是否正在流式输出过程中
+  metadata: TChapterChunkMetaData
 };
 
 type TStreamedChunksState = {
@@ -16,6 +18,8 @@ type TStreamedChunksState = {
 type TStreamedChunksAction = {
   initChunksFromChapterInfo: (chapterInfo: TChapterInfo) => void;
   appendChunk: (isStreaming?: boolean) => void;
+  appendChunkWithContent: (chunk: TStreamedChunk, index: number) => void; // 手动添加chunk
+  updateChunkContent: (content: string, index: number) => void;
   appendChunkContent: (nextText: string, isFinal?: boolean) => void;
   setIsStreaming: (isStreaming: boolean) => void;
   reset: () => void;
@@ -40,6 +44,7 @@ const useStreamedChunksStore = create(
         const streamedChunks = chapterChunks.map((chunk) => ({
           isStreaming: false,
           content: chunk.chunk_content,
+          metadata: chunk.metadata
         }));
         set({
           currentChunk: streamedChunks[streamedChunks.length - 1],
@@ -57,6 +62,33 @@ const useStreamedChunksStore = create(
           currentIndex: state.streamedChunks.length,
           streamedChunks: [...state.streamedChunks, newChunk],
         }));
+      },
+      updateChunkContent: (content, index) => {
+        const chunkList = get().streamedChunks;
+        const copyChunk = cloneDeep(chunkList);
+        if (index > copyChunk.length - 1) return;
+        const item = copyChunk[index]
+        item.content = content
+        copyChunk.splice(index, 1, item)
+        set({
+          currentChunk: item,
+          currentIndex: index,
+          streamedChunks: copyChunk
+        })
+      },
+      appendChunkWithContent: (chunk, index) => {
+        const chunkList = get().streamedChunks;
+        console.log(chunkList)
+        const copyChunk = cloneDeep(chunkList)
+        console.log(copyChunk)
+        if (!chunk.content || index>copyChunk.length - 1) return;
+        copyChunk.splice(index + 1, 0, chunk)
+        console.log(copyChunk)
+        set(state => ({
+          currentChunk: chunk,
+          streamedChunks: copyChunk,
+          currentIndex: index + 1
+        }))
       },
       appendChunkContent: (nextText: string, isFinal: boolean = false) => {
         const targetChunk = get().currentChunk;
