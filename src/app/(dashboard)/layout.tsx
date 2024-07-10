@@ -8,6 +8,7 @@ import "../globals.css";
 import style from "../style.module.css";
 import { ReactQueryClientProvider } from "./ReactQueryClientProvider";
 import StoreProvider from "./StoreProvider";
+import { TooltipProvider } from "@radix-ui/react-tooltip";
 export const metadata: Metadata = {
   title: "Your Personal AI Novel Writer",
   description: "Your Personal AI Novel Writer",

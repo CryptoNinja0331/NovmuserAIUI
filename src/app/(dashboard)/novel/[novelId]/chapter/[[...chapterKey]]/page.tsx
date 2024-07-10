@@ -2,7 +2,7 @@ import NovelSidebar from "@/components/singleNovel/NovelSidebar";
 import { getOrInitChapterInfo } from "@/lib/apiCall/server/getOrInitChapterInfo";
 import { getSingleNovel } from "@/lib/apiCall/server/getSingleNovel";
 import { revalidatePath, revalidateTag } from "next/cache";
-import ChapterWrapper from './_components/chapterWrapper';
+import ChapterWrapper from "./_components/chapterWrapper";
 const page = async ({
   params,
 }: {
@@ -22,7 +22,7 @@ const page = async ({
 
   return (
     <div className="h-[calc(100%-50px)] relative">
-      <div className="text-white relative h-full flex justify-between ">
+      <div className="text-white relative h-full flex justify-between">
         <ChapterWrapper
           chapterInfo={chapterInfo}
           chapterKey={params.chapterKey}
