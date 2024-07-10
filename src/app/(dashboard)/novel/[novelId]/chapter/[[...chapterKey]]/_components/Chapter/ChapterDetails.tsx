@@ -33,17 +33,17 @@ const ChapterDetails = ({
         chapterInfo?.metadata?.topic_mapping?.topic_point_id
       );
     }
-  }, [chapterInfo]);
+  }, [chapterInfo, updateCurrentId]);
   return (
     <div className="text-white relative h-full flex justify-between">
-      <div className=" inline-block w-[16rem] h-full p-3">
+      <div className=" inline-block w-[16rem] h-full">
         <Link className="" href={`/novel/${novelId}`}>
-          <button className="flex bg-[#150F2D] mb-3 rounded-md p-1 text-sm items-center gap-1">
+          <button className="flex bg-[#150F2D] mb-2 rounded-md p-1 text-sm items-center gap-1">
             <IoArrowBackCircleOutline />
             <h1 className="">Chapter List</h1>
           </button>
         </Link>
-        <div className="mt-4 bg-[#150F2D]  rounded-md p-3">
+        <div className="mt-2 bg-[#150F2D]  rounded-md p-3">
           <div className="text-sm">
             {decodeURIComponent(chapterNumber)} :{" "}
             {decodeURIComponent(chapterTitle)}
@@ -51,10 +51,8 @@ const ChapterDetails = ({
           <div>
             <ChapterUi chapterInfo={chapterInfo} novelId={novelId} />
           </div>
-
-          <div>
-            <TopicRoadMapUi chapterInfo={chapterInfo} />
-          </div>
+          {/* Topic roadmap tree */}
+          <TopicRoadMapUi chapterInfo={chapterInfo} />
         </div>
       </div>
     </div>

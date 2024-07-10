@@ -26,6 +26,7 @@ import {
   TChapterTopicPointEditDto,
   TChapterTopics,
   TChapterTopicsEditDto,
+  TTopicResourceType,
 } from "@/lib/types/api/chapter";
 import { TFormEditingMode } from "@/lib/types/api/common";
 import { cloneDeep } from "lodash";
@@ -34,8 +35,6 @@ import useClientToken from "@/hooks/useClientToken";
 import useClientHttp from "@/hooks/useClientHttp";
 import { Input } from "@/components/ui/input";
 import { refreshChapterInfo } from "@/lib/apiCall/server/getOrInitChapterInfo";
-
-type TTopicTreeNodeType = "topic" | "topicPoint";
 
 type TNodeNameValue = {
   name: string;
@@ -46,7 +45,7 @@ type TTopicTreeNodeData = {
   id: string;
   name: string;
   hasPersisted: boolean;
-  nodeType: TTopicTreeNodeType;
+  nodeType: TTopicResourceType;
   children?: TTopicTreeNodeData[];
 };
 

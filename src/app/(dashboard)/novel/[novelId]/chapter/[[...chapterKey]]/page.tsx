@@ -22,7 +22,7 @@ const page = async ({
 
   return (
     <div className="h-[calc(100%-50px)] relative">
-      <div className="text-white relative h-full flex justify-between ">
+      <div className="text-white relative h-full flex justify-between">
         <ChapterWrapper
           chapterInfo={chapterInfo}
           chapterKey={params.chapterKey}
