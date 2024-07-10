@@ -39,7 +39,7 @@ const page = async ({ searchParams }: { searchParams: any }) => {
               key={item.id}
               className="flex justify-between gap-4 items-center"
             >
-              <Link href={`/${item.id}`} className="w-[95%]">
+              <Link href={`/novel/${item.id}`} className="w-[95%]">
                 <div className="text-[#817691]   font-medium capitalize cursor-pointer p-4 bg-[#160929] rounded-lg">
                   <div className="">
                     <h1 className="heading-color font-medium">
