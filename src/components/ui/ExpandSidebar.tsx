@@ -13,7 +13,7 @@ import { Button } from "./button";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import React from "react";
-import { useToken } from '@/lib/hooks'
+import { useToken } from "@/lib/hooks";
 
 interface NovelDetails {
   brain_storming: null;
@@ -49,16 +49,16 @@ const ExpandSidebar = () => {
     setIsExpanded(!isExpanded);
   };
 
-  const {token} = useToken()
+  const { token } = useToken();
   const {
     isLoading = true,
     data,
-    error = {}
+    error = {},
   } = useGetCreatedNovelQuery({
-      page_number: "1",
-      page_size: "8",
-      userId: token,
-    });
+    page_number: "1",
+    page_size: "8",
+    userId: token,
+  });
   useEffect(() => {
     if (!isLoading && data?.data?.records) {
       setNovelData(data.data.records);

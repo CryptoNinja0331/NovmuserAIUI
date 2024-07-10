@@ -15,7 +15,8 @@ export const clientApi = createApi({
       query: (arg) => {
         const { page_number, page_size, userId } = arg;
         if (!userId) {
-          return {}
+          // Return an invalid url
+          return { url: "" };
         }
         return {
           url: `novel/page?page_number=${page_number}&page_size=${page_size}`,
