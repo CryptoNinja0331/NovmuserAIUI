@@ -36,6 +36,8 @@ export type TChapterChunkDoc = {
   chunk_content: string;
 };
 
+export type TTopicResourceType = "topic" | "topicPoint";
+
 export type TChapterTopicPoint = {
   id: string;
   point_content: string;
