@@ -1,6 +1,8 @@
 "use client";
+import BalanceNotEnoughAlert from "@/components/alert/BalanceNotEnoughAlert";
 import { Button } from "@/components/ui/button";
 import { customRevalidateTag } from "@/lib/actions/revalidateTag";
+import emitter from "@/lib/emitters";
 import { useGetClientToken } from "@/lib/hooks";
 import { PATCH } from "@/lib/http";
 import useStreamedChunksStore from "@/lib/store/chapterChunks/streamedChunksStore";
@@ -313,7 +315,7 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
   );
 
   const handleNextChunk = React.useCallback(async () => {
-    const userToken = await getToken({ template: "UserToken" });
+    const userToken = await getClientToken();
     setGenerating(true);
 
     // Get chunk event stream
@@ -373,6 +375,10 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
             resp.status !== 429
           ) {
             console.log("Client side error ", resp);
+            if (resp.status === 402) {
+              emitter.emit("402-error", "Credits not enough");
+              console.log("🚀 ~ emitter.emit 402 error");
+            }
           }
         },
         onmessage: async (event) => {
@@ -426,7 +432,6 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
       }
     );
   }, [
-    getToken,
     chapterKey,
     chunkStreamGenerationPayload,
     prevChunk,
@@ -570,6 +575,7 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
           )}
         </Button>
       </div>
+      <BalanceNotEnoughAlert />
     </div>
   );
 };
