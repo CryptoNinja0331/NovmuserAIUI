@@ -34,6 +34,10 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
   const simpleBarRef = React.useRef<typeof SimpleBar>(null);
 
 
+  // React.useEffect(() => {
+  //   initChunksFromChapterInfo(chapterInfo);
+  // }, [initChunksFromChapterInfo, chapterInfo]);
+
   React.useEffect(() => {
     initChunksFromChapterInfo(curChapterInfo);
     console.log("initialized chunks from chapter info");
@@ -85,10 +89,12 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
         <div className="overflow-auto">
           <div className="py-2 px-4">
             {streamedChunks.map((chunk, index) => {
+              console.log(chunk, '-----')
               return (
-                <React.Fragment key={chunk.id}>
+                <React.Fragment>
                   <StreamedChunk
                     mapping={chunk.metadata}
+                    key={index}
                     index={index}
                     chunkId={chunk.id}
                     content={chunk.content}

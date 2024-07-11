@@ -34,7 +34,7 @@ const doFetchData = async <T>({
   ...rest
 }: TDoFetchDataProps): Promise<T> => {
   console.log("🚀 ~ baseURL:", baseURL);
-  console.log("🚀 ~ data:", rest)
+
   const defaultHeaders: HeadersInit = {
     "Content-Type": "application/json",
     ...config.headers,
