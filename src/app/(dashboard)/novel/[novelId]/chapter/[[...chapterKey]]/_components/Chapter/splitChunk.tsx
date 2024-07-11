@@ -52,7 +52,7 @@ const SplitChunk = ({ mapping, index }: ISplitChunkProps) => {
 	const onInput = (e: any) => {
 		updateChunkContent(e.target.innerText)
 	}
-	return <span id={uuid} contentEditable={editable} onInput={onInput} onClick={addChunk} onBlur={onBlur} style={{ display: 'inline-block', outline: 'none', minWidth: '5px', height: '20px' }} suppressContentEditableWarning></span>
+	return <span id={uuid} contentEditable={editable} onInput={onInput} onClick={addChunk} onBlur={onBlur} style={{ display: 'inline-block', outline: 'none', minWidth: '10px', height: '20px' }} suppressContentEditableWarning></span>
 }
 
 export default SplitChunk

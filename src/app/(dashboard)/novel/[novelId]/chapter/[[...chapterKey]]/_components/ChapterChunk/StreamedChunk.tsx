@@ -3,6 +3,7 @@ import { TChapterChunkMetaData } from "@/lib/types/api/chapter";
 import React, { FC, FormEventHandler, useState } from 'react';
 import { shallow } from "zustand/shallow";
 import { ChapterContext } from '../../context/useChapterContext';
+import { debounce } from 'lodash-es';
 
 export type TStreamedChunkProps = {
   index: number;
@@ -13,7 +14,7 @@ export type TStreamedChunkProps = {
 
 const StreamedChunk: FC<TStreamedChunkProps> = ({ content = '', index = 0, mapping, chunkId }) => {
   const [chunkContent, setChunkContent] = React.useState<string>(content);
-  const [context, updateContext] = useState('')
+  const [context, updateContext] = useState(content)
   const { chunk_type, topic_mapping } = mapping
   const { topic_id = '', topic_point_id = '' } = topic_mapping
   const { currentPointerId, currentTopicId, updateCurrentId } = React.useContext(ChapterContext)
@@ -38,9 +39,9 @@ const StreamedChunk: FC<TStreamedChunkProps> = ({ content = '', index = 0, mappi
     updateContext(e.target.innerText)
   }
   const onblur = () => {
-    console.log(context)
     if (context == chunkContent) return;
-    updateChunkContent(context, index)
+     updateChunkContent(context, index)
+    setChunkContent(context)
   }
   React.useEffect(() => {
     const unSub = useStreamedChunksStore.subscribe(
