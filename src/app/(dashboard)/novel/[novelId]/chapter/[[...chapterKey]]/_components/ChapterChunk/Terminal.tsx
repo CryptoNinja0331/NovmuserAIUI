@@ -14,17 +14,6 @@ import { useAppDispatch } from "@/lib/hooks";
 import { customRevalidateTag } from "@/lib/actions/revalidateTag";
 import { cn } from "@/lib/utils";
 
-function debounce<T extends (...args: any[]) => void>(
-  func: T,
-  delay: number
-): (...args: Parameters<T>) => void {
-  let debounceTimer: ReturnType<typeof setTimeout>;
-  return (...args: Parameters<T>) => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => func(...args), delay);
-  };
-}
-
 export type TTerminalProps = {
   chapterKey: string;
   chapterInfo: TChapterInfo;

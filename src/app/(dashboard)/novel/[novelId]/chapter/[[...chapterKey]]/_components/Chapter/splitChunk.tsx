@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { TTopicMapping } from "@/lib/types/api/chapter";
+import { TChapterChunkMetaData } from "@/lib/types/api/chapter";
 import useStreamedChunksStore from '@/lib/store/chapterChunks/streamedChunksStore';
 import { TStreamedChunk } from '@/lib/store/chapterChunks/streamedChunksStore';
 import { getUUid } from '@/lib/utils';
 import { ChapterContext } from '../../context/useChapterContext';
 interface ISplitChunkProps {
-	mapping: TTopicMapping;
+	mapping: TChapterChunkMetaData;
 	index: number; // current chunk isAfter chunk index
 }
 
@@ -15,10 +15,11 @@ interface ISplitChunkProps {
  * @param index
  * @constructor
  */
-const SplitChunk = ({ mapping = {}, index }: ISplitChunkProps) => {
+const SplitChunk = ({ mapping, index }: ISplitChunkProps) => {
 	const [editable, updateEditable] = useState(false)
-	const { topic_id = '', topic_point_id = ''} = mapping.topic_mapping
-	const [chunkContent, updateChunkContent ] = useState('')
+	const { topic_mapping } = mapping
+	const { topic_id = '', topic_point_id = '' } = topic_mapping
+	const [chunkContent, updateChunkContent] = useState('')
 	const { appendChunkWithContent } = useStreamedChunksStore()
 	const { updateCurrentId } = useContext(ChapterContext)
 	const uuid = getUUid()
@@ -29,8 +30,10 @@ const SplitChunk = ({ mapping = {}, index }: ISplitChunkProps) => {
 		updateEditable(false)
 		if (!chunkContent) return;
 		const chunk: TStreamedChunk = {
+			id: uuid,
 			content: chunkContent,
 			isStreaming: false,
+			has_persisted: true,
 			metadata: {
 				topic_mapping: {
 					topic_id,
@@ -43,14 +46,13 @@ const SplitChunk = ({ mapping = {}, index }: ISplitChunkProps) => {
 		appendChunkWithContent(chunk, index)
 		updateChunkContent('')
 		document.getElementById(uuid).innerHTML = ''
-		console.log(topic_id, topic_point_id, 'ssss')
 		updateCurrentId(topic_id, topic_point_id)
 	}
 
-	const onInput = e => {
+	const onInput = (e: any) => {
 		updateChunkContent(e.target.innerText)
 	}
-	return <span id={uuid} contentEditable={editable} onInput={onInput} onClick={addChunk} onBlur={onBlur} style={{ display: 'inline-block',  outline: 'none', minWidth: '5px', height: '20px' }} suppressContentEditableWarning></span>
+	return <span id={uuid} contentEditable={editable} onInput={onInput} onClick={addChunk} onBlur={onBlur} style={{ display: 'inline-block', outline: 'none', minWidth: '5px', height: '20px' }} suppressContentEditableWarning></span>
 }
 
 export default SplitChunk
