@@ -159,6 +159,10 @@ const TopicEditingDialog = React.forwardRef<
       url: `/chapter/topic/${novelId}/${chapterInfo.chapter_key}`,
       token: await getClientToken(),
     });
+    console.log("🚀 ~ handleAiGeneration ~ resp:", resp);
+    if (!resp?.success) {
+      return;
+    }
     const chapterTopicsFromAi: TChapterTopics = resp.data!;
     topicEditingTreeRef.current?.fillChapterTopics(chapterTopicsFromAi);
   }, [chapterInfo.chapter_key, getClientToken, novelId, post]);
