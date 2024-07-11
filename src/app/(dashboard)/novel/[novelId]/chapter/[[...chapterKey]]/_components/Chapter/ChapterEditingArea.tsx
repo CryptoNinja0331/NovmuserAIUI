@@ -89,17 +89,18 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
         <div className="overflow-auto">
           <div className="py-2 px-4">
             {streamedChunks.map((chunk, index) => {
-              console.log(chunk, '-----')
+              console.log(JSON.stringify(chunk), '-----')
               return (
                 <React.Fragment>
                   <StreamedChunk
                     mapping={chunk.metadata}
-                    key={index}
+                    key={chunk.id}
                     index={index}
                     chunkId={chunk.id}
                     content={chunk.content}
                   />
                   <SplitChunk
+                    key={chunk.id + 'split'}
                     mapping={chunk.metadata}
                     index={index}
                   />

@@ -22,15 +22,12 @@ const StreamedChunk: FC<TStreamedChunkProps> = ({ content = '', index = 0, mappi
   const getChunkStyle = () => {
     if (topic_id == currentTopicId && topic_point_id == currentPointerId) {
       if (chunk_type == 'leader') {
-        return { outline: 'none', border: '1px solid #a43442', background: '#582242' }
+        return { lineHeight: '20px', height: '20px', outline: 'none', border: '1px solid #a43442', background: '#582242' }
       } else {
-        return { outline: 'none', border: '1px solid #8b47cc', background: '#50266d' }
+        return { lineHeight: '20px', height: '20px', outline: 'none', border: '1px solid #8b47cc', background: '#50266d' }
       }
     }
-    return {}
-  }
-  const canEdit = () => {
-    return currentTopicId == topic_id && currentPointerId == topic_point_id
+    return { outline: 'none' }
   }
   const changeHandler = (topicId: string, pointerId: string) => {
     updateCurrentId(topicId, pointerId)
@@ -73,7 +70,7 @@ const StreamedChunk: FC<TStreamedChunkProps> = ({ content = '', index = 0, mappi
       unSub();
     };
   }, [chunkContent, index]);
-  return <span id={chunkId} style={getChunkStyle()} onInput={onInput} onBlur={onblur} onClick={() => changeHandler(topic_id, topic_point_id)} contentEditable={canEdit()} suppressContentEditableWarning>{chunkContent}</span>;
+  return <span  id={chunkId} style={getChunkStyle()} onInput={onInput} onBlur={onblur} onClick={() => changeHandler(topic_id, topic_point_id)} contentEditable suppressContentEditableWarning>{chunkContent}</span>;
 };
 
 export default React.memo(StreamedChunk);

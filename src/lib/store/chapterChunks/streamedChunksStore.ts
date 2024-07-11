@@ -25,11 +25,11 @@ type TStreamedChunksState = {
 type TStreamedChunksAction = {
   initChunksFromChapterInfo: (chapterInfo: TChapterInfo) => void;
   appendChunk: (isStreaming?: boolean) => void;
-  appendChunkWithContent: (chunk: TStreamedChunk, index: number) => void; // 手动添加chunk
+  appendChunkWithContent: (chunk: TStreamedChunk, index: number) => Promise; // 手动添加chunk
   updateChunkContent: (content: string, index: number) => void;
   appendChunkContent: (nextText: string, isFinal?: boolean) => void;
   setIsStreaming: (isStreaming: boolean) => void;
-  autoSaveChunk: (type: boolean) => void, // 自动保存chunk
+  autoSaveChunk: (type: boolean) => Promise, // 自动保存chunk
   reset: () => void;
 };
 const timer = null
@@ -109,7 +109,7 @@ const useStreamedChunksStore = create(
           ],
           currentIndex: index + 1
         }))
-        get().autoSaveChunk(false)
+        return get().autoSaveChunk(false)
       },
       appendChunkContent: (nextText: string, isFinal: boolean = false) => {
         const targetChunk = get().currentChunk;
@@ -165,29 +165,34 @@ const useStreamedChunksStore = create(
         });
       },
       autoSaveChunk: (type) => {
-        const saveChunk = async () => {
-          const chapterInfo = get().chapterInfo
-          const streamedChunks = get().streamedChunks
-          console.log(streamedChunks, 'autoSaveChunk')
-          const res = await PATCH({
-            url: `/chapter/${chapterInfo?.chapter_key}/fullEdit/chunks`,
-            token: await getToken(),
-            data: {
-              chapter_editing_chunks: cloneDeep(streamedChunks).map((item: TStreamedChunk) => {
-                return {
-                  ...item,
-                  chunk_content: item.content
-                }
-              }).filter(item => item.chunk_content)
+        return new Promise(resolve => {
+          const saveChunk = async () => {
+            const chapterInfo = get().chapterInfo
+            const streamedChunks = get().streamedChunks
+            console.log(streamedChunks, 'autoSaveChunk')
+            const res = await PATCH({
+              url: `/chapter/${chapterInfo?.chapter_key}/fullEdit/chunks`,
+              token: await getToken(),
+              data: {
+                chapter_editing_chunks: cloneDeep(streamedChunks).map((item: TStreamedChunk) => {
+                  return {
+                    ...item,
+                    chunk_content: item.content
+                  }
+                }).filter(item => item.chunk_content)
+              }
+            })
+            if (res.code == 200) {
+              const initChunksFromChapterInfo = get().initChunksFromChapterInfo
+              initChunksFromChapterInfo(res.data)
+              resolve()
+              console.log('🚀 has update chapterInfo', res.data)
             }
-          })
-          if (res.code == 200) {
-            const initChunksFromChapterInfo = get().initChunksFromChapterInfo
-            initChunksFromChapterInfo(res.data)
+            console.log(res, 'auto save chunk')
           }
-          console.log(res, 'auto save chunk')
-        }
-        saveChunk()
+          saveChunk()
+        })
+
       }
     })
   )

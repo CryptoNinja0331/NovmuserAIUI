@@ -15,19 +15,25 @@ interface ISplitChunkProps {
  * @param index
  * @constructor
  */
+const defaultStyle = {
+	cursor: 'text',
+	display: 'inline-block',
+	outline: 'none',
+	minWidth: '10px',
+	lineHeight: '22px',
+	minHeight: '24px',
+	verticalAlign: 'bottom'
+}
 const SplitChunk = ({ mapping, index }: ISplitChunkProps) => {
-	const [editable, updateEditable] = useState(false)
 	const { topic_mapping } = mapping
 	const { topic_id = '', topic_point_id = '' } = topic_mapping
 	const [chunkContent, updateChunkContent] = useState('')
 	const { appendChunkWithContent } = useStreamedChunksStore()
 	const { updateCurrentId } = useContext(ChapterContext)
-	const uuid = getUUid()
-	const addChunk = () => {
-		updateEditable(true)
-	}
+	const [style, updateStyle ] = useState<React.CSSProperties>(defaultStyle)
+	const [uuid] = useState<string>(getUUid())
 	const onBlur = () => {
-		updateEditable(false)
+		updateStyle(defaultStyle)
 		if (!chunkContent) return;
 		const chunk: TStreamedChunk = {
 			id: uuid,
@@ -43,16 +49,22 @@ const SplitChunk = ({ mapping, index }: ISplitChunkProps) => {
 				generate_from: 'human',
 			}
 		}
-		appendChunkWithContent(chunk, index)
-		updateChunkContent('')
-		document.getElementById(uuid).innerHTML = ''
-		updateCurrentId(topic_id, topic_point_id)
+		document.getElementById(uuid + 'split').innerHTML = ''
+		appendChunkWithContent(chunk, index).then(_ => {
+			updateChunkContent('')
+			updateCurrentId(topic_id, topic_point_id)
+		})
 	}
-
+	const onfocus = () => {
+		updateStyle({
+			...defaultStyle,
+			borderBottom: '1px solid #fff',
+		})
+	}
 	const onInput = (e: any) => {
 		updateChunkContent(e.target.innerText)
 	}
-	return <span id={uuid} contentEditable={editable} onInput={onInput} onClick={addChunk} onBlur={onBlur} style={{ display: 'inline-block', outline: 'none', minWidth: '10px', height: '20px' }} suppressContentEditableWarning></span>
+	return <span id={uuid + 'split'} onFocus={onfocus} contentEditable onInput={onInput}  onBlur={onBlur} style={style} suppressContentEditableWarning></span>
 }
 
 export default SplitChunk
