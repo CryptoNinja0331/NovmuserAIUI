@@ -39,7 +39,7 @@ const StreamedChunk: FC<TStreamedChunkProps> = ({ content = '', index = 0, mappi
   }
   const onblur = () => {
     console.log(context)
-    if (!content || content == chunkContent) return;
+    if (context == chunkContent) return;
     updateChunkContent(context, index)
   }
   React.useEffect(() => {

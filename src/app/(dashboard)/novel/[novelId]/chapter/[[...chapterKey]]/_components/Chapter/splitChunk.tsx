@@ -33,7 +33,7 @@ const SplitChunk = ({ mapping, index }: ISplitChunkProps) => {
 			id: uuid,
 			content: chunkContent,
 			isStreaming: false,
-			has_persisted: true,
+			has_persisted: false,
 			metadata: {
 				topic_mapping: {
 					topic_id,

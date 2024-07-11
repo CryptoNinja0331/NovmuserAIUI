@@ -2,8 +2,6 @@ import NovelSidebar from "@/components/singleNovel/NovelSidebar";
 import { getOrInitChapterInfo } from "@/lib/apiCall/server/getOrInitChapterInfo";
 import { getSingleNovel } from "@/lib/apiCall/server/getSingleNovel";
 import ChapterWrapper from './_components/chapterWrapper';
-import { revalidatePath, revalidateTag } from "next/cache";
-import ChapterWrapper from "./_components/chapterWrapper";
 const page = async ({
   params,
 }: {
