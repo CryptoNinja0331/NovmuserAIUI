@@ -20,16 +20,14 @@ const page = async ({
   ).data!;
 
   return (
-    <div className="h-[calc(100%-50px)] relative">
-      <div className="text-white relative h-full flex justify-between">
-        <ChapterWrapper
-          chapterInfo={chapterInfo}
-          chapterKey={params.chapterKey}
-          novelId={params.novelId}
-        />
-        <div className="relative mt-2">
-          <NovelSidebar novelDetails={response.data} />
-        </div>
+    <div className="h-[calc(100%-50px)] text-white w-full overflow-x-hidden flex relative justify-between">
+      <ChapterWrapper
+        chapterInfo={chapterInfo}
+        chapterKey={params.chapterKey}
+        novelId={params.novelId}
+      />
+      <div className="mt-2">
+        <NovelSidebar novelDetails={response.data} />
       </div>
     </div>
   );
