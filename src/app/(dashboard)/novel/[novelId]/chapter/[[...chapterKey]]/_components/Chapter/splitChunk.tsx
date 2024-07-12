@@ -15,25 +15,16 @@ interface ISplitChunkProps {
  * @param index
  * @constructor
  */
-const defaultStyle = {
-	cursor: 'text',
-	display: 'inline-block',
-	outline: 'none',
-	minWidth: '10px',
-	lineHeight: '22px',
-	minHeight: '24px',
-	verticalAlign: 'bottom'
-}
 const SplitChunk = ({ mapping, index }: ISplitChunkProps) => {
 	const { topic_mapping } = mapping
 	const { topic_id = '', topic_point_id = '' } = topic_mapping
 	const [chunkContent, updateChunkContent] = useState('')
 	const { appendChunkWithContent } = useStreamedChunksStore()
 	const { updateCurrentId } = useContext(ChapterContext)
-	const [style, updateStyle ] = useState<React.CSSProperties>(defaultStyle)
+	const [style, updateStyle ] = useState<React.CSSProperties>({})
 	const [uuid] = useState<string>(getUUid())
 	const onBlur = () => {
-		updateStyle(defaultStyle)
+		updateStyle({})
 		if (!chunkContent) return;
 		const chunk: TStreamedChunk = {
 			id: uuid,
@@ -57,14 +48,13 @@ const SplitChunk = ({ mapping, index }: ISplitChunkProps) => {
 	}
 	const onfocus = () => {
 		updateStyle({
-			...defaultStyle,
 			borderBottom: '1px solid #fff',
 		})
 	}
 	const onInput = (e: any) => {
 		updateChunkContent(e.target.innerText)
 	}
-	return <span id={uuid + 'split'} onFocus={onfocus} contentEditable onInput={onInput}  onBlur={onBlur} style={style} suppressContentEditableWarning></span>
+	return <span className="add-split" id={uuid + 'split'} onFocus={onfocus} contentEditable onInput={onInput}  onBlur={onBlur} style={style} suppressContentEditableWarning></span>
 }
 
 export default SplitChunk
