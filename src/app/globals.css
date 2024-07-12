@@ -347,3 +347,22 @@
   width: 0;
   height: 0;
 }
+.add-split {
+  position: relative;
+  cursor: text;
+  outline: none;
+  lineHeight: 22px;
+  verticalAlign: bottom;
+}
+.add-split:before {
+  content: '';
+  width: 5px;
+  display: inline-block;
+  height: 20px;
+}
+.add-split:after {
+  content: '';
+  width: 5px;
+  display: inline-block;
+  height: 20px;
+}

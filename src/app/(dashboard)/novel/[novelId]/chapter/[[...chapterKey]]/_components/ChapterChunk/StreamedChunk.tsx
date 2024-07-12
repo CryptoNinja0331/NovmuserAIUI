@@ -70,7 +70,7 @@ const StreamedChunk: FC<TStreamedChunkProps> = ({ content = '', index = 0, mappi
       unSub();
     };
   }, [chunkContent, index]);
-  return <span  id={chunkId} style={getChunkStyle()} onInput={onInput} onBlur={onblur} onClick={() => changeHandler(topic_id, topic_point_id)} contentEditable suppressContentEditableWarning>{chunkContent}</span>;
+  return <span  id={chunkId} style={getChunkStyle()} onInput={onInput} onBlur={onblur} onClick={() => changeHandler(topic_id, topic_point_id)} contentEditable suppressContentEditableWarning >{chunkContent}</span>;
 };
 
 export default React.memo(StreamedChunk);

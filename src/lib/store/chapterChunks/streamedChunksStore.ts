@@ -25,11 +25,11 @@ type TStreamedChunksState = {
 type TStreamedChunksAction = {
   initChunksFromChapterInfo: (chapterInfo: TChapterInfo) => void;
   appendChunk: (isStreaming?: boolean) => void;
-  appendChunkWithContent: (chunk: TStreamedChunk, index: number) => Promise; // 手动添加chunk
+  appendChunkWithContent: (chunk: TStreamedChunk, index: number) => Promise<any>; // 手动添加chunk
   updateChunkContent: (content: string, index: number) => void;
   appendChunkContent: (nextText: string, isFinal?: boolean) => void;
   setIsStreaming: (isStreaming: boolean) => void;
-  autoSaveChunk: (type: boolean) => Promise, // 自动保存chunk
+  autoSaveChunk: (type: boolean) => Promise<any>, // 自动保存chunk
   reset: () => void;
 };
 const timer = null
@@ -179,7 +179,7 @@ const useStreamedChunksStore = create(
                     ...item,
                     chunk_content: item.content
                   }
-                }).filter(item => item.chunk_content)
+                }).filter(item => item.chunk_content.trim() != '')
               }
             })
             if (res.code == 200) {
