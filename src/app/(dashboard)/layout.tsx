@@ -36,7 +36,7 @@ export default function RootLayout({
             <div className={`h-screen w-full ${style.dashboard}`}>
               <ReactQueryClientProvider>
                 <StoreProvider>
-                  <div className="flex h-full">
+                  <div className="flex w-full overflow-x-hidden h-full">
                     <Sidebar />
                     <main className="flex-1  z-[49] relative">
                       <Navbar />
