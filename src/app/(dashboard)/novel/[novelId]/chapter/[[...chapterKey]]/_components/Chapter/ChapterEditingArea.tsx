@@ -81,13 +81,8 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
   }, [chapterInfo.chapter_key, novelId]);
 
   return (
-    <div className="flex-1 h-full relative px-1">
-      {/*<SimpleBar*/}
-      {/*  scrollableNodeProps={{ ref: simpleBarRef }}*/}
-      {/*  className="w-full h-full bg-slate-900/70 pb-[40%]"*/}
-      {/*>*/}
-        <div className="overflow-auto">
-          <div className="py-2 px-4">
+    <div className="flex-1 h-full relative px-1" style={{ paddingBottom: '160px'}}>
+        <div className="py-2 px-4 w-full h-full overflow-auto">
             {streamedChunks.map((chunk, index) => {
               console.log(JSON.stringify(chunk), '-----')
               return (
@@ -108,8 +103,6 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
               )
             })}
           </div>
-        </div>
-      {/*</SimpleBar>*/}
       <Terminal
         chapterInfo={curChapterInfo}
         chapterKey={chapterInfo.chapter_key}

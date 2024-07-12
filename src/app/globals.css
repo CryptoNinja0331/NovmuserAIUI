@@ -342,3 +342,8 @@
 .bg-bluish {
   background: linear-gradient(90deg, #a993fe, 0%, #7e61e7) !important;
 }
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
