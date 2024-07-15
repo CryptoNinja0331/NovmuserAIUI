@@ -10,7 +10,7 @@ import SimpleBar from "simplebar-react";
 import { shallow } from "zustand/shallow";
 import StreamedChunk from "../ChapterChunk/StreamedChunk";
 import Terminal from "../ChapterChunk/Terminal";
-import SplitChunk from './splitChunk';
+import SplitChunk from "./splitChunk";
 
 export type TNovelEditingAreaProps = {
   novelId: string;
@@ -33,7 +33,6 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
   );
   const simpleBarRef = React.useRef<typeof SimpleBar>(null);
 
-
   // React.useEffect(() => {
   //   initChunksFromChapterInfo(chapterInfo);
   // }, [initChunksFromChapterInfo, chapterInfo]);
@@ -44,7 +43,7 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
   }, [initChunksFromChapterInfo, curChapterInfo]);
 
   React.useEffect(() => {
-    console.log(streamedChunks, 'streamedChunks')
+    console.log(streamedChunks, "streamedChunks");
     const simpleBarCur: any = simpleBarRef.current;
     const unSub = useStreamedChunksStore.subscribe(
       (state) => state.currentIndex,
@@ -81,28 +80,31 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
   }, [chapterInfo.chapter_key, novelId]);
 
   return (
-    <div className="flex-1 h-full relative px-1" style={{ paddingBottom: '160px'}}>
-        <div className="py-2 px-4 w-full h-full overflow-auto">
-            {streamedChunks.map((chunk, index) => {
-              console.log(JSON.stringify(chunk), '-----')
-              return (
-                <React.Fragment>
-                  <StreamedChunk
-                    mapping={chunk.metadata}
-                    key={chunk.id}
-                    index={index}
-                    chunkId={chunk.id}
-                    content={chunk.content}
-                  />
-                  <SplitChunk
-                    key={chunk.id + 'split'}
-                    mapping={chunk.metadata}
-                    index={index}
-                  />
-                </React.Fragment>
-              )
-            })}
-          </div>
+    <div
+      className="flex-1 h-full relative px-1"
+      style={{ paddingBottom: "160px" }}
+    >
+      <div className="py-2 px-4 w-full h-full overflow-auto">
+        {streamedChunks.map((chunk, index) => {
+          console.log(JSON.stringify(chunk), "-----");
+          return (
+            <React.Fragment key={chunk.id}>
+              <StreamedChunk
+                mapping={chunk.metadata}
+                key={chunk.id}
+                index={index}
+                chunkId={chunk.id}
+                content={chunk.content}
+              />
+              <SplitChunk
+                key={chunk.id + "split"}
+                mapping={chunk.metadata}
+                index={index}
+              />
+            </React.Fragment>
+          );
+        })}
+      </div>
       <Terminal
         chapterInfo={curChapterInfo}
         chapterKey={chapterInfo.chapter_key}
