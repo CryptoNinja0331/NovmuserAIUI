@@ -1,8 +1,19 @@
 "use server";
-import { auth } from "@clerk/nextjs";
 import { z } from "zod";
+import { getToken } from "../apiCall/server/getToken";
+import { POST, TResponseDto } from "../http";
+import { TNovel } from "../types/api/novel";
 
-export async function handleInitNovel(prevState: any, formData: FormData) {
+export type THandleInitNovelState = {
+  validatedForm?: boolean;
+  message: string;
+  novel?: TNovel;
+};
+
+export async function handleInitNovel(
+  previousState: unknown,
+  formData: FormData
+): Promise<THandleInitNovelState> {
   console.log(formData);
 
   const formSchema = z.object({
@@ -17,35 +28,25 @@ export async function handleInitNovel(prevState: any, formData: FormData) {
 
   if (!parse.success) {
     console.log("error");
-    return { message: "fill all the fields" };
+    return { validatedForm: false, message: "Please fill all the fields" };
   }
 
   const data = parse.data;
 
-  const { getToken } = auth();
-  const userId = await getToken({ template: "UserToken" });
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/novel/init`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userId}`,
-        },
-        body: JSON.stringify(data),
-      }
-    );
+  const resp = await POST<TResponseDto<TNovel>>({
+    url: "/novel/init",
+    token: await getToken(),
+    data,
+    config: {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  });
 
-    if (response.ok) {
-      const responseData = await response.json();
-      console.log(responseData);
-      return { message: "Novel initialized successfully", data: responseData };
-    } else {
-      console.error("Failed to initialize novel");
-      return { message: "Failed to initialize novel" };
-    }
-  } catch (e) {
-    return { message: "Failed to initialize novel" };
-  }
+  return {
+    validatedForm: true,
+    message: "Novel initialized successfully",
+    novel: resp?.data,
+  };
 }
