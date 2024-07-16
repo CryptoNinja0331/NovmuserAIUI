@@ -18,7 +18,6 @@ const page = async ({
       chapterKey,
     })
   ).data!;
-
   return (
     <div className="h-[calc(100%-50px)] text-white w-full overflow-x-hidden flex relative justify-between">
       <ChapterWrapper

@@ -5,8 +5,9 @@ import { TStreamedChunk } from "@/lib/store/chapterChunks/streamedChunksStore";
 import { getUUid } from "@/lib/utils";
 import { ChapterContext } from "../../context/useChapterContext";
 interface ISplitChunkProps {
-  mapping: TChapterChunkMetaData;
-  index: number; // current chunk isAfter chunk index
+	chunkId: string;
+	mapping: TChapterChunkMetaData;
+	index: number; // current chunk isAfter chunk index
 }
 
 /**
@@ -15,12 +16,12 @@ interface ISplitChunkProps {
  * @param index
  * @constructor
  */
-const SplitChunk = ({ mapping, index }: ISplitChunkProps) => {
+const SplitChunk = ({ mapping, index, chunkId }: ISplitChunkProps) => {
   const { topic_mapping } = mapping;
   const { topic_id = "", topic_point_id = "" } = topic_mapping;
   const [chunkContent, updateChunkContent] = useState("");
   const { appendChunkWithContent } = useStreamedChunksStore();
-  const { updateCurrentId } = useContext(ChapterContext);
+  const { updateCurrentId, updateCurrentChunkId } = useContext(ChapterContext);
   const [style, updateStyle] = useState<React.CSSProperties>({});
   const [uuid] = useState<string>(getUUid());
   const onBlur = () => {
@@ -50,9 +51,11 @@ const SplitChunk = ({ mapping, index }: ISplitChunkProps) => {
     });
   };
   const onfocus = () => {
-    updateStyle({
-      borderBottom: "1px solid #fff",
-    });
+	  updateCurrentId(topic_id, topic_point_id)
+	  updateCurrentChunkId(chunkId)
+	  updateStyle({
+		  borderBottom: '1px solid #fff',
+	  })
   };
   const onInput = (e: any) => {
     updateChunkContent(e.target.innerText);

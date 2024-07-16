@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from 'react';
 const initValue = {
   currentTopicId: "",
   currentPointerId: "",
+  currentChunkId: "",
+  updateCurrentChunkId: (_chunkId: string) => {},
   updateCurrentId: (_topicId: string, _pointerId: string) => {},
 };
 const ChapterContext = React.createContext(initValue);
@@ -9,6 +11,7 @@ const ChapterContext = React.createContext(initValue);
 const ChapterProvider = ({ children }: React.PropsWithChildren) => {
   const [currentTopicId, updateCurrentTopicId] = React.useState("");
   const [currentPointerId, updateCurrentPointerId] = React.useState("");
+  const [currentChunkId, updateCurrentChunkId ] = useState("")
   const updateCurrentId = React.useCallback(
     (topicId: string, pointerId: string) => {
       console.log(topicId, pointerId);
@@ -23,6 +26,8 @@ const ChapterProvider = ({ children }: React.PropsWithChildren) => {
         currentPointerId,
         currentTopicId,
         updateCurrentId,
+        currentChunkId,
+        updateCurrentChunkId
       }}
     >
       {children}
