@@ -2,13 +2,17 @@
 
 import { GET, TResponseDto } from "@/lib/http";
 import { getToken } from "./getToken";
+import { TNovel } from "@/lib/types/api/novel";
+import { TPaginationResponseDto } from "@/lib/types/api/page";
+import { revalidateTag } from "next/cache";
 
-export async function getAllNovels(pageNumber: any) {
-  // TODO 2024-06-18 Define type of novel page
-  return await GET<TResponseDto<any>>({
+const NOVEL_PAGE_CACHE_TAG = "novelPage";
+
+export async function getAllNovels(pageNumber: number) {
+  return await GET<TResponseDto<TPaginationResponseDto<TNovel>>>({
     url: "/novel/page",
     params: {
-      page_number: pageNumber,
+      page_number: `${pageNumber}`,
       page_size: "7",
     },
     token: await getToken(),
@@ -16,7 +20,14 @@ export async function getAllNovels(pageNumber: any) {
       headers: {
         "Content-Type": "application/json",
       },
+      next: {
+        tags: [NOVEL_PAGE_CACHE_TAG],
+      },
     },
     next: { tags: ["allNovels"] },
   });
 }
+
+export const refreshNovelPage = async () => {
+  revalidateTag(NOVEL_PAGE_CACHE_TAG);
+};

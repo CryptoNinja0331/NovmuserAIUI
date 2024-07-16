@@ -28,3 +28,24 @@ const TooltipContent = React.forwardRef<
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };
+
+export const TooltipWrapper: React.FC<
+  React.PropsWithChildren & {
+    tooltipContent?: string;
+    triggerClassName?: string | undefined;
+    contentClassName?: string | undefined;
+  }
+> = ({ children, tooltipContent = "", triggerClassName, contentClassName }) => {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger className={cn(triggerClassName)}>
+          {children}
+        </TooltipTrigger>
+        <TooltipContent className={cn("z-auto", contentClassName)}>
+          <p>{tooltipContent}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};

@@ -1,7 +1,6 @@
 "use client";
 
 import { clientApi } from "@/lib/apiCall/client/clientAPi";
-import { useAuth } from "@clerk/nextjs";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import prepareImage from "../assets/images/writter.svg";
@@ -9,11 +8,10 @@ import AgentUi from "./AgentUi";
 import { Button } from "./ui/button";
 
 import useClientHttp from "@/hooks/useClientHttp";
+import { useGetClientToken } from "@/lib/hooks";
 import { TResponseDto } from "@/lib/http";
 import React from "react";
 import { useDispatch } from "react-redux";
-import Swal from "sweetalert2";
-import { createPortal } from "react-dom";
 import BalanceNotEnoughAlert from "./alert/BalanceNotEnoughAlert";
 
 interface PrepareNovelResponse {
@@ -27,25 +25,16 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
   );
   const [finishedPrepare, setFinishedPrepare] = useState<boolean>(false);
   const [novelMsg, setNovelMsg] = useState<string>("");
-  const [userId, setUserId] = useState<string | null>(null);
 
-  const { isLoaded, getToken } = useAuth();
+  const { getClientToken } = useGetClientToken();
 
   const websocketRef = React.useRef<WebSocket | null>(null);
 
   useEffect(() => {
     const socketUrl = `${process.env.NEXT_PUBLIC_WS_SERVER_URL}/novel/preparing/${novelId}/ws`;
 
-    async function getAuthToken() {
-      if (!isLoaded) {
-        return null;
-      }
-      const token = await getToken({ template: "UserToken" });
-      return token;
-    }
-
     async function connectWebSocket() {
-      const authToken = await getAuthToken();
+      const authToken = await getClientToken();
       if (!authToken) {
         console.error("Failed to obtain auth token");
         return;
@@ -65,7 +54,7 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
       };
 
       newWebsocket.onmessage = (event) => {
-        console.log(event.data);
+        console.log("🚀 ~ connectWebSocket ~ event.data:", event.data);
         setNovelMsg(event.data);
       };
 
@@ -86,7 +75,7 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
         websocketRef.current.close();
       }
     };
-  }, [isLoaded, getToken, novelId]);
+  }, [novelId, getClientToken]);
 
   return (
     <div className="text-white p-4">
@@ -113,7 +102,7 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
   );
 };
 
-export default PrepareNovel;
+export default React.memo(PrepareNovel);
 
 const PrepareButton: React.FC<{
   setPrepareNovel: (data: any) => void;
@@ -128,11 +117,10 @@ const PrepareButton: React.FC<{
     dispatch(clientApi.util.invalidateTags(["novelData"]));
   }, [dispatch]);
 
-  const { isLoaded, getToken } = useAuth();
+  const { getClientToken } = useGetClientToken();
 
   const handlePrepareNovel = React.useCallback(async () => {
     console.log("🚀 ~ handlePrepareNovel ~ handlePrepareNovel");
-    const userToken = await getToken({ template: "UserToken" });
     try {
       const respDto = await post<TResponseDto<any>>({
         url: `/novel/prepare/${novelId}/task`,
@@ -141,14 +129,14 @@ const PrepareButton: React.FC<{
             "Content-Type": "application/json",
           },
         },
-        token: userToken,
+        token: await getClientToken(),
       });
       setPrepareNovel(respDto);
     } catch (error) {
       console.error("Error:", error);
       // Handle errors, e.g., show an error message to the user
     }
-  }, [getToken, novelId, post, setPrepareNovel]);
+  }, [getClientToken, novelId, post, setPrepareNovel]);
 
   console.log("🚀 ~ PrepareButton:", "rendering");
 

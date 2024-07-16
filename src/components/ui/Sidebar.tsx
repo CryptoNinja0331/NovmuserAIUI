@@ -1,4 +1,4 @@
-import ExpandSidebar from "./ExpandSidebar";
+import ExpandSidebar from "../../app/(dashboard)/novel/[novelId]/_components/ExpandSidebar";
 const Sidebar = () => {
   return (
     <div

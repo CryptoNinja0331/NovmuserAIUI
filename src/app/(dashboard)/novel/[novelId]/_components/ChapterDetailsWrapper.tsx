@@ -1,8 +1,8 @@
-import { Chapter } from "../page";
-import SingleChapter from "./singleChapter";
+import { TChapter } from "@/lib/types/api/agent";
+import SingleChapter from "./SingleChapter";
 
 interface ChapterDetailsWrapperProps {
-  chapters: Chapter[];
+  chapters: TChapter[];
   novelId: string;
 }
 
@@ -15,7 +15,7 @@ const ChapterDetailsWrapper = ({
       <div className="space-y-2 mt-2 text-sm font-medium">
         <h1 className="text-[1.1rem] font-medium mb-2">Chapter List</h1>
         <div className="space-y-3">
-          {chapters.map((item: Chapter) => (
+          {chapters.map((item: TChapter) => (
             <SingleChapter
               novelId={novelId}
               key={item.chapter_number}

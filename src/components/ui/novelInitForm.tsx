@@ -44,13 +44,10 @@ const NovelInitForm = () => {
   console.log("🚀 ~ NovelInitForm ~ state:", state);
 
   return (
-    <div
-      style={{ marginTop: "2rem" }}
-      className=" mx-auto text-center relative"
-    >
+    <div className=" mx-auto text-center relative mt-1">
       <Dialog onOpenChange={setIsDialogOpen} open={isDialogOpen}>
         <DialogTrigger asChild>
-          <Button className="button-gradient-2 z-[49] relative">
+          <Button className="button-gradient-2 z-[49] relative hover:scale-105 hover:opacity-60 text-sm">
             Add Novel
           </Button>
         </DialogTrigger>
