@@ -192,9 +192,7 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
               resp.status !== 429
             ) {
               console.log("Client side error ", resp);
-            }
-            console.log("Connection made ", resp);
-          } else if (
+            } else if (
             resp.status >= 400 &&
             resp.status < 500 &&
             resp.status !== 429
