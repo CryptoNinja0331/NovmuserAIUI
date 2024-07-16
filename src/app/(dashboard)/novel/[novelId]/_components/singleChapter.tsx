@@ -1,8 +1,8 @@
+import { TChapter } from "@/lib/types/api/agent";
 import Link from "next/link";
-import { Chapter } from "../page";
 
 interface SingleChapterProps {
-  item: Chapter;
+  item: TChapter;
   novelId: string;
 }
 

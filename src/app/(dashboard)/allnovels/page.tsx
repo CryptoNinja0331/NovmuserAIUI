@@ -4,27 +4,16 @@ import {
   PaginationContent,
   PaginationItem,
 } from "@/components/ui/pagination";
-import Link from "next/link";
 import { getAllNovels } from "@/lib/apiCall/server/getAllNovel";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { TNovel } from "@/lib/types/api/novel";
+import NovelItem from "../_components/TopUpDialog/NovelItem";
 
 const page = async ({ searchParams }: { searchParams: any }) => {
-  let currentPage = Number(searchParams.page ? searchParams.page : 1);
-
-  let response = await getAllNovels(currentPage);
+  const currentPage = Number(searchParams.page ? searchParams.page : 1);
+  const response = await getAllNovels(currentPage);
 
   const totalPages = response?.data?.total_pages;
   const commonClasses =
@@ -33,51 +22,19 @@ const page = async ({ searchParams }: { searchParams: any }) => {
   return (
     <div>
       <div className="bg-[#010313] w-[70%] mx-auto p-6 rounded-md">
-        <div className="div space-y-6 px-4 ">
-          {response?.data?.records?.map((item: any) => (
-            <div
+        <div className="div space-y-4 px-4">
+          {response?.data?.records?.map((item: TNovel) => (
+            <NovelItem
               key={item.id}
-              className="flex justify-between gap-4 items-center"
-            >
-              <Link href={`/novel/${item.id}`} className="w-[95%]">
-                <div className="text-[#817691]   font-medium capitalize cursor-pointer p-4 bg-[#160929] rounded-lg">
-                  <div className="">
-                    <h1 className="heading-color font-medium">
-                      {" "}
-                      {item.metadata.name}
-                    </h1>
-                  </div>
-                </div>
-              </Link>
-              <div className="flex-1 flex justify-center">
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <RiDeleteBin6Line className=" text-2xl text-[#FF453A] cursor-pointer" />
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete your account and remove your data from our
-                        servers.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction>Continue</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            </div>
+              novelData={item}
+              variant="extended"
+              linkPath={`/novel/${item.id}`}
+            />
           ))}
         </div>
       </div>
 
-      {response?.data?.total_records > 10 && (
+      {(response?.data?.total_records ?? 0) > 10 && (
         <Pagination className="mt-4">
           <PaginationContent>
             <PaginationItem>
@@ -93,7 +50,7 @@ const page = async ({ searchParams }: { searchParams: any }) => {
               )}
             </PaginationItem>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+            {Array.from({ length: totalPages! }, (_, i) => i + 1).map(
               (pageNum) => (
                 <PaginationItem key={pageNum}>
                   <Link
@@ -109,7 +66,7 @@ const page = async ({ searchParams }: { searchParams: any }) => {
             )}
 
             <PaginationItem>
-              {currentPage < totalPages && (
+              {currentPage < totalPages! && (
                 <Link href={`?page=${currentPage + 1}`}>
                   <Button
                     variant="outline"

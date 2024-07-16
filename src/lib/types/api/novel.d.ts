@@ -1,4 +1,4 @@
-import { TCharacter, TPlotOutline, TWorldView } from "./agent";
+import { TChapterOutline, TCharacter, TPlotOutline, TWorldView } from "./agent";
 
 export type TNovelTaskStatus = "PENDING" | "CANCELLED" | "FINISHED";
 
@@ -20,6 +20,7 @@ export type TNovelDetails = {
   characters?: TCharacter;
   world_view?: TWorldView;
   plot_outline?: TPlotOutline;
+  chapter_outline?: TChapterOutline;
 };
 
 export type TNovelMetadata = {
@@ -27,6 +28,7 @@ export type TNovelMetadata = {
   requirements?: string;
   author_id: number | string;
   status?: "draft" | "published";
+  preparing_status?: "pending" | "preparing" | "ready";
   created_at: string;
   updated_at: string;
 };

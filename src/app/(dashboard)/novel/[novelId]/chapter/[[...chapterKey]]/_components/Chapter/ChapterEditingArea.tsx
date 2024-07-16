@@ -79,29 +79,31 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
   }, [chapterInfo, novelId]);
 
   return (
-    <div className="flex-1 h-full relative px-1" style={{ paddingBottom: '160px'}}>
-        <div className="py-2 px-4 w-full h-full overflow-auto">
-            {streamedChunks.map((chunk, index) => {
-              console.log(JSON.stringify(chunk), '-----')
-              return (
-                <React.Fragment key={chunk.id}>
-                  <StreamedChunk
-                    mapping={chunk.metadata}
-                    key={chunk.id}
-                    index={index}
-                    chunkId={chunk.id}
-                    content={chunk.content}
-                  />
-                  <SplitChunk
-                    key={chunk.id + 'split'}
-                    mapping={chunk.metadata}
-                    chunkId={chunk.id}
-                    index={index}
-                  />
-                </React.Fragment>
-              )
-            })}
-          </div>
+    <div
+      className="flex-1 h-full relative px-1"
+      style={{ paddingBottom: "160px" }}
+    >
+      <div className="py-2 px-4 w-full h-full overflow-auto">
+        {streamedChunks.map((chunk, index) => {
+          console.log(JSON.stringify(chunk), "-----");
+          return (
+            <React.Fragment key={chunk.id}>
+              <StreamedChunk
+                mapping={chunk.metadata}
+                index={index}
+                chunkId={chunk.id}
+                content={chunk.content}
+              />
+              <SplitChunk
+                key={chunk.id + "split"}
+                mapping={chunk.metadata}
+                chunkId={chunk.id}
+                index={index}
+              />
+            </React.Fragment>
+          );
+        })}
+      </div>
       <Terminal
         chapterInfo={curChapterInfo}
         chapterKey={chapterInfo.chapter_key}

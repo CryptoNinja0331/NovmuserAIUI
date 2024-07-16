@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getToken } from "../apiCall/server/getToken";
 import { POST, TResponseDto } from "../http";
 import { TNovel } from "../types/api/novel";
+import { refreshNovelPage } from "../apiCall/server/getAllNovel";
 
 export type THandleInitNovelState = {
   validatedForm?: boolean;
@@ -43,6 +44,8 @@ export async function handleInitNovel(
       },
     },
   });
+
+  await refreshNovelPage();
 
   return {
     validatedForm: true,

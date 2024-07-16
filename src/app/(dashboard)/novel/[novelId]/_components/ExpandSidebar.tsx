@@ -5,45 +5,24 @@ import { BiSolidLeftArrow, BiSolidRightArrow } from "react-icons/bi";
 import { IoMdSettings } from "react-icons/io";
 import Image from "next/image";
 import logo from "@/assets/logo-tiny.svg";
-import NovelInitForm from "./novelInitForm";
+import NovelInitForm from "../../../../../components/ui/novelInitForm";
 import { useAuth } from "@clerk/nextjs";
 import { useGetCreatedNovelQuery } from "@/lib/apiCall/client/clientAPi";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "./button";
+import { Button } from "../../../../../components/ui/button";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { useToken } from "@/lib/hooks";
-
-interface NovelDetails {
-  brain_storming: null;
-  chapter_outline: null;
-  characters: null;
-  plot_outline: null;
-  world_view: null;
-}
-
-interface NovelMetadata {
-  name: string;
-  requirements: string;
-  author_id: string;
-  created_at: string;
-  status: string;
-  updated_at: string;
-}
-
-interface Novel {
-  id: string;
-  content: null;
-  details: NovelDetails;
-  metadata: NovelMetadata;
-}
+import NovelItem from "@/app/(dashboard)/_components/TopUpDialog/NovelItem";
+import { TNovel } from "@/lib/types/api/novel";
+import { cn } from "@/lib/utils";
 
 const ExpandSidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(true);
-  const [novelData, setNovelData] = useState<Novel[]>([]);
+  const [novelData, setNovelData] = useState<TNovel[]>([]);
 
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
@@ -114,17 +93,14 @@ const ExpandSidebar = () => {
                   <>
                     <div className="div space-y-3 px-4">
                       {novelData?.map((item) => (
-                        <div
-                          onClick={() => handleNavigate(item.id)}
+                        <NovelItem
                           key={item.id}
-                          className={`font-medium text-[1.1rem] capitalize cursor-pointer p-3 rounded-lg ${
-                            pathname.includes(item.id)
-                              ? "bg-[#05020ca3]"
-                              : "bg-[#16112f65]"
-                          }`}
-                        >
-                          {item.metadata.name}
-                        </div>
+                          novelData={item}
+                          onClick={() => handleNavigate(item.id)}
+                          className={cn({
+                            "bg-[#05020ca3]": pathname.includes(item.id),
+                          })}
+                        />
                       ))}
                     </div>
 
@@ -132,13 +108,14 @@ const ExpandSidebar = () => {
                       <Button
                         onClick={handleViewMore}
                         variant="outline"
-                        className="mx-auto flex mt-6 hover:bg-background hover:text-white"
+                        className="mx-auto flex mt-6 hover:bg-background hover:text-white hover:opacity-60 hover:scale-105"
                       >
                         View More...
                       </Button>
                     )}
                   </>
                 ) : (
+                  // Show skeleton
                   <div className="space-y-8">
                     <div className="space-y-2">
                       <Skeleton className="h-3 w-[250px] bg-[#655e70]" />

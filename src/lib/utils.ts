@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import uuid from "react-uuid";
-import { TChapterTopicDoc } from './types/api/chapter';
+import { TChapterTopicDoc } from "./types/api/chapter";
 import * as _ from "lodash";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -19,9 +19,12 @@ export const cloneDeep = <T>(arg: T): T => {
  * @param topics
  * @param prevPointer
  */
-export const getNextTopicAndChunkId = (topics: TChapterTopicDoc[], prevPointer: string) => {
+export const getNextTopicAndChunkId = (
+  topics: TChapterTopicDoc[],
+  prevPointer: string
+) => {
   if (topics.length == 0 || !prevPointer) {
-    console.warn('getNextTopicAndChunkId argument is not present')
+    console.warn("getNextTopicAndChunkId argument is not present");
   }
 
   let topicIndex = -1;
@@ -30,23 +33,26 @@ export const getNextTopicAndChunkId = (topics: TChapterTopicDoc[], prevPointer: 
     const flag = topic.topic_points.some((pointer, i) => {
       if (prevPointer == pointer.id) {
         if (i < topic.topic_points.length - 1) {
-          topicIndex = index
-          pointerIndex = i + 1
-        } else if(index < topics.length - 1){
+          topicIndex = index;
+          pointerIndex = i + 1;
+        } else if (index < topics.length - 1) {
           topicIndex = index + 1;
-          pointerIndex = 0
+          pointerIndex = 0;
         }
-        return true
+        return true;
       }
-      return  false
-    })
-    return flag
-  })
+      return false;
+    });
+    return flag;
+  });
   if (topicIndex > -1 && pointerIndex > -1) {
     return {
       topic_id: topics?.[topicIndex].id,
-      topic_point_id: topics?.[topicIndex]?.topic_points?.[pointerIndex].id
-    }
+      topic_point_id: topics?.[topicIndex]?.topic_points?.[pointerIndex].id,
+    };
   }
-  return {}
-}
+  return {
+    topic_id: "",
+    topic_point_id: "",
+  };
+};
