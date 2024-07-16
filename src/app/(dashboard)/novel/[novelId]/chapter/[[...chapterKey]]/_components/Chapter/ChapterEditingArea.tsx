@@ -78,7 +78,7 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
       setCurChapterInfo(updatedChapterInfo);
       console.log("refreshed and set current chapter info");
     }
-  }, [chapterInfo.chapter_key, novelId]);
+  }, [chapterInfo, novelId]);
 
   return (
     <div className="flex-1 h-full relative px-1" style={{ paddingBottom: '160px'}}>
@@ -97,6 +97,7 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
                   <SplitChunk
                     key={chunk.id + 'split'}
                     mapping={chunk.metadata}
+                    chunkId={chunk.id}
                     index={index}
                   />
                 </React.Fragment>

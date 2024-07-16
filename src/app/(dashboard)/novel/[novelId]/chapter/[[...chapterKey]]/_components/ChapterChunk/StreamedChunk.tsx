@@ -17,7 +17,7 @@ const StreamedChunk: FC<TStreamedChunkProps> = ({ content = '', index = 0, mappi
   const [context, updateContext] = useState(content)
   const { chunk_type, topic_mapping } = mapping
   const { topic_id = '', topic_point_id = '' } = topic_mapping
-  const { currentPointerId, currentTopicId, updateCurrentId } = React.useContext(ChapterContext)
+  const { currentPointerId, currentTopicId, updateCurrentId, updateCurrentChunkId } = React.useContext(ChapterContext)
   const { updateChunkContent } = useStreamedChunksStore()
   const getChunkStyle = () => {
     if (topic_id == currentTopicId && topic_point_id == currentPointerId) {
@@ -30,6 +30,7 @@ const StreamedChunk: FC<TStreamedChunkProps> = ({ content = '', index = 0, mappi
     return { outline: 'none' }
   }
   const changeHandler = (topicId: string, pointerId: string) => {
+    updateCurrentChunkId(chunkId)
     updateCurrentId(topicId, pointerId)
   }
   const onInput = (e: any) => {
@@ -56,6 +57,7 @@ const StreamedChunk: FC<TStreamedChunkProps> = ({ content = '', index = 0, mappi
             cur.currentChunk.content &&
             cur.currentChunk.content !== chunkContent
           ) {
+            console.log(cur.currentChunk, '监听到的变化')
             setChunkContent(cur.currentChunk?.content!);
           }
         }
