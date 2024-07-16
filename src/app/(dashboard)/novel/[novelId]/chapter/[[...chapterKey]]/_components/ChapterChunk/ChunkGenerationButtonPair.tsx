@@ -6,18 +6,18 @@ import useStreamedChunksStore from "@/lib/store/chapterChunks/streamedChunksStor
 import {
   TChapterInfo,
   TChunkStreamEventDto,
-  TChunkType
+  TChunkType,
 } from "@/lib/types/api/chapter";
 import { useAuth } from "@clerk/nextjs";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { Loader2 } from "lucide-react";
-import React, { FC, useContext, useState } from 'react';
+import React, { FC, useContext, useState } from "react";
 import { FaRobot } from "react-icons/fa6";
 import { GrPowerReset } from "react-icons/gr";
 import { toast } from "sonner";
-import { ChapterContext } from '../../context/useChapterContext';
-import { TStreamedChunk } from '@/lib/store/chapterChunks/streamedChunksStore';
-import { getNextTopicAndChunkId, getUUid } from '@/lib/utils';
+import { ChapterContext } from "../../context/useChapterContext";
+import { TStreamedChunk } from "@/lib/store/chapterChunks/streamedChunksStore";
+import { getNextTopicAndChunkId, getUUid } from "@/lib/utils";
 
 export type TChunkGenerationButtonPairProps = {
   chapterKey: string;
@@ -31,10 +31,10 @@ export type TChunkGenerationButtonPairProps = {
 const TYPING_SPEED = 24;
 export type TGenerationParams = {
   prev_chunk?: any;
-  is_first_chunk: boolean,
-  user_feedback: string,
-  chunk_type: TChunkType,
-}
+  is_first_chunk: boolean;
+  user_feedback: string;
+  chunk_type: TChunkType;
+};
 const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
   chapterKey,
   userFeedback,
@@ -47,16 +47,16 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
     setIsStreaming,
     getChunkById,
     streamedChunks,
-    replaceChunkContentById
+    replaceChunkContentById,
   } = useStreamedChunksStore();
 
   const [generating, setGenerating] = useState<boolean>(false);
   const [regenerateLoading, setRegenrateLoading] = useState(false);
-  const { currentTopicId, currentPointerId, currentChunkId } = useContext(ChapterContext)
+  const { currentTopicId, currentPointerId, currentChunkId } =
+    useContext(ChapterContext);
   const { getToken } = useAuth();
 
   const chapterChunks = chapterInfo.details?.chapter_chunks ?? [];
-
 
   const isFirstChunk = React.useMemo<boolean>(() => {
     return chapterChunks.length === 0;
@@ -67,33 +67,33 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
       return {
         is_first_chunk: isFirstChunk,
         user_feedback: userFeedback,
-        chunk_type: 'leader',
-      }
+        chunk_type: "leader",
+      };
     }
-    let prevChunk = getChunkById(currentChunkId)
-    let chunkType = 'follower' as const
+    let prevChunk = getChunkById(currentChunkId);
+    let chunkType = "follower" as const;
 
     const result: TGenerationParams = {
       is_first_chunk: isFirstChunk,
       user_feedback: userFeedback,
       chunk_type: chunkType,
-    }
+    };
     if (prevChunk) {
       result.prev_chunk = {
-          id: prevChunk.id,
-          metadata: {
+        id: prevChunk.id,
+        metadata: {
           topic_mapping: {
-            topic_id: prevChunk.metadata.topic_mapping.topic_id,
-            topic_point_id: prevChunk.metadata.topic_mapping.topic_point_id,
+            topic_id: prevChunk?.metadata.topic_mapping.topic_id,
+            topic_point_id: prevChunk?.metadata.topic_mapping.topic_point_id,
           },
           chunk_type: prevChunk.metadata.chunk_type,
           generate_from: prevChunk.metadata.generate_from,
-        }
-      }
+        },
+      };
     }
-    console.log(result, 'result')
-    return result
-  }
+    console.log(result, "result");
+    return result;
+  };
 
   const stopGeneratingWithTimeout = React.useCallback(
     (timeout: number = 3_000) => {
@@ -103,7 +103,7 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
     },
     []
   );
-  const getNewChunk = () => {
+  const getNewChunk = (): TStreamedChunk => {
     if (isFirstChunk && streamedChunks.length == 0) {
       const topics = chapterInfo.details.chapter_topics?.topics || [];
       return {
@@ -113,19 +113,22 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
         metadata: {
           topic_mapping: {
             topic_point_id: topics[0].topic_points[0].id,
-            topic_id: topics[0].id
+            topic_id: topics[0].id,
           },
-          generate_from: 'ai',
-          chunk_type: 'leader'
-        }
-      }
+          generate_from: "ai",
+          chunk_type: "leader",
+        },
+      };
     }
     if (nextPointChecked) {
       const lastChunk = streamedChunks[streamedChunks.length - 1];
       const prevPointer = lastChunk.metadata.topic_mapping.topic_point_id;
       const topics = chapterInfo.details.chapter_topics?.topics || [];
-      const { topic_point_id, topic_id } = getNextTopicAndChunkId(topics, prevPointer)
-      console.log(prevPointer, topic_id, topic_point_id)
+      const { topic_point_id, topic_id } = getNextTopicAndChunkId(
+        topics,
+        prevPointer
+      );
+      console.log(prevPointer, topic_id, topic_point_id);
       return {
         id: getUUid(),
         isStreaming: true,
@@ -133,28 +136,29 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
         metadata: {
           topic_mapping: {
             topic_point_id: topic_point_id,
-            topic_id: topic_id
+            topic_id: topic_id,
           },
-          generate_from: 'ai',
-          chunk_type: 'leader'
-        }
-      }
+          generate_from: "ai",
+          chunk_type: "leader",
+        },
+      };
     } else if (currentTopicId && currentPointerId) {
-      return  {
+      return {
         id: getUUid(),
         isStreaming: true,
         content: "",
         metadata: {
-          topic_mapping: { // todo 下一个pointer topicId 和pointerId 应该传什么
+          topic_mapping: {
+            // todo 下一个pointer topicId 和pointerId 应该传什么
             topic_id: currentTopicId,
-            topic_point_id: currentPointerId
+            topic_point_id: currentPointerId,
           },
-          generate_from: 'ai',
-          chunk_type: 'follower'
-        }
-      }
+          generate_from: "ai",
+          chunk_type: "follower",
+        },
+      };
     } else {
-      const preChunk = streamedChunks[streamedChunks.length - 1]
+      const preChunk = streamedChunks[streamedChunks.length - 1];
       return {
         id: getUUid(),
         isStreaming: true,
@@ -162,14 +166,14 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
         metadata: {
           topic_mapping: {
             topic_id: preChunk.metadata.topic_mapping.topic_id,
-            topic_point_id: preChunk.metadata.topic_mapping.topic_point_id
+            topic_point_id: preChunk.metadata.topic_mapping.topic_point_id,
           },
-          generate_from: 'ai',
-          chunk_type:  'follower'
-        }
-      }
+          generate_from: "ai",
+          chunk_type: "follower",
+        },
+      };
     }
-  }
+  };
   const handleNextChunk = async () => {
     const userToken = await getToken({ template: "UserToken" });
     setGenerating(true);
@@ -185,18 +189,18 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
         body: JSON.stringify(getStreamGenerationPayload()),
         onopen: async (resp) => {
           if (resp.ok && resp.status === 201) {
-            console.log(resp)
+            console.log(resp);
             counter = 1;
-            let newChunk: any = getNewChunk();
-              appendChunk(newChunk, currentChunkId);
-              console.log("Connection made ", resp);
-            } else if (
-              resp.status >= 400 &&
-              resp.status < 500 &&
-              resp.status !== 429
-            ) {
-              console.log("Client side error ", resp);
-            } else if (
+            let newChunk: TStreamedChunk = getNewChunk();
+            appendChunk(newChunk, currentChunkId);
+            console.log("Connection made ", resp);
+          } else if (
+            resp.status >= 400 &&
+            resp.status < 500 &&
+            resp.status !== 429
+          ) {
+            console.log("Client side error ", resp);
+          } else if (
             resp.status >= 400 &&
             resp.status < 500 &&
             resp.status !== 429
@@ -223,7 +227,6 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
           setTimeout(() => {
             appendChunkContent(content, isFinal);
           }, TYPING_SPEED * counter);
-
         },
         onclose: () => {
           console.log("Connection closed by the server");
@@ -267,9 +270,9 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
         body: JSON.stringify(payload),
         onopen: async (resp) => {
           if (resp.ok && resp.status === 201) {
-            console.log(resp)
+            console.log(resp);
             counter = 1;
-            replaceChunkContentById('', currentChunkId)
+            replaceChunkContentById("", currentChunkId);
             console.log("Connection made ", resp);
           } else if (
             resp.status >= 400 &&
@@ -294,7 +297,6 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
           setTimeout(() => {
             appendChunkContent(content, isFinal);
           }, TYPING_SPEED * counter);
-
         },
         onclose: () => {
           console.log("Connection closed by the server");
