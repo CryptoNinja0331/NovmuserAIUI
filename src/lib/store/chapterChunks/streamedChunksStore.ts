@@ -8,6 +8,7 @@ import { getToken } from "@/lib/apiCall/server/getToken";
 export type TStreamedChunk = {
   id: string;
   content: string;
+  chunk_content?: string;
   isStreaming: boolean; // 判断是否正在流式输出过程中
   metadata: TChapterChunkMetaData;
   has_persisted?: boolean; // 是否要替换id
@@ -79,11 +80,11 @@ const useStreamedChunksStore = create(
         if (!chunkId) {
           return chunkList[chunkList.length - 1]
         }
-        return chunkList?.find(item => item.id = chunkId)
+        return chunkList.find(item => item.id = chunkId)
       },
       deleteChunk: async (chunkId) => {
         const chapterInfo = get().chapterInfo;
-        const res = await PATCH({
+        const res: TResponseDto<any> = await PATCH({
           url: `/chapter/${chapterInfo?.chapter_key}/delete/chunk/${chunkId}`,
           token: await getToken(),
         })
@@ -232,7 +233,7 @@ const useStreamedChunksStore = create(
           const saveChunk = async () => {
             const chapterInfo = get().chapterInfo
             const streamedChunks = get().streamedChunks
-            const res = await PATCH({
+            const res: TResponseDto<any> = await PATCH({
               url: `/chapter/${chapterInfo?.chapter_key}/fullEdit/chunks`,
               token: await getToken(),
               data: {
@@ -241,7 +242,7 @@ const useStreamedChunksStore = create(
                     ...item,
                     chunk_content: item.content
                   }
-                }).filter((item: TStreamedChunk) => item.chunk_content.trim() != '' && item.id !== '')
+                }).filter((item: TStreamedChunk) => item?.chunk_content?.trim() != '' && item.id !== '')
               }
             })
             if (res.code == 200) {

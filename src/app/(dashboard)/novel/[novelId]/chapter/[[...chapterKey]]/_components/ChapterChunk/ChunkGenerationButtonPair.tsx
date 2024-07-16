@@ -1,14 +1,12 @@
 "use client";
 import BalanceNotEnoughAlert from "@/components/alert/BalanceNotEnoughAlert";
 import { Button } from "@/components/ui/button";
-import { customRevalidateTag } from "@/lib/actions/revalidateTag";
 import emitter from "@/lib/emitters";
-import { useGetClientToken } from "@/lib/hooks";
-import { PATCH } from "@/lib/http";
 import useStreamedChunksStore from "@/lib/store/chapterChunks/streamedChunksStore";
 import {
   TChapterInfo,
   TChunkStreamEventDto,
+  TChunkType
 } from "@/lib/types/api/chapter";
 import { useAuth } from "@clerk/nextjs";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
@@ -18,21 +16,25 @@ import { FaRobot } from "react-icons/fa6";
 import { GrPowerReset } from "react-icons/gr";
 import { toast } from "sonner";
 import { ChapterContext } from '../../context/useChapterContext';
-import { TStreamedChunk } from '../../../../../../../../lib/store/chapterChunks/streamedChunksStore';
-import { getNextTopicAndChunkId, getUUid } from '../../../../../../../../lib/utils';
+import { TStreamedChunk } from '@/lib/store/chapterChunks/streamedChunksStore';
+import { getNextTopicAndChunkId, getUUid } from '@/lib/utils';
 
 export type TChunkGenerationButtonPairProps = {
   chapterKey: string;
   nextPointChecked: boolean;
-  selectedChunkId?: string;
-  userFeedback?: string;
+  userFeedback: string;
   replaceChunkText: (chunkId: string, newText: string) => void;
   chapterInfo: TChapterInfo;
   refreshChapterInfo: () => Promise<void>;
 };
 
 const TYPING_SPEED = 24;
-
+export type TGenerationParams = {
+  prev_chunk?: any;
+  is_first_chunk: boolean,
+  user_feedback: string,
+  chunk_type: TChunkType,
+}
 const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
   chapterKey,
   userFeedback,
@@ -69,12 +71,17 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
       }
     }
     let prevChunk = getChunkById(currentChunkId)
-    let chunkType = 'follower'
+    let chunkType = 'follower' as const
 
-    const result = {
-      prev_chunk: {
-        id: prevChunk.id,
-        metadata: {
+    const result: TGenerationParams = {
+      is_first_chunk: isFirstChunk,
+      user_feedback: userFeedback,
+      chunk_type: chunkType,
+    }
+    if (prevChunk) {
+      result.prev_chunk = {
+          id: prevChunk.id,
+          metadata: {
           topic_mapping: {
             topic_id: prevChunk.metadata.topic_mapping.topic_id,
             topic_point_id: prevChunk.metadata.topic_mapping.topic_point_id,
@@ -82,10 +89,7 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
           chunk_type: prevChunk.metadata.chunk_type,
           generate_from: prevChunk.metadata.generate_from,
         }
-      },
-      is_first_chunk: isFirstChunk,
-      user_feedback: userFeedback,
-      chunk_type: chunkType,
+      }
     }
     console.log(result, 'result')
     return result
@@ -183,7 +187,7 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
           if (resp.ok && resp.status === 201) {
             console.log(resp)
             counter = 1;
-            let newChunk: TStreamedChunk = getNewChunk();
+            let newChunk: any = getNewChunk();
               appendChunk(newChunk, currentChunkId);
               console.log("Connection made ", resp);
             } else if (

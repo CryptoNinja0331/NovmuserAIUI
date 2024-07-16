@@ -4,16 +4,10 @@ import { TChapterInfo, TChunkType } from "@/lib/types/api/chapter";
 import ChunkGenerationButtonPair from "./ChunkGenerationButtonPair";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect, useCallback, useRef, FC, useContext } from 'react';
+import { useState, FC } from 'react';
 import { IoMdEye } from "react-icons/io";
 import { Checkbox } from "@/components/ui/checkbox";
-import SimpleBar from "simplebar-react";
-import { useAuth } from "@clerk/nextjs";
-import { updateHumanFirstChunk } from "@/lib/store/features/chunkSlice";
-import { useAppDispatch } from "@/lib/hooks";
-import { customRevalidateTag } from "@/lib/actions/revalidateTag";
 import { cn } from "@/lib/utils";
-import { ChapterContext } from '../../context/useChapterContext';
 
 export type TTerminalProps = {
   chapterKey: string;
@@ -30,7 +24,6 @@ const Terminal: FC<TTerminalProps> = ({
 }) => {
   const [nextPointChecked, setNextPointChecked] = useState(true);
   const [userFeedback, setUserFeedback] = useState("");
-  const { currentChunkId } = useContext(ChapterContext)
   const [generatedChunks, setGeneratedChunks] = useState<Record<string, any>>(
     {}
   );
@@ -104,7 +97,6 @@ const Terminal: FC<TTerminalProps> = ({
           </div>
           <ChunkGenerationButtonPair
             userFeedback={userFeedback}
-            selectedChunkId={currentChunkId}
             chapterInfo={chapterInfo}
             nextPointChecked={nextPointChecked}
             chapterKey={chapterKey}
