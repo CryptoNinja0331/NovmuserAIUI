@@ -8,7 +8,7 @@ interface CharacterProfileUiProps {
 }
 
 const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({ novelMsg }) => {
-    const data = JSON.parse(novelMsg.msg)
+    const data = novelMsg.msg || {}
 
 
     return (
