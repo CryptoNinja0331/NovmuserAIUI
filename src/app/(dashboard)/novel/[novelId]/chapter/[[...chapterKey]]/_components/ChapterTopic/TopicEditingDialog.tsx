@@ -19,7 +19,6 @@ import TopicEditingTree, {
   TTopicEditingTreeHandle,
 } from "./TopicEditingTree";
 import { showErrorAlert } from "@/lib/alerts";
-import { refreshChapterInfo } from "@/lib/apiCall/server/getOrInitChapterInfo";
 
 export type TTopicEditingDialogProps = {
   novelId: string;

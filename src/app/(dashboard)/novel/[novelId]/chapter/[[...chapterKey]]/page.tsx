@@ -2,13 +2,15 @@ import NovelSidebar from "@/components/singleNovel/NovelSidebar";
 import { getOrInitChapterInfo } from "@/lib/apiCall/server/getOrInitChapterInfo";
 import { getSingleNovel } from "@/lib/apiCall/server/getSingleNovel";
 import ChapterWrapper from './_components/chapterWrapper';
+import { TResponseDto } from '@/lib/http';
+import { TNovel } from '@/lib/types/api/novel';
 const page = async ({
   params,
 }: {
   params: { chapterKey: string[]; novelId: string };
 }) => {
   console.log("🚀 ~ chapterKey:", params.chapterKey);
-  const response = await getSingleNovel(params.novelId);
+  const response: TResponseDto<TNovel> = await getSingleNovel(params.novelId);
   const chapterKeySegments: string[] = params.chapterKey;
   const chapterKey = chapterKeySegments[0];
 

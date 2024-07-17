@@ -8,8 +8,6 @@ import WorldViewUi from "./aiAgent/WorldViewUi";
 import CharacterProfileUi from "./aiAgent/CharacterProfileUi";
 import ChapterOutlineUi from "./aiAgent/ChapterOutlineUi";
 import PlotUi from "./aiAgent/PlotUi";
-import SimpleBar from "simplebar-react";
-import "simplebar-react/dist/simplebar.min.css";
 
 interface Agent {
   name: string;
@@ -22,7 +20,7 @@ interface AgentUiProps {
   finishedPrepare: boolean | null;
 }
 
-const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
+const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare = true }) => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [activeTab, setActiveTab] = useState<number>(0);
   const [preparing, setPreparing] = useState<boolean>(true);
@@ -67,8 +65,8 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
       {agents.length > 0 && (
         <div className="flex gap-8 w-full">
           <div className="w-[80%]">
-            <SimpleBar style={{ maxHeight: "90vh" }}>
-              <div className=" bg-[#170F21]  overflow-y-auto overflow-x-hidden agent-card border-2 shadow-md border-input p-6 text-sm rounded-md">
+            <div style={{ maxHeight: "90vh" }} className="overflow-y-auto overflow-x-hidden">
+              <div className=" bg-[#170F21] agent-card border-2 shadow-md border-input p-6 text-sm rounded-md">
                 {agents[activeTab] && agents[activeTab].novel !== null ? (
                   activeTab === 0 ? (
                     <BrainstormingUi novelMsg={agents[activeTab].novel} />
@@ -87,9 +85,9 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
                   <div>{agents[activeTab].name} is working, please wait...</div>
                 ) : null}
               </div>
-            </SimpleBar>
+            </div>
           </div>
-          <div className="w-[20%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border">
+          <div className="w-[20%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border overflow-auto" style={{ maxHeight: '90vh' }}>
             {agents.map((agent, index) => (
               <div key={agent.name} onClick={() => handleTabChange(index)}>
                 <div

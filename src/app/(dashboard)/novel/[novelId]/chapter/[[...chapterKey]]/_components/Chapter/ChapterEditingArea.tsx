@@ -85,9 +85,8 @@ const NovelEditingArea: FC<TNovelEditingAreaProps> = ({
     >
       <div className="py-2 px-4 w-full h-full overflow-auto">
         {streamedChunks.map((chunk, index) => {
-          console.log(JSON.stringify(chunk), "-----");
           return (
-            <React.Fragment key={chunk.id}>
+            <React.Fragment key={index + 'fragment'}>
               <StreamedChunk
                 mapping={chunk.metadata}
                 index={index}
