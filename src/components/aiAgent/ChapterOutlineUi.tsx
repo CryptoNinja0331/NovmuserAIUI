@@ -22,12 +22,11 @@ interface ChapterOutlineData {
 }
 
 interface ChapterOutlineUiProps {
-    novelMsg: string | null;
+    novelMsg: any | null;
 }
 
 const ChapterOutlineUi: React.FC<ChapterOutlineUiProps> = ({ novelMsg }) => {
-    const dataMain = JSON.parse(novelMsg || '{}');
-    const data: ChapterOutlineData = JSON.parse(dataMain.msg || '{}');
+    const data: ChapterOutlineData = novelMsg.msg;
 
     const renderCharacters = (characters: Character[]) => {
         return characters?.map((character, index) => (

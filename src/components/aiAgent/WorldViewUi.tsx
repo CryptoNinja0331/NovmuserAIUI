@@ -3,12 +3,11 @@ import { FaRegEdit } from "react-icons/fa";
 import { FormGroup } from '../ui/form-group';
 
 interface WorldViewUiProps {
-    novelMsg: string | null;
+    novelMsg: any | null;
 }
 
 const WorldViewUi: React.FC<WorldViewUiProps> = ({ novelMsg }) => {
-    const data = JSON.parse(novelMsg || '{}');
-    const { novel_type, novel_style, point_of_view, geography, politics, economy, culture, history } = JSON.parse(data.msg);
+    const { novel_type, novel_style, point_of_view, geography, politics, economy, culture, history } = novelMsg.msg;
 
     return (
         <div>

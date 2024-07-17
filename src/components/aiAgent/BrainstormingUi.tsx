@@ -3,12 +3,11 @@ import React from 'react';
 import brainImage from '../../assets/images/creative-brain.png';
 
 interface BrainstormingUiProps {
-    novelMsg: string | null;
+    novelMsg: any | null;
 }
 
 const BrainstormingUi: React.FC<BrainstormingUiProps> = ({ novelMsg }) => {
-    const parsedMsg = novelMsg ? JSON.parse(novelMsg) : null;
-    const msg = parsedMsg ? parsedMsg.msg : '';
+    const msg = novelMsg ? novelMsg.msg : '';
     return (
         <div className='w-full    '>
             {/* <div className='bubble' /> */}

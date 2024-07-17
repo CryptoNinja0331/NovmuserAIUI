@@ -40,12 +40,11 @@ interface PlotData {
 }
 
 interface PlotUiProps {
-    novelMsg: string | null;
+    novelMsg: any | null;
 }
 
 const PlotUi: React.FC<PlotUiProps> = ({ novelMsg }) => {
-    const dataMain = JSON.parse(novelMsg || '{}');
-    const data: PlotData = JSON.parse(dataMain.msg || '{}');
+    const data: PlotData = JSON.parse(novelMsg.msg || '{}');
 
     const renderSubplots = (subplots: Subplot[]) => {
         return subplots?.map((subplot, index) => (

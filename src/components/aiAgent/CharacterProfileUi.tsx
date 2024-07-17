@@ -4,12 +4,11 @@ import { Textarea } from '../ui/textarea';
 
 
 interface CharacterProfileUiProps {
-    novelMsg: string | null;
+    novelMsg: any | null;
 }
 
 const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({ novelMsg }) => {
-    const dataMain = JSON.parse(novelMsg || '{}');
-    const data = JSON.parse(dataMain.msg)
+    const data = JSON.parse(novelMsg.msg)
 
 
     return (

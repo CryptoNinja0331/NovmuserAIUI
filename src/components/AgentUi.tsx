@@ -11,6 +11,7 @@ import PlotUi from "./aiAgent/PlotUi";
 
 interface Agent {
   name: string;
+  key: string;
   novel: string | null;
   working: boolean;
 }
@@ -19,8 +20,15 @@ interface AgentUiProps {
   novelMsg: string | null;
   finishedPrepare: boolean | null;
 }
-
-const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare = true }) => {
+const AgentTitleKey = {
+  "brain_storming": "brain Storming",
+  "novel_world_generation": 'novel World',
+  "character_generation": "character",
+  "plot_planning": 'plot Planning',
+  "chapter_outline_generation": "chapter Outline"
+}
+const keys = Object.keys(AgentTitleKey)
+const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare  }) => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [activeTab, setActiveTab] = useState<number>(0);
   const [preparing, setPreparing] = useState<boolean>(true);
@@ -31,28 +39,30 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare = true }) =
       if (message.msg_key === "finish_prepare") {
         return;
       }
-
-      setAgents((prevAgents) => {
-        const updatedAgents = prevAgents.map((agent) => {
-          if (agent.novel === null) {
-            return { ...agent, novel: novelMsg, working: false };
+      console.log(message, 'message')
+      setAgents(preAgents => {
+        if (keys.includes(message.msg_key)) {
+          const index = preAgents.findIndex(item => item.key == message.msg_key)
+          if (index === -1) {
+            preAgents.push({
+              name: AgentTitleKey[message.msg_key],
+              key: message.msg_key,
+              novel: message,
+              working: false
+            })
+          } else {
+            preAgents[index] = {
+              name: AgentTitleKey[message.msg_key],
+              key: message.msg_key,
+              novel: message,
+              working: false
+            }
           }
-          return agent;
-        });
-
-        if (!prevAgents.some((agent) => agent.novel === null)) {
-          return [
-            ...prevAgents,
-            {
-              name: `Agent ${prevAgents.length + 1}`,
-              novel: novelMsg,
-              working: false,
-            },
-          ];
         }
 
-        return updatedAgents;
-      });
+        return preAgents
+      })
+
     }
   }, [novelMsg]);
 
@@ -89,7 +99,7 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare = true }) =
           </div>
           <div className="w-[20%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border overflow-auto" style={{ maxHeight: '90vh' }}>
             {agents.map((agent, index) => (
-              <div key={agent.name} onClick={() => handleTabChange(index)}>
+              <div key={agent.key} onClick={() => handleTabChange(index)}>
                 <div
                   className={`${
                     activeTab === index ? "active-tab" : ""
