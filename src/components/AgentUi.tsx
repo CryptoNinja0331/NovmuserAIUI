@@ -28,8 +28,8 @@ const AgentTitleKey: Record<TNovelPrepareWsMsgKeys, string> = {
   character_generation: "Character Profile",
   plot_planning: "Plot",
   chapter_outline_generation: "Chapter Outline",
-  finish_prepare: "",
-  prepare_novel: "",
+  // finish_prepare: "",
+  // prepare_novel: "",
 };
 
 const keys = Object.keys(AgentTitleKey);
