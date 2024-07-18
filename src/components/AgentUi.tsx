@@ -23,13 +23,13 @@ interface AgentUiProps {
 }
 
 const AgentTitleKey: Record<TNovelPrepareWsMsgKeys, string> = {
-  brain_storming: "Brain Storming",
-  novel_world_generation: "World View",
-  character_generation: "Character Profile",
-  plot_planning: "Plot",
-  chapter_outline_generation: "Chapter Outline",
-  // finish_prepare: "",
-  // prepare_novel: "",
+  brain_storming: "Leader Writer",
+  novel_world_generation: "World Builder",
+  character_generation: "Character Designer",
+  plot_planning: "Plot Designer",
+  chapter_outline_generation: "Outline Planner",
+  finish_prepare: "",
+  prepare_novel: "",
 };
 
 const keys = Object.keys(AgentTitleKey);
