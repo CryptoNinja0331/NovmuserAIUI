@@ -52,6 +52,8 @@ const ExpandSidebar = () => {
     router.push(`/allnovels`, { scroll: false });
   };
 
+  console.log(" ~ ExpandSidebar rendering");
+
   return (
     <div
       className={`h-full transition-all duration-500 ease-in-out ${

@@ -38,7 +38,7 @@ const TopicRoadMapTree: FC<TTopicRoadMapTreeProps> = ({
     <div className="flex flex-col gap-2 my-2">
       {roadMapTreeData?.map((topicTreeNode) => {
         return (
-          <>
+          <React.Fragment key={topicTreeNode.id}>
             <TopicResourceNodeCard
               key={topicTreeNode.id}
               {...{
@@ -72,7 +72,7 @@ const TopicRoadMapTree: FC<TTopicRoadMapTreeProps> = ({
                 </div>
               );
             })}
-          </>
+          </React.Fragment>
         );
       })}
     </div>

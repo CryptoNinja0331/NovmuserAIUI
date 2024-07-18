@@ -95,6 +95,7 @@ const NovelItem: FC<TNovelItemProps> = ({
     };
 
     if (!intervalRef.current) {
+      console.log("ready to set internal", novelData.id);
       intervalRef.current = setInterval(async () => {
         try {
           const novelPreparingTaskRespDto = await getNovelPreparingTask(
@@ -112,7 +113,8 @@ const NovelItem: FC<TNovelItemProps> = ({
               }
               return preStatus;
             });
-          } else if (taskStatus === "FINISHED") {
+          } else {
+            setTimeout(() => clearInterval(intervalRef.current), 1_000);
             setPreparingStatus("ready");
           }
         } catch (error) {
@@ -139,6 +141,8 @@ const NovelItem: FC<TNovelItemProps> = ({
       }, 1_500);
     }
   }, [get, getClientToken, novelData.id, preparingStatus]);
+
+  console.log("🚀 ~ intervalRef.current;:", intervalRef.current);
 
   return (
     <div
