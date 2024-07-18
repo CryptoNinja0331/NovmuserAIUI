@@ -86,11 +86,14 @@ const NovelItem: FC<TNovelItemProps> = ({
   );
 
   React.useEffect(() => {
-    emitter.on("novelItem-interval", (novelId) => {
+    const unSub = emitter.on("novelItem-interval", (novelId) => {
       if (novelId === novelData.id) {
         setNeedToInitInterval(true);
       }
     });
+    return () => {
+      unSub();
+    };
   }, [novelData.id]);
 
   React.useEffect(() => {
