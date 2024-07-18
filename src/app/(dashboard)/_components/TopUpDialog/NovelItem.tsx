@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { TooltipWrapper } from "@/components/ui/tooltip";
 import useClientHttp from "@/hooks/useClientHttp";
+import emitter from "@/lib/emitters";
 import { useGetClientToken } from "@/lib/hooks";
 import { TResponseDto } from "@/lib/http";
 import {
@@ -80,7 +81,20 @@ const NovelItem: FC<TNovelItemProps> = ({
   const { getClientToken } = useGetClientToken();
   const intervalRef = React.useRef<any>(null);
 
+  const [needToInitInterval, setNeedToInitInterval] = React.useState<boolean>(
+    novelData.metadata.preparing_status === "preparing"
+  );
+
   React.useEffect(() => {
+    emitter.on("novelItem-interval", (novelId) => {
+      if (novelId === novelData.id) {
+        setNeedToInitInterval(true);
+      }
+    });
+  }, [novelData.id]);
+
+  React.useEffect(() => {
+    console.log("🚀 ~ needToInitInterval:", needToInitInterval);
     if (preparingStatus === "ready") {
       return;
     }
@@ -94,7 +108,14 @@ const NovelItem: FC<TNovelItemProps> = ({
       });
     };
 
-    if (!intervalRef.current) {
+    const doClearInterval = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+
+    if (!intervalRef.current && needToInitInterval) {
       console.log("ready to set internal", novelData.id);
       intervalRef.current = setInterval(async () => {
         try {
@@ -107,6 +128,7 @@ const NovelItem: FC<TNovelItemProps> = ({
           );
           const taskStatus = novelPreparingTaskRespDto.data?.status;
           if (taskStatus === "PENDING") {
+            // The task is running
             setPreparingStatus((preStatus) => {
               if (preStatus === "pending") {
                 return "preparing";
@@ -114,33 +136,21 @@ const NovelItem: FC<TNovelItemProps> = ({
               return preStatus;
             });
           } else {
-            setTimeout(() => clearInterval(intervalRef.current), 1_000);
+            setTimeout(() => doClearInterval(), 1_000);
             setPreparingStatus("ready");
           }
         } catch (error) {
           console.error("🚀 ~ intervalRef.current=setInterval ~ error:", error);
-          if (!(error instanceof Error && error.cause)) {
-            clearInterval(intervalRef.current);
-            return;
-          }
-          if (error.cause === 404) {
-            console.log(
-              "🚀 ~ intervalRef.current=setInterval ~ error.cause:",
-              error.cause
-            );
-            setPreparingStatus((preparingStatus) => {
-              if (preparingStatus === "preparing") {
-                setTimeout(() => clearInterval(intervalRef.current), 1_000);
-                return "ready";
-              } else {
-                return preparingStatus;
-              }
-            });
-          }
+          clearInterval(intervalRef.current);
         }
-      }, 1_500);
+      }, 2_000);
     }
-  }, [get, getClientToken, novelData.id, preparingStatus]);
+
+    return () => {
+      console.log("novel item unmounted", novelData.id);
+      doClearInterval();
+    };
+  }, [get, getClientToken, needToInitInterval, novelData.id, preparingStatus]);
 
   console.log("🚀 ~ intervalRef.current;:", intervalRef.current);
 
