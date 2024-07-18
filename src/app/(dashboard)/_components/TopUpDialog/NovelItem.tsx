@@ -106,7 +106,7 @@ const NovelItem: FC<TNovelItemProps> = ({
             novelPreparingTaskRespDto
           );
           const taskStatus = novelPreparingTaskRespDto.data?.status;
-          if (taskStatus === "PENDING") {
+          if (taskStatus === "PENDING" || taskStatus == "CANCELLED") {
             setPreparingStatus((preStatus) => {
               if (preStatus === "pending") {
                 return "preparing";

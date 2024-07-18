@@ -9,6 +9,7 @@ import CharacterProfileUi from "./aiAgent/CharacterProfileUi";
 import ChapterOutlineUi from "./aiAgent/ChapterOutlineUi";
 import PlotUi from "./aiAgent/PlotUi";
 import { TNovelPrepareWsMsgKeys } from "@/lib/types/api/websocket";
+import { cloneDeep } from 'lodash-es';
 
 interface Agent {
   name: string;
@@ -28,8 +29,8 @@ const AgentTitleKey: Record<TNovelPrepareWsMsgKeys, string> = {
   character_generation: "Character Designer",
   plot_planning: "Plot Designer",
   chapter_outline_generation: "Outline Planner",
-  finish_prepare: "",
-  prepare_novel: "",
+  // finish_prepare: "",
+  // prepare_novel: "",
 };
 
 const keys = Object.keys(AgentTitleKey);
@@ -47,19 +48,23 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
       }
       console.log(message, "message");
       setAgents((preAgents) => {
+        let updateAgent = cloneDeep(preAgents)
         if (keys.includes(message.msg_key)) {
-          const index = preAgents.findIndex(
+          const index = updateAgent.findIndex(
             (item) => item.key == message.msg_key
           );
           if (index === -1) {
-            preAgents.push({
-              name: AgentTitleKey[msgKey],
-              key: message.msg_key,
-              novel: message,
-              working: false,
-            });
+            updateAgent = [
+              ...updateAgent,
+              {
+                name: AgentTitleKey[msgKey],
+                key: message.msg_key,
+                novel: message,
+                working: false,
+              }
+            ];
           } else {
-            preAgents[index] = {
+            updateAgent[index] = {
               name: AgentTitleKey[msgKey],
               key: message.msg_key,
               novel: message,
@@ -67,8 +72,8 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
             };
           }
         }
-
-        return preAgents;
+        console.log(updateAgent, 'updateAgent')
+        return updateAgent;
       });
     }
   }, [novelMsg]);
@@ -116,15 +121,13 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
                 <div
                   className={`${
                     activeTab === index ? "active-tab" : ""
-                  }  relative list-none cursor-pointer flex gap-4 items-center justify-between agent-sidebar-item`}
+                  }  relative list-none cursor-pointer flex gap-4 items-center justify-center agent-sidebar-item`}
                 >
-                  <div className="flex gap-2 items-center">
-                    <div className="item-icon-conatiner">
-                      <FaRobot className="text-[1.5rem] item-icon" />
-                    </div>
+                  <div className="flex flex-col gap-3 items-center">
+                    <Image src={`/images/${agent.key}.jpeg`} style={{ borderRadius: '100%', overflow: 'hidden'}} alt={agent.key} width={80} height={80} />
                     <span className="item-name">{agent.name}</span>
                   </div>
-                  <Image src={aiAgent} alt="ai gent" width={20} height={20} />
+
                 </div>
               </div>
             ))}

@@ -44,7 +44,7 @@ interface PlotUiProps {
 }
 
 const PlotUi: React.FC<PlotUiProps> = ({ novelMsg }) => {
-    const data: PlotData = novelMsg.msg || '{}';
+    const data: PlotData = novelMsg.msg || {};
 
     const renderSubplots = (subplots: Subplot[]) => {
         return subplots?.map((subplot, index) => (
