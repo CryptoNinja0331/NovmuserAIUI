@@ -13,6 +13,7 @@ import { TResponseDto } from "@/lib/http";
 import React from "react";
 import { useDispatch } from "react-redux";
 import BalanceNotEnoughAlert from "./alert/BalanceNotEnoughAlert";
+import emitter from "@/lib/emitters";
 
 interface PrepareNovelResponse {
   success: boolean;
@@ -132,6 +133,7 @@ const PrepareButton: React.FC<{
         token: await getClientToken(),
       });
       setPrepareNovel(respDto);
+      emitter.emit("novelItem-interval", novelId);
     } catch (error) {
       console.error("Error:", error);
       // Handle errors, e.g., show an error message to the user

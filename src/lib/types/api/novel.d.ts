@@ -1,10 +1,6 @@
 import { TChapterOutline, TCharacter, TPlotOutline, TWorldView } from "./agent";
 
-export type TNovelTaskStatus =
-  | "NOT_FOUND"
-  | "PENDING"
-  | "CANCELLED"
-  | "FINISHED";
+export type TNovelTaskStatus = "PENDING" | "CANCELLED" | "FINISHED";
 
 export type TNovelDetailsFields =
   | "brain_storming"
