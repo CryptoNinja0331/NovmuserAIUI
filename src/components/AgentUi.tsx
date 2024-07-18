@@ -8,6 +8,7 @@ import WorldViewUi from "./aiAgent/WorldViewUi";
 import CharacterProfileUi from "./aiAgent/CharacterProfileUi";
 import ChapterOutlineUi from "./aiAgent/ChapterOutlineUi";
 import PlotUi from "./aiAgent/PlotUi";
+import { TNovelPrepareWsMsgKeys } from "@/lib/types/api/websocket";
 
 interface Agent {
   name: string;
@@ -20,15 +21,19 @@ interface AgentUiProps {
   novelMsg: string | null;
   finishedPrepare: boolean | null;
 }
-const AgentTitleKey = {
-  "brain_storming": "brain Storming",
-  "novel_world_generation": 'novel World',
-  "character_generation": "character",
-  "plot_planning": 'plot Planning',
-  "chapter_outline_generation": "chapter Outline"
-}
-const keys = Object.keys(AgentTitleKey)
-const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare  }) => {
+
+const AgentTitleKey: Record<TNovelPrepareWsMsgKeys, string> = {
+  brain_storming: "Brain Storming",
+  novel_world_generation: "World View",
+  character_generation: "Character Profile",
+  plot_planning: "Plot",
+  chapter_outline_generation: "Chapter Outline",
+  finish_prepare: "",
+  prepare_novel: "",
+};
+
+const keys = Object.keys(AgentTitleKey);
+const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [activeTab, setActiveTab] = useState<number>(0);
   const [preparing, setPreparing] = useState<boolean>(true);
@@ -36,33 +41,35 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare  }) => {
   useEffect(() => {
     if (novelMsg) {
       const message = JSON.parse(novelMsg);
-      if (message.msg_key === "finish_prepare") {
+      const msgKey = message.msg_key as TNovelPrepareWsMsgKeys;
+      if (msgKey === "finish_prepare") {
         return;
       }
-      console.log(message, 'message')
-      setAgents(preAgents => {
+      console.log(message, "message");
+      setAgents((preAgents) => {
         if (keys.includes(message.msg_key)) {
-          const index = preAgents.findIndex(item => item.key == message.msg_key)
+          const index = preAgents.findIndex(
+            (item) => item.key == message.msg_key
+          );
           if (index === -1) {
             preAgents.push({
-              name: AgentTitleKey[message.msg_key],
+              name: AgentTitleKey[msgKey],
               key: message.msg_key,
               novel: message,
-              working: false
-            })
+              working: false,
+            });
           } else {
             preAgents[index] = {
-              name: AgentTitleKey[message.msg_key],
+              name: AgentTitleKey[msgKey],
               key: message.msg_key,
               novel: message,
-              working: false
-            }
+              working: false,
+            };
           }
         }
 
-        return preAgents
-      })
-
+        return preAgents;
+      });
     }
   }, [novelMsg]);
 
@@ -75,7 +82,10 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare  }) => {
       {agents.length > 0 && (
         <div className="flex gap-8 w-full">
           <div className="w-[80%]">
-            <div style={{ maxHeight: "90vh" }} className="overflow-y-auto overflow-x-hidden">
+            <div
+              style={{ maxHeight: "90vh" }}
+              className="overflow-y-auto overflow-x-hidden"
+            >
               <div className=" bg-[#170F21] agent-card border-2 shadow-md border-input p-6 text-sm rounded-md">
                 {agents[activeTab] && agents[activeTab].novel !== null ? (
                   activeTab === 0 ? (
@@ -97,7 +107,10 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare  }) => {
               </div>
             </div>
           </div>
-          <div className="w-[20%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border overflow-auto" style={{ maxHeight: '90vh' }}>
+          <div
+            className="w-[20%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border overflow-auto"
+            style={{ maxHeight: "90vh" }}
+          >
             {agents.map((agent, index) => (
               <div key={agent.key} onClick={() => handleTabChange(index)}>
                 <div
