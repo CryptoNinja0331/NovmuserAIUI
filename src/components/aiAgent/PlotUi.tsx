@@ -64,7 +64,7 @@ const PlotUi: React.FC<PlotUiProps> = ({ novelMsg }) => {
                     <p className="mb-2">Event: {data?.beginning?.event}</p>
                     <p className="mb-2">
                         Main Characters:
-                        {data?.beginning.main_characters?.map((item, index) => (
+                        {data?.beginning?.main_characters?.map((item, index) => (
                             <span key={index} className="inline-block bg-gray-200 rounded-full px-2 py-1 text-sm font-semibold mr-2">
                                 {item}
                             </span>
