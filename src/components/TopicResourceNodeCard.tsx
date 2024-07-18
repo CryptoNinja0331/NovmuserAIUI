@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { TTopicResourceType } from "@/lib/types/api/chapter";
 import { cn } from "@/lib/utils";
-import React, { FC } from "react";
+import React, { FC, MouseEventHandler } from "react";
 import { AiOutlineExpandAlt, AiOutlineShrink } from "react-icons/ai";
 import SimpleBar from "simplebar-react";
 
@@ -42,9 +42,14 @@ const TopicResourceNodeCard: FC<TTopicResourceNodeCardProps> = ({
     return <div className="truncate">{cardContent}</div>;
   }, [cardContent, expanded]);
 
-  const toggleExpand = React.useCallback(() => {
-    setExpanded((prev) => !prev);
-  }, []);
+  const handleToggleExpandClick = React.useCallback<MouseEventHandler<any>>(
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setExpanded((prev) => !prev);
+    },
+    []
+  );
 
   const resourceTypeBadgeText = React.useMemo(
     () => (resourceType === "topic" ? "Topic" : "Point"),
@@ -126,7 +131,7 @@ const TopicResourceNodeCard: FC<TTopicResourceNodeCardProps> = ({
         <div className="flex-1 flex flex-row justify-end items-baseline text-white text-lg font-medium px-2">
           <div
             className="cursor-pointer hover:opacity-40"
-            onClick={toggleExpand}
+            onClick={handleToggleExpandClick}
           >
             {expanded ? <AiOutlineShrink /> : <AiOutlineExpandAlt />}
           </div>
