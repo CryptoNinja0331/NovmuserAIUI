@@ -1,9 +1,12 @@
 import React from "react";
 import { FaRegEdit } from "react-icons/fa";
 import { FormGroup } from "../ui/form-group";
+import { TWsMsgDto } from "@/lib/types/api/websocket";
+import { TEditStatus } from "./agentCard";
 
 interface WorldViewUiProps {
-  novelMsg: any | null;
+  novelMsg: TWsMsgDto;
+  editStatus: TEditStatus;
 }
 
 const WorldViewUi: React.FC<WorldViewUiProps> = ({ novelMsg }) => {

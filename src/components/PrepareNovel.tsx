@@ -154,7 +154,7 @@ const PrepareNovel: React.FC<TPrepareNovelProps> = ({
           </div>
         </div>
       ) : (
-        <AgentUi finishedPrepare={finishedPrepare} novelMsg={novelMsg} />
+        <AgentUi finishedPrepare={finishedPrepare} wsMsgStr={novelMsg} />
       )}
       <BalanceNotEnoughAlert />
     </div>

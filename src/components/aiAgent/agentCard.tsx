@@ -18,6 +18,7 @@ import CharacterProfileUi from "./CharacterProfileUi";
 import PlotUi from "./PlotUi";
 import ChapterOutlineUi from "./ChapterOutlineUi";
 import { TooltipWrapper } from "../ui/tooltip";
+import { TWsMsgDto } from "@/lib/types/api/websocket";
 export interface IAgentCardProps {
   icon: React.FC;
   style?: React.CSSProperties;
@@ -62,24 +63,24 @@ const AgentCard: React.FC<PropsWithChildren<IAgentCardProps>> = ({
     (agent: Agent) => {
       switch (activeTab) {
         case 0:
-          return <BrainstormingUi novelMsg={agent.novel} />;
+          return <BrainstormingUi novelMsg={agent.wsMsg} />;
         case 1:
-          return <WorldViewUi novelMsg={agent.novel} editStatus={editStatus} />;
+          return <WorldViewUi novelMsg={agent.wsMsg} editStatus={editStatus} />;
         case 2:
           return (
             <CharacterProfileUi
-              novelMsg={agent.novel}
+              novelMsg={agent.wsMsg}
               editStatus={editStatus}
             />
           );
         case 3:
-          return <PlotUi novelMsg={agent.novel} editStatus={editStatus} />;
+          return <PlotUi novelMsg={agent.wsMsg} editStatus={editStatus} />;
         case 4:
           return (
-            <ChapterOutlineUi novelMsg={agent.novel} editStatus={editStatus} />
+            <ChapterOutlineUi novelMsg={agent.wsMsg} editStatus={editStatus} />
           );
         default:
-          return <div>{agent.novel}</div>;
+          return <div></div>;
       }
     },
     [activeTab, editStatus]
