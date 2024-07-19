@@ -21,14 +21,12 @@ export interface IAgentCardProps {
 	agent: Agent;
 	saveHandler: (text: string) => void;
 }
-type TEditStatus = "prepare" | "edit" | 'save'
+export type TEditStatus = "prepare" | "edit" | 'save'
 const AgentCard: React.FC<PropsWithChildren<IAgentCardProps>> = ({
-   children,
 	 activeTab,
    style,
    className,
-	 agent,
-   saveHandler
+	 agent
 }) => {
 	const [editStatus, updateStatus] = useState<TEditStatus>("prepare")
 	const changeEdit = () => {
@@ -75,8 +73,8 @@ const AgentCard: React.FC<PropsWithChildren<IAgentCardProps>> = ({
 		updateStatus("prepare")
 	}, [activeTab])
 	return (
-		<div style={style} className={`${className} w-full flex flex-col bg-[#170F21] agent-card border-2 shadow-md border-input p-6 text-sm rounded-md`}>
-			<div className="title flex">
+		<div style={style} className={`${className} w-full flex flex-col bg-[#1e063d] agent-card border-2 shadow-md border-input p-6 text-sm rounded-md`}>
+			<div className="title flex pb-5">
 				<div className="flex align-center justify-center text-center flex-1 text-lg mb-2 font-semibold">
 					<div style={{ marginRight: '20px' }} className={"flex align-center"}>
 						{getIcon()}
@@ -98,7 +96,7 @@ const AgentCard: React.FC<PropsWithChildren<IAgentCardProps>> = ({
 					)
 				}
 			</div>
-			<div className="flex-1 w-full overflow-y-scroll">
+			<div className="flex-1 w-full overflow-y-scroll bg-[#08071e] p-5">
 				{getChildCom(agent)}
 			</div>
 		</div>
