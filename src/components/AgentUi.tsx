@@ -15,6 +15,7 @@ interface Agent {
   name: string;
   key: string;
   novel: string | null;
+  working: boolean;
   status: boolean;
 }
 
@@ -38,10 +39,11 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
   const [agents, setAgents] = useState<Agent[]>(
     keys.map((key) => {
       return {
-        name: AgentTitleKey[key],
+        name: AgentTitleKey[key as TNovelPrepareWsMsgKeys] ?? "",
         key: key,
         novel: "",
         working: false,
+        status: false,
       } as Agent;
     })
   );
