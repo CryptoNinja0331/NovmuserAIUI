@@ -9,7 +9,7 @@ import CharacterProfileUi from "./aiAgent/CharacterProfileUi";
 import ChapterOutlineUi from "./aiAgent/ChapterOutlineUi";
 import PlotUi from "./aiAgent/PlotUi";
 import { TNovelPrepareWsMsgKeys } from "@/lib/types/api/websocket";
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep } from "lodash-es";
 
 interface Agent {
   name: string;
@@ -23,26 +23,28 @@ interface AgentUiProps {
   finishedPrepare: boolean | null;
 }
 
-const AgentTitleKey: Record<TNovelPrepareWsMsgKeys, string> = {
+const AgentTitleKey: Record<TNovelPrepareWsMsgKeys, string | undefined> = {
   brain_storming: "Leader Writer",
   novel_world_generation: "World Builder",
   character_generation: "Character Designer",
   plot_planning: "Plot Designer",
   chapter_outline_generation: "Outline Planner",
-  // finish_prepare: "",
-  // prepare_novel: "",
-};
+  finish_prepare: undefined,
+  prepare_novel: undefined,
+} as const;
 
 const keys = Object.keys(AgentTitleKey);
 const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
-  const [agents, setAgents] = useState<Agent[]>(keys.map(key => {
-    return ({
-      name: AgentTitleKey[key],
-      key: key,
-      novel: "",
-      working: false,
-    }) as Agent
-  }));
+  const [agents, setAgents] = useState<Agent[]>(
+    keys.map((key) => {
+      return {
+        name: AgentTitleKey[key],
+        key: key,
+        novel: "",
+        working: false,
+      } as Agent;
+    })
+  );
   const [activeTab, setActiveTab] = useState<number>(-1);
   const [preparing, setPreparing] = useState<boolean>(true);
 
@@ -55,22 +57,21 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
       }
       console.log(message, "message");
       setAgents((preAgents) => {
-        let updateAgent = cloneDeep(preAgents)
+        let updateAgent = cloneDeep(preAgents);
         if (keys.includes(message.msg_key)) {
           const index = updateAgent.findIndex(
             (item) => item.key == message.msg_key
           );
-          updateAgent[index] = ({
+          updateAgent[index] = {
             ...updateAgent[index],
             novel: message,
             working: true,
-          }) as Agent;
+          } as Agent;
           if (index == 0) {
-            setActiveTab(0)
+            setActiveTab(0);
           }
         }
-
-        console.log(updateAgent, 'updateAgent')
+        console.log(updateAgent, "updateAgent");
         return updateAgent;
       });
     }
@@ -78,29 +79,32 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
 
   const handleTabChange = (index: number) => {
     if (!agents[index].working) {
-      return
+      return;
     }
     setActiveTab(index);
   };
-  const getStyle = (agent: Agent, index: number):React.CSSProperties | undefined => {
+  const getStyle = (
+    agent: Agent,
+    index: number
+  ): React.CSSProperties | undefined => {
     if (activeTab == index) {
       return {
         opacity: 1,
-        cursor: "pointer"
-      }
+        cursor: "pointer",
+      };
     }
     if (!agent.working) {
       return {
         opacity: 0.3,
-        cursor: "not-allowed"
-      }
+        cursor: "not-allowed",
+      };
     } else {
       return {
         opacity: 0.8,
-        cursor: "pointer"
-      }
+        cursor: "pointer",
+      };
     }
-  }
+  };
   return (
     <div className=" mx-auto">
       {activeTab > -1 && (
@@ -133,7 +137,7 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
           </div>
           <div
             className="w-[20%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border overflow-auto"
-            style={{ maxHeight: "90vh", minWidth: '220px' }}
+            style={{ maxHeight: "90vh", minWidth: "220px" }}
           >
             {agents.map((agent, index) => (
               <div key={agent.key} onClick={() => handleTabChange(index)}>
@@ -144,10 +148,15 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
                   }  relative list-none cursor-pointer flex gap-4 items-center justify-center agent-sidebar-item`}
                 >
                   <div className="flex flex-col gap-3 items-center">
-                    <Image src={`/images/${agent.key}.jpeg`} style={{ borderRadius: '100%', overflow: 'hidden'}} alt={agent.key} width={80} height={80} />
+                    <Image
+                      src={`/images/${agent.key}.jpeg`}
+                      style={{ borderRadius: "100%", overflow: "hidden" }}
+                      alt={agent.key}
+                      width={80}
+                      height={80}
+                    />
                     <span className="item-name">{agent.name}</span>
                   </div>
-
                 </div>
               </div>
             ))}

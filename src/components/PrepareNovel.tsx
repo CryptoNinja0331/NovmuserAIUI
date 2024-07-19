@@ -15,15 +15,69 @@ import { useDispatch } from "react-redux";
 import BalanceNotEnoughAlert from "./alert/BalanceNotEnoughAlert";
 import emitter from "@/lib/emitters";
 
-interface PrepareNovelResponse {
-  success: boolean;
-  // Add other properties of the response object here
-}
+const PrepareButton: React.FC<{
+  novelId: string;
+  onSuccess?: () => void;
+}> = ({ novelId, onSuccess }) => {
+  const dispatch = useDispatch();
 
-const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
-  const [prepareNovel, setPrepareNovel] = useState<PrepareNovelResponse | null>(
-    null
+  const { post } = useClientHttp();
+
+  React.useEffect(() => {
+    // Prevent calling api all the time
+    dispatch(clientApi.util.invalidateTags(["novelData"]));
+  }, [dispatch]);
+
+  const { getClientToken } = useGetClientToken();
+
+  const handlePrepareNovel = React.useCallback(async () => {
+    console.log("🚀 ~ handlePrepareNovel ~ handlePrepareNovel");
+    try {
+      const respDto = await post<TResponseDto<void>>({
+        url: `/novel/prepare/${novelId}/task`,
+        config: {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+        token: await getClientToken(),
+      });
+      if (respDto.success) {
+        onSuccess?.();
+        emitter.emit("novelItem-interval", novelId);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle errors, e.g., show an error message to the user
+    }
+  }, [getClientToken, novelId, onSuccess, post]);
+
+  console.log("🚀 ~ PrepareButton:", "rendering");
+
+  return (
+    <>
+      <Button className="bg-bluish" onClick={handlePrepareNovel}>
+        Prepare Novel
+      </Button>
+    </>
   );
+};
+
+const MemorizedPrepareButton = React.memo(PrepareButton);
+
+export type TPreparePage = "submitPrepare" | "agentProcess";
+
+export type TPrepareNovelProps = {
+  novelId: string;
+  initialPage?: TPreparePage;
+};
+
+const PrepareNovel: React.FC<TPrepareNovelProps> = ({
+  novelId,
+  initialPage = "submitPrepare",
+}) => {
+  const [curPage, setCurPage] = useState<TPreparePage>(initialPage);
+
   const [finishedPrepare, setFinishedPrepare] = useState<boolean>(false);
   const [novelMsg, setNovelMsg] = useState<string>("");
 
@@ -78,11 +132,13 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
     };
   }, [novelId, getClientToken]);
 
+  const handlePrepareSuccess = React.useCallback(() => {
+    setCurPage("agentProcess");
+  }, []);
+
   return (
     <div className="text-white p-4">
-      {prepareNovel?.success ? (
-        <AgentUi finishedPrepare={finishedPrepare} novelMsg={novelMsg} />
-      ) : (
+      {curPage === "submitPrepare" ? (
         <div>
           <Image
             className="mx-auto"
@@ -92,11 +148,13 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
           />
           <div className="text-center mt-8">
             <MemorizedPrepareButton
-              setPrepareNovel={setPrepareNovel}
               novelId={novelId}
+              onSuccess={handlePrepareSuccess}
             />
           </div>
         </div>
+      ) : (
+        <AgentUi finishedPrepare={finishedPrepare} novelMsg={novelMsg} />
       )}
       <BalanceNotEnoughAlert />
     </div>
@@ -104,51 +162,3 @@ const PrepareNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
 };
 
 export default React.memo(PrepareNovel);
-
-const PrepareButton: React.FC<{
-  setPrepareNovel: (data: any) => void;
-  novelId: string;
-}> = ({ setPrepareNovel, novelId }) => {
-  const dispatch = useDispatch();
-
-  const { post } = useClientHttp();
-
-  React.useEffect(() => {
-    // Prevent calling api all the time
-    dispatch(clientApi.util.invalidateTags(["novelData"]));
-  }, [dispatch]);
-
-  const { getClientToken } = useGetClientToken();
-
-  const handlePrepareNovel = React.useCallback(async () => {
-    console.log("🚀 ~ handlePrepareNovel ~ handlePrepareNovel");
-    try {
-      const respDto = await post<TResponseDto<any>>({
-        url: `/novel/prepare/${novelId}/task`,
-        config: {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-        token: await getClientToken(),
-      });
-      setPrepareNovel(respDto);
-      emitter.emit("novelItem-interval", novelId);
-    } catch (error) {
-      console.error("Error:", error);
-      // Handle errors, e.g., show an error message to the user
-    }
-  }, [getClientToken, novelId, post, setPrepareNovel]);
-
-  console.log("🚀 ~ PrepareButton:", "rendering");
-
-  return (
-    <>
-      <Button className="bg-bluish" onClick={handlePrepareNovel}>
-        Prepare Novel
-      </Button>
-    </>
-  );
-};
-
-const MemorizedPrepareButton = React.memo(PrepareButton);
