@@ -22,12 +22,10 @@ import {
   TNovelPreparingTask,
 } from "@/lib/types/api/novel";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
-import React, { FC } from "react";
+import React, { FC, MouseEventHandler } from "react";
 import { FaBook } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { UrlObject } from "url";
 
 const PreparingStatusTag = ({
   status,
@@ -57,13 +55,16 @@ const PreparingStatusTag = ({
   );
 };
 
+export type TNovelItemPreparingTaskState = {
+  preparingStatus: TNovelMetadata["preparing_status"];
+} & Pick<TNovelPreparingTask, "last_step_field">;
+
 export type TNovelItemProps = {
   novelData: TNovel;
   variant?: "tiny" | "extended";
   showDelButton?: boolean;
   className?: string | undefined;
-  linkPath?: string | UrlObject;
-  onClick?: () => void;
+  onClick?: (novel: TNovel, prepareState: TNovelItemPreparingTaskState) => void;
 };
 
 const NovelItem: FC<TNovelItemProps> = ({
@@ -71,11 +72,11 @@ const NovelItem: FC<TNovelItemProps> = ({
   variant = "tiny",
   onClick,
   className,
-  linkPath,
 }) => {
-  const [preparingStatus, setPreparingStatus] = React.useState<
-    TNovelMetadata["preparing_status"]
-  >(novelData.metadata.preparing_status);
+  const [preparingTaskState, setPreparingTaskState] =
+    React.useState<TNovelItemPreparingTaskState>({
+      preparingStatus: novelData.metadata.preparing_status,
+    });
 
   const { get } = useClientHttp();
   const { getClientToken } = useGetClientToken();
@@ -86,16 +87,19 @@ const NovelItem: FC<TNovelItemProps> = ({
   );
 
   React.useEffect(() => {
-    emitter.on("novelItem-interval", (novelId) => {
+    const unSub = emitter.on("novelItem-interval", (novelId) => {
       if (novelId === novelData.id) {
         setNeedToInitInterval(true);
       }
     });
+    return () => {
+      unSub();
+    };
   }, [novelData.id]);
 
   React.useEffect(() => {
     console.log("🚀 ~ needToInitInterval:", needToInitInterval);
-    if (preparingStatus === "ready") {
+    if (preparingTaskState.preparingStatus === "ready") {
       return;
     }
 
@@ -126,18 +130,37 @@ const NovelItem: FC<TNovelItemProps> = ({
             "🚀 ~ React.useEffect ~ novelPreparingTaskRespDto:",
             novelPreparingTaskRespDto
           );
-          const taskStatus = novelPreparingTaskRespDto.data?.status;
+          const novelPreparingTask = novelPreparingTaskRespDto.data;
+          const taskStatus = novelPreparingTask?.status;
+          const lastStepField =
+            novelPreparingTask?.last_step_field ??
+            preparingTaskState.last_step_field;
           if (taskStatus === "PENDING") {
-            // The task is running
-            setPreparingStatus((preStatus) => {
-              if (preStatus === "pending") {
-                return "preparing";
+            setPreparingTaskState((prevState) => {
+              if (prevState.preparingStatus === "pending") {
+                return {
+                  preparingStatus: "preparing",
+                  last_step_field: lastStepField,
+                };
               }
-              return preStatus;
+              if (
+                lastStepField &&
+                prevState.last_step_field !== lastStepField
+              ) {
+                return {
+                  ...prevState,
+                  last_step_field: lastStepField,
+                };
+              }
+              return prevState;
             });
           } else {
+            // Finished or Cancelled
             setTimeout(() => doClearInterval(), 1_000);
-            setPreparingStatus("ready");
+            setPreparingTaskState({
+              preparingStatus: "ready",
+              last_step_field: lastStepField,
+            });
           }
         } catch (error) {
           console.error("🚀 ~ intervalRef.current=setInterval ~ error:", error);
@@ -150,9 +173,23 @@ const NovelItem: FC<TNovelItemProps> = ({
       console.log("novel item unmounted", novelData.id);
       doClearInterval();
     };
-  }, [get, getClientToken, needToInitInterval, novelData.id, preparingStatus]);
+  }, [
+    get,
+    getClientToken,
+    needToInitInterval,
+    novelData.id,
+    preparingTaskState.last_step_field,
+    preparingTaskState.preparingStatus,
+  ]);
 
-  console.log("🚀 ~ intervalRef.current;:", intervalRef.current);
+  const handleOnItemClick = React.useCallback<MouseEventHandler<any>>(
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onClick?.(novelData, preparingTaskState);
+    },
+    [novelData, onClick, preparingTaskState]
+  );
 
   return (
     <div
@@ -166,14 +203,17 @@ const NovelItem: FC<TNovelItemProps> = ({
           className={
             "flex flex-row justify-start items-center font-medium capitalize cursor-pointer p-3 gap-6"
           }
-          onClick={onClick}
+          onClick={handleOnItemClick}
         >
-          <PreparingStatusTag status={preparingStatus} />
+          {/* <PreparingStatusTag status={preparingStatus} /> */}
+          <PreparingStatusTag status={preparingTaskState.preparingStatus} />
           <TooltipWrapper tooltipContent={novelData.metadata.name}>
             <div
               className={cn("flex flex-row items-center gap-4 truncate", {
-                "animate-pulse": preparingStatus === "preparing",
-                "opacity-40 animate-pulse": preparingStatus === "pending",
+                "animate-pulse":
+                  preparingTaskState.preparingStatus === "preparing",
+                "opacity-40 animate-pulse":
+                  preparingTaskState.preparingStatus === "pending",
               })}
             >
               <FaBook className="text-lg" />
@@ -185,25 +225,27 @@ const NovelItem: FC<TNovelItemProps> = ({
         </div>
       ) : (
         <div className="flex flex-row justify-between gap-4 items-center px-1">
-          <Link
-            href={linkPath!}
+          <div
             className="flex flex-row w-[90%] max-w-[90%] text-gray-600 font-medium capitalize cursor-pointer p-4 rounded-lg gap-6"
+            onClick={handleOnItemClick}
           >
-            <PreparingStatusTag status={preparingStatus} />
+            <PreparingStatusTag status={preparingTaskState.preparingStatus} />
             <TooltipWrapper
               tooltipContent={novelData.metadata.name}
               triggerClassName="w-[60%] truncate"
             >
               <h1
                 className={cn("text-left heading-color font-medium truncate", {
-                  "animate-pulse": preparingStatus === "preparing",
-                  "opacity-40 animate-pulse": preparingStatus === "pending",
+                  "animate-pulse":
+                    preparingTaskState.preparingStatus === "preparing",
+                  "opacity-40 animate-pulse":
+                    preparingTaskState.preparingStatus === "pending",
                 })}
               >
                 {novelData.metadata.name}
               </h1>
             </TooltipWrapper>
-          </Link>
+          </div>
           <div className="flex-1 flex justify-end mr-2">
             <AlertDialog>
               <AlertDialogTrigger asChild>
