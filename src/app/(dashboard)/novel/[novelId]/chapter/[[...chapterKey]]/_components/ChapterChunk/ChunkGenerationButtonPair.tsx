@@ -51,7 +51,7 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
   } = useStreamedChunksStore();
 
   const [generating, setGenerating] = useState<boolean>(false);
-  const [regenerateLoading, setRegenrateLoading] = useState(false);
+  const [regenerateLoading, setRegenerateLoading] = useState(false);
   const { currentTopicId, currentPointerId, currentChunkId } =
     useContext(ChapterContext);
   const { getToken } = useAuth();
@@ -246,9 +246,9 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
   };
 
   const handleRegenerate = async () => {
-    setRegenrateLoading(true);
+    setRegenerateLoading(true);
     if (!userFeedback || !currentChunkId) {
-      setRegenrateLoading(false);
+      setRegenerateLoading(false);
 
       toast.error("Select the chunk or input your feedback");
       return;
@@ -302,13 +302,13 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
           console.log("Connection closed by the server");
           counter = 0;
           setIsStreaming(false);
-          setRegenrateLoading(false);
+          setRegenerateLoading(false);
         },
         onerror: (err) => {
           console.log("There was an error from server", err);
           counter = 0;
           setIsStreaming(false);
-          setRegenrateLoading(false);
+          setRegenerateLoading(false);
           throw err;
         },
       }

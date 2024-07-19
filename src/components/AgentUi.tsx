@@ -10,8 +10,9 @@ import ChapterOutlineUi from "./aiAgent/ChapterOutlineUi";
 import PlotUi from "./aiAgent/PlotUi";
 import { TNovelPrepareWsMsgKeys } from "@/lib/types/api/websocket";
 import { cloneDeep } from "lodash-es";
+import AgentCard from './aiAgent/agentCard';
 
-interface Agent {
+export interface Agent {
   name: string;
   key: string;
   novel: string | null;
@@ -34,7 +35,7 @@ const AgentTitleKey: Record<TNovelPrepareWsMsgKeys, string | undefined> = {
   prepare_novel: undefined,
 } as const;
 
-const keys = Object.keys(AgentTitleKey);
+const keys = Object.keys(AgentTitleKey).filter(key => !!AgentTitleKey[key]);
 const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
   const [agents, setAgents] = useState<Agent[]>(
     keys.map((key) => {
@@ -112,30 +113,18 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
       {activeTab > -1 && (
         <div className="flex gap-8 w-full">
           <div className="w-[80%]">
-            <div
+            <AgentCard
+              activeTab={activeTab}
+              canEdit={activeTab > 0}
+              title={agents?.[activeTab]?.name || ''}
+              icon={<FaRobot size={30} />}
+              tip={agents?.[activeTab]?.name} editCallback={(e) => console.log(e)}
               style={{ maxHeight: "90vh" }}
+              agent={agents[activeTab]}
               className="overflow-y-auto overflow-x-hidden"
             >
-              <div className=" bg-[#170F21] agent-card border-2 shadow-md border-input p-6 text-sm rounded-md">
-                {agents[activeTab] && agents[activeTab].novel !== null ? (
-                  activeTab === 0 ? (
-                    <BrainstormingUi novelMsg={agents[activeTab].novel} />
-                  ) : activeTab === 1 ? (
-                    <WorldViewUi novelMsg={agents[activeTab].novel} />
-                  ) : activeTab === 2 ? (
-                    <CharacterProfileUi novelMsg={agents[activeTab].novel} />
-                  ) : activeTab === 3 ? (
-                    <PlotUi novelMsg={agents[activeTab].novel} />
-                  ) : activeTab === 4 ? (
-                    <ChapterOutlineUi novelMsg={agents[activeTab].novel} />
-                  ) : (
-                    <div>{agents[activeTab].novel}</div>
-                  )
-                ) : agents[activeTab] && agents[activeTab].working ? (
-                  <div>{agents[activeTab].name} is working, please wait...</div>
-                ) : null}
-              </div>
-            </div>
+
+            </AgentCard>
           </div>
           <div
             className="w-[20%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border overflow-auto"
