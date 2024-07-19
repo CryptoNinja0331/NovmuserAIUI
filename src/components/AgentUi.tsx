@@ -15,7 +15,7 @@ interface Agent {
   name: string;
   key: string;
   novel: string | null;
-  working: boolean;
+  status: boolean;
 }
 
 interface AgentUiProps {
@@ -35,8 +35,15 @@ const AgentTitleKey: Record<TNovelPrepareWsMsgKeys, string> = {
 
 const keys = Object.keys(AgentTitleKey);
 const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
-  const [agents, setAgents] = useState<Agent[]>([]);
-  const [activeTab, setActiveTab] = useState<number>(0);
+  const [agents, setAgents] = useState<Agent[]>(keys.map(key => {
+    return ({
+      name: AgentTitleKey[key],
+      key: key,
+      novel: "",
+      working: false,
+    }) as Agent
+  }));
+  const [activeTab, setActiveTab] = useState<number>(-1);
   const [preparing, setPreparing] = useState<boolean>(true);
 
   useEffect(() => {
@@ -53,25 +60,16 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
           const index = updateAgent.findIndex(
             (item) => item.key == message.msg_key
           );
-          if (index === -1) {
-            updateAgent = [
-              ...updateAgent,
-              {
-                name: AgentTitleKey[msgKey],
-                key: message.msg_key,
-                novel: message,
-                working: false,
-              }
-            ];
-          } else {
-            updateAgent[index] = {
-              name: AgentTitleKey[msgKey],
-              key: message.msg_key,
-              novel: message,
-              working: false,
-            };
+          updateAgent[index] = ({
+            ...updateAgent[index],
+            novel: message,
+            working: true,
+          }) as Agent;
+          if (index == 0) {
+            setActiveTab(0)
           }
         }
+
         console.log(updateAgent, 'updateAgent')
         return updateAgent;
       });
@@ -79,12 +77,33 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
   }, [novelMsg]);
 
   const handleTabChange = (index: number) => {
+    if (!agents[index].working) {
+      return
+    }
     setActiveTab(index);
   };
-
+  const getStyle = (agent: Agent, index: number):React.CSSProperties | undefined => {
+    if (activeTab == index) {
+      return {
+        opacity: 1,
+        cursor: "pointer"
+      }
+    }
+    if (!agent.working) {
+      return {
+        opacity: 0.3,
+        cursor: "not-allowed"
+      }
+    } else {
+      return {
+        opacity: 0.8,
+        cursor: "pointer"
+      }
+    }
+  }
   return (
     <div className=" mx-auto">
-      {agents.length > 0 && (
+      {activeTab > -1 && (
         <div className="flex gap-8 w-full">
           <div className="w-[80%]">
             <div
@@ -114,11 +133,12 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
           </div>
           <div
             className="w-[20%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border overflow-auto"
-            style={{ maxHeight: "90vh" }}
+            style={{ maxHeight: "90vh", minWidth: '220px' }}
           >
             {agents.map((agent, index) => (
               <div key={agent.key} onClick={() => handleTabChange(index)}>
                 <div
+                  style={getStyle(agent, index)}
                   className={`${
                     activeTab === index ? "active-tab" : ""
                   }  relative list-none cursor-pointer flex gap-4 items-center justify-center agent-sidebar-item`}
