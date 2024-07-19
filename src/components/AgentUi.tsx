@@ -8,20 +8,20 @@ import WorldViewUi from "./aiAgent/WorldViewUi";
 import CharacterProfileUi from "./aiAgent/CharacterProfileUi";
 import ChapterOutlineUi from "./aiAgent/ChapterOutlineUi";
 import PlotUi from "./aiAgent/PlotUi";
-import { TNovelPrepareWsMsgKeys } from "@/lib/types/api/websocket";
+import { TNovelPrepareWsMsgKeys, TWsMsgDto } from "@/lib/types/api/websocket";
 import { cloneDeep } from "lodash-es";
-import AgentCard from './aiAgent/agentCard';
+import AgentCard from "./aiAgent/agentCard";
 
 export interface Agent {
   name: string;
   key: string;
-  novel: string | null;
+  wsMsg: TWsMsgDto;
   working: boolean;
   status: boolean;
 }
 
 interface AgentUiProps {
-  novelMsg: string | null;
+  wsMsgStr: string | null;
   finishedPrepare: boolean | null;
 }
 
@@ -35,14 +35,13 @@ const AgentTitleKey: Record<TNovelPrepareWsMsgKeys, string | undefined> = {
   prepare_novel: undefined,
 } as const;
 
-const keys = Object.keys(AgentTitleKey).filter(key => !!AgentTitleKey[key]);
-const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
+const keys = Object.keys(AgentTitleKey).filter((key) => !!AgentTitleKey[key]);
+const AgentUi: React.FC<AgentUiProps> = ({ wsMsgStr, finishedPrepare }) => {
   const [agents, setAgents] = useState<Agent[]>(
     keys.map((key) => {
       return {
         name: AgentTitleKey[key as TNovelPrepareWsMsgKeys] ?? "",
         key: key,
-        novel: "",
         working: false,
         status: false,
       } as Agent;
@@ -52,22 +51,22 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
   const [preparing, setPreparing] = useState<boolean>(true);
 
   useEffect(() => {
-    if (novelMsg) {
-      const message = JSON.parse(novelMsg);
-      const msgKey = message.msg_key as TNovelPrepareWsMsgKeys;
+    if (wsMsgStr) {
+      const wsMsgDto = JSON.parse(wsMsgStr) as TWsMsgDto;
+      const msgKey = wsMsgDto.msg_key as TNovelPrepareWsMsgKeys;
       if (msgKey === "finish_prepare") {
         return;
       }
-      console.log(message, "message");
+      console.log(wsMsgDto, "message");
       setAgents((preAgents) => {
         let updateAgent = cloneDeep(preAgents);
-        if (keys.includes(message.msg_key)) {
+        if (keys.includes(wsMsgDto.msg_key)) {
           const index = updateAgent.findIndex(
-            (item) => item.key == message.msg_key
+            (item) => item.key == wsMsgDto.msg_key
           );
           updateAgent[index] = {
             ...updateAgent[index],
-            novel: message,
+            wsMsg: wsMsgDto,
             working: true,
           } as Agent;
           if (index == 0) {
@@ -78,7 +77,7 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
         return updateAgent;
       });
     }
-  }, [novelMsg]);
+  }, [wsMsgStr]);
 
   const handleTabChange = (index: number) => {
     if (!agents[index].working) {
@@ -116,15 +115,14 @@ const AgentUi: React.FC<AgentUiProps> = ({ novelMsg, finishedPrepare }) => {
             <AgentCard
               activeTab={activeTab}
               canEdit={activeTab > 0}
-              title={agents?.[activeTab]?.name || ''}
+              title={agents?.[activeTab]?.name || ""}
               icon={<FaRobot size={30} />}
-              tip={agents?.[activeTab]?.name} editCallback={(e) => console.log(e)}
+              tip={agents?.[activeTab]?.name}
+              editCallback={(e) => console.log(e)}
               style={{ maxHeight: "90vh" }}
               agent={agents[activeTab]}
               className="overflow-y-auto overflow-x-hidden"
-            >
-
-            </AgentCard>
+            ></AgentCard>
           </div>
           <div
             className="w-[20%] space-y-4 p-4 bg-[#170F21] shadow-md rounded-md border-input border overflow-auto"

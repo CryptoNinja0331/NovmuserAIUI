@@ -1,138 +1,235 @@
-import React from 'react';
-import 'react-vertical-timeline-component/style.min.css';
+import { TPlotOutline, TSubplot } from "@/lib/types/api/agent";
+import { cn } from "@/lib/utils";
+import React, { FC } from "react";
+import { AiOutlineArrowDown, AiOutlineExclamationCircle } from "react-icons/ai";
+import { BiSolidUser } from "react-icons/bi";
+import { IoMdPricetag } from "react-icons/io";
+import "react-vertical-timeline-component/style.min.css";
+import { Card, CardContent, CardTitle } from "../ui/card";
+import { Textarea } from "../ui/textarea";
+import { TEditStatus } from "./agentCard";
+import { TWsMsgDto } from "@/lib/types/api/websocket";
 
-interface Subplot {
-    plot: string;
-    involved_characters: string[];
-    expected_impact: string;
-}
+export type TPlotUiProps = {
+  novelMsg: TWsMsgDto;
+  editStatus: TEditStatus;
+};
 
-interface Beginning {
-    event: string;
-    main_characters: string[];
-    scene: string;
-}
+type TPlotData = {
+  title: string;
+  description?: string;
+  renderer?: React.ReactNode;
+};
 
-interface Development {
-    conflict_expansion: string;
-    inciting_incident: string;
-    subplots: Subplot[];
-}
-
-interface Climax {
-    key_turn: string;
-    decisions: string;
-    consequences: string;
-}
-
-interface Ending {
-    character_outcomes: string;
-    conflict_resolution: string;
-    loose_ends: string;
-    world_state: string;
-}
-
-interface PlotData {
-    beginning: Beginning;
-    development: Development;
-    climax: Climax;
-    ending: Ending;
-}
-
-interface PlotUiProps {
-    novelMsg: any | null;
-}
-
-const PlotUi: React.FC<PlotUiProps> = ({ novelMsg }) => {
-    const data: PlotData = novelMsg.msg || {};
-
-    const renderSubplots = (subplots?: Subplot[]) => {
-        return subplots?.map((subplot, index) => (
-            <div key={index} className="bg-gray-100 rounded-md p-4 shadow-md mb-4">
-                <h4 className="text-lg font-semibold mb-2">Plot: {subplot.plot}</h4>
-                <p className="mb-2">Involved Characters: {subplot.involved_characters.join(', ')}</p>
-                <p>Expected Impact: {subplot.expected_impact}</p>
-            </div>
-        ));
-    };
-
-    const plotData = [
-        {
-            title: 'Beginning',
-            description: (
-                <div>
-                    <p className="mb-2">Event: {data?.beginning?.event}</p>
-                    <p className="mb-2">
-                        Main Characters:
-                        {data?.beginning?.main_characters?.map((item, index) => (
-                            <span key={index} className="inline-block bg-gray-200 rounded-full px-2 py-1 text-sm font-semibold mr-2">
-                                {item}
-                            </span>
-                        ))}
-                    </p>
-                    <p>Scene: {data?.beginning?.scene}</p>
-                </div>
-            ),
-        },
-        {
-            title: 'Development',
-            description: (
-                <div>
-                    <p className="mb-2">Conflict Expansion: {data?.development?.conflict_expansion}</p>
-                    <p className="mb-2">Inciting Incident: {data?.development?.inciting_incident}</p>
-                    <div className="mt-4">
-                        <h3 className="text-lg font-semibold mb-2">Subplots:</h3>
-                        {renderSubplots(data?.development?.subplots)}
-                    </div>
-                </div>
-            ),
-        },
-        {
-            title: 'Climax',
-            description: (
-                <div>
-                    <p className="mb-2">Key Turn: {data?.climax?.key_turn}</p>
-                    <p className="mb-2">Decisions: {data?.climax?.decisions}</p>
-                    <p>Consequences: {data?.climax?.consequences}</p>
-                </div>
-            ),
-        },
-        {
-            title: 'Ending',
-            description: (
-                <div>
-                    <p className="mb-2">Character Outcomes: {data?.ending?.character_outcomes}</p>
-                    <p className="mb-2">Conflict Resolution: {data?.ending?.conflict_resolution}</p>
-                    <p className="mb-2">Loose Ends: {data?.ending?.loose_ends}</p>
-                    <p>World State: {data?.ending?.world_state}</p>
-                </div>
-            ),
-        },
-    ];
-
-    return (
-        <div>
-            <h2 className="text-2xl font-bold mb-4">Plot</h2>
-            <section className="timeline-landing">
-                <div className="row container">
-                    <div className="timeline">
-                        <div className="timeline-line" />
-                        {plotData.map((event, index) => (
-                            <div key={index} className="timeline-event">
-                                <div className="timeline-event-content bg-white rounded-lg shadow-md p-6">
-                                    <div className="event-details">
-                                        <h3 className="text-xl font-semibold mb-4">{event.title}</h3>
-                                        {event.description}
-                                    </div>
-                                </div>
-                                {index < plotData.length - 1 && <div className="timeline-connector" />}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
+const PlotItemCard: FC<TPlotData> = ({ title, description, renderer }) => {
+  return (
+    <Card className="w-[60%] max-w-[40rem] rounded-3xl bg-blue-950/30 border-[#9649f1] border-4">
+      <div className="flex flex-row justify-center mt-2 mb-6">
+        <div className="flex flex-row items-center gap-2 px-4 py-2 rounded-md bg-violet-950 ">
+          <CardTitle className="text-lg text-white font-bold">
+            {title}
+          </CardTitle>
+          <AiOutlineExclamationCircle size={20} color={"#818cf8"} />
         </div>
+      </div>
+      {renderer}
+    </Card>
+  );
+};
+
+const PlotUi: React.FC<TPlotUiProps> = ({ novelMsg, editStatus }) => {
+  const saveEdit = () => {
+    console.log("保存");
+  };
+  React.useEffect(() => {
+    if (editStatus == "save") {
+      saveEdit();
+    } else if (editStatus == "edit") {
+      console.log("可编辑");
+    }
+  }, [editStatus]);
+  const plotOutlineData: TPlotOutline = React.useMemo(() => {
+    if (typeof novelMsg.msg === "string") {
+      try {
+        return JSON.parse(novelMsg.msg) as TPlotOutline;
+      } catch (e) {
+        return novelMsg.msg;
+      }
+    } else {
+      return novelMsg.msg;
+    }
+  }, [novelMsg.msg]);
+
+  console.log("🚀 ~ editStatus:", editStatus);
+
+  const renderTextField = React.useCallback(
+    (
+      rootField: any,
+      fieldFilter: (value: string, index: number, array: string[]) => unknown,
+      titleClassName?: string | undefined
+    ) => {
+      return Object.keys(rootField)
+        .filter(fieldFilter)
+        .map((key, index) => (
+          <CardContent key={index}>
+            <div className="flex gap-1 items-center text-[#eee0ff66] capitalize mb-2 font-medium text-[1rem]">
+              <div className={cn("mr-1", titleClassName)}>{key}</div>
+              <AiOutlineExclamationCircle size={20} color={"#818cf8"} />
+            </div>
+            <Textarea
+              disabled={editStatus !== "edit"}
+              defaultValue={rootField[key] ?? ""}
+              style={{ minHeight: "64px" }}
+              className="text-[#eee0ffd9]  font-semibold text-sm min-h-8 resize-none"
+            />
+          </CardContent>
+        ));
+    },
+    [editStatus]
+  );
+
+  const renderSubplots = React.useCallback(
+    (subplots: TSubplot[]) => {
+      if (subplots.length < 1) {
+        return null;
+      }
+      return (
+        <CardContent>
+          <div className="flex gap-1 items-center text-[#eee0ff66] capitalize mb-2 font-medium text-[1rem]">
+            <div className="mr-1">Subplots:</div>
+            <AiOutlineExclamationCircle size={20} color={"#818cf8"} />
+          </div>
+          <div className="flex flex-row items-center gap-1">
+            <IoMdPricetag size={24} className="text-purple-500" />
+            <div className="flex-1 bg-violet-500/30 p-2 rounded-lg">
+              {subplots.map((subplot, index) => (
+                <div key={index}>
+                  {renderTextField(
+                    subplot,
+                    (key) => key !== "involved_characters",
+                    "text-[0.8rem]"
+                  )}
+                  <CardContent className="flex flex-col gap-1 text-[#eee0ff66] capitalize mb-2 font-medium text-[0.8rem] py-2">
+                    <div className="flex flex-row gap-1">
+                      <div className="mr-1">Involved Characters:</div>
+                      <AiOutlineExclamationCircle size={20} color={"#818cf8"} />
+                    </div>
+                    {subplot?.involved_characters &&
+                      subplot.involved_characters.length > 0 && (
+                        <div className="flex flex-row flex-wrap gap-2 items-baseline justify-start">
+                          {subplot.involved_characters.map(
+                            (characterName, index) => (
+                              <div
+                                key={index}
+                                className="flex flex-col items-center"
+                              >
+                                <BiSolidUser
+                                  className="text-indigo-300"
+                                  size={36}
+                                />
+                                <p className="text-white font-semibold text-xs">
+                                  {characterName}
+                                </p>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      )}
+                  </CardContent>
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      );
+    },
+    [renderTextField]
+  );
+
+  console.log(
+    "🚀 ~ plotData ~ plotOutlineData['beginning']:",
+    plotOutlineData["beginning"]
+  );
+
+  const plotData = React.useMemo<TPlotData[]>(() => {
+    const { beginning, development, climax, ending } = plotOutlineData;
+    console.log(
+      "🚀 ~ plotData ~ (beginning as any)[key] ?? ",
+      (beginning as any)["scene"] ?? ""
     );
+    return [
+      {
+        title: "Begining",
+        // TODO 2024-07-20 Replace description
+        description: "Begining",
+        renderer: (
+          <div>
+            {renderTextField(beginning, (key) => key !== "main_characters")}
+            <CardContent>
+              <div className="flex gap-1 items-center text-[#eee0ff66] capitalize mb-2 font-medium text-[1rem]">
+                <div className="mr-1">Main Characters:</div>
+                <AiOutlineExclamationCircle size={20} color={"#818cf8"} />
+              </div>
+              {beginning.main_characters &&
+                beginning.main_characters.length > 0 && (
+                  <div className="flex flex-row flex-wrap gap-2 items-center justify-start">
+                    {beginning.main_characters.map((characterName, index) => (
+                      <div key={index} className="flex flex-col items-center">
+                        <BiSolidUser className="text-indigo-300" size={48} />
+                        <p className="text-white font-semibold text-xs">
+                          {characterName}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+            </CardContent>
+          </div>
+        ),
+      },
+      {
+        title: "Development",
+        description: "Development",
+        renderer: (
+          <div>
+            {renderTextField(development, (key) => key !== "subplots")}
+            {renderSubplots(development.subplots ?? [])}
+          </div>
+        ),
+      },
+      {
+        title: "Climax",
+        description: "Climax",
+        renderer: <div>{renderTextField(climax, () => true)}</div>,
+      },
+      {
+        title: "Ending",
+        description: "Ending",
+        renderer: <div>{renderTextField(ending, () => true)}</div>,
+      },
+    ];
+  }, [plotOutlineData, renderSubplots, renderTextField]);
+
+  return (
+    <div>
+      <div className="flex flex-col gap-1 items-center justify-start">
+        {plotData.map((event, index) => (
+          <React.Fragment key={index}>
+            <PlotItemCard
+              {...{
+                title: event.title,
+                description: event.description,
+                renderer: event.renderer,
+              }}
+            />
+            {index < plotData.length - 1 ? (
+              <AiOutlineArrowDown size={48} className="text-green-300" />
+            ) : null}
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default PlotUi;
