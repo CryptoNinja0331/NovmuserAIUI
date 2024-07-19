@@ -46,7 +46,7 @@ interface PlotUiProps {
 const PlotUi: React.FC<PlotUiProps> = ({ novelMsg }) => {
     const data: PlotData = novelMsg.msg || {};
 
-    const renderSubplots = (subplots: Subplot[]) => {
+    const renderSubplots = (subplots?: Subplot[]) => {
         return subplots?.map((subplot, index) => (
             <div key={index} className="bg-gray-100 rounded-md p-4 shadow-md mb-4">
                 <h4 className="text-lg font-semibold mb-2">Plot: {subplot.plot}</h4>
@@ -70,7 +70,7 @@ const PlotUi: React.FC<PlotUiProps> = ({ novelMsg }) => {
                             </span>
                         ))}
                     </p>
-                    <p>Scene: {data?.beginning.scene}</p>
+                    <p>Scene: {data?.beginning?.scene}</p>
                 </div>
             ),
         },
