@@ -66,8 +66,7 @@ const ExpandSidebar = () => {
         novel.metadata.preparing_status === "ready" ||
         prepareState.preparingStatus === "ready"
       ) {
-        // handleNavigate(novel.id);
-        novelPreparingDialogHandleRef.current?.open(novel, prepareState);
+        handleNavigate(novel.id);
       } else {
         novelPreparingDialogHandleRef.current?.open(novel, prepareState);
       }
