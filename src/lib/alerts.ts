@@ -1,4 +1,5 @@
 import Swal, { SweetAlertIcon, SweetAlertOptions } from "sweetalert2";
+import { promise } from "zod";
 
 export type TAlertProps = Pick<
   SweetAlertOptions,
@@ -20,7 +21,7 @@ export const showErrorAlert = (props: TAlertProps) => {
 };
 
 export const showWarningAlert = (props: TAlertProps) => {
-  showAlert({
+  return showAlert({
     icon: "warning",
     ...props,
   });
@@ -31,7 +32,7 @@ const showAlert = ({
   confirmButtonText = "OK",
   ...rest
 }: TAlertProps & { icon: SweetAlertIcon }) => {
-  Swal.fire({
+  return Swal.fire({
     confirmButtonColor: "linear-gradient(90deg, #a993fe, 0%, #7e61e7)",
     cancelButtonColor: "#d33",
     showCancelButton,
