@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import DeleteNovel from "@/components/singleNovel/DeleteNovel";
 import { TooltipWrapper } from "@/components/ui/tooltip";
 import useClientHttp from "@/hooks/useClientHttp";
 import emitter from "@/lib/emitters";
@@ -25,7 +15,6 @@ import { cn } from "@/lib/utils";
 import React, { FC, MouseEventHandler } from "react";
 import { FaBook } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
-import { RiDeleteBin6Line } from "react-icons/ri";
 
 const PreparingStatusTag = ({
   status,
@@ -65,12 +54,14 @@ export type TNovelItemProps = {
   showDelButton?: boolean;
   className?: string | undefined;
   onClick?: (novel: TNovel, prepareState: TNovelItemPreparingTaskState) => void;
+  afterDeleteCallback?: () => Promise<void>;
 };
 
 const NovelItem: FC<TNovelItemProps> = ({
   novelData,
   variant = "tiny",
   onClick,
+  afterDeleteCallback,
   className,
 }) => {
   const [preparingTaskState, setPreparingTaskState] =
@@ -247,7 +238,7 @@ const NovelItem: FC<TNovelItemProps> = ({
             </TooltipWrapper>
           </div>
           <div className="flex-1 flex justify-end mr-2">
-            <AlertDialog>
+            {/* <AlertDialog>
               <AlertDialogTrigger asChild>
                 <RiDeleteBin6Line className=" text-2xl text-[#FF453A] cursor-pointer" />
               </AlertDialogTrigger>
@@ -264,7 +255,11 @@ const NovelItem: FC<TNovelItemProps> = ({
                   <AlertDialogAction>Continue</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
-            </AlertDialog>
+            </AlertDialog> */}
+            <DeleteNovel
+              novelId={novelData.id}
+              afterDeleteCallback={afterDeleteCallback}
+            />
           </div>
         </div>
       )}

@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import NovelPreparingDialog, {
   TNovelPreparingDialogHandle,
 } from "../../_components/NovelPreparingDialog";
+import { refreshNovelPage } from "@/lib/apiCall/server/getAllNovel";
 
 export type TNovelPageProps = {
   currentPage: number;
@@ -57,6 +58,10 @@ const NovelPage: FC<TNovelPageProps> = ({ currentPage, novelPageRespDto }) => {
     [handleNavigate]
   );
 
+  const handleAfterDelete = React.useCallback(async () => {
+    await refreshNovelPage();
+  }, []);
+
   return (
     <React.Fragment>
       <div>
@@ -70,6 +75,7 @@ const NovelPage: FC<TNovelPageProps> = ({ currentPage, novelPageRespDto }) => {
                 onClick={(item, prepareState) =>
                   handleOnNovelItemClick(item, prepareState)
                 }
+                afterDeleteCallback={handleAfterDelete}
               />
             ))}
           </div>

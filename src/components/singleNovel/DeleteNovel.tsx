@@ -1,44 +1,52 @@
 "use client";
-import React from "react";
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { showWarningAlert, showSuccessfulAlert } from "@/lib/alerts";
+import { showSuccessfulAlert, showWarningAlert } from "@/lib/alerts";
 import { useDeleteNovelMutation } from "@/lib/apiCall/client/clientAPi";
+import { refreshNovelPage } from "@/lib/apiCall/server/getAllNovel";
+import { useGetClientToken } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
-import { todo } from "node:test";
+import { FC } from "react";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
-export default function DeleteNovel(props: any) {
+export type TDeleteNovelProps = {
+  novelId: string;
+  afterDeleteCallback?: () => Promise<void>;
+};
+
+const DeleteNovel: FC<TDeleteNovelProps> = ({
+  novelId,
+  afterDeleteCallback,
+}) => {
   const [deleteFn, { isLoading }] = useDeleteNovelMutation();
   const router = useRouter();
-  const { getToken } = useAuth();
+  const { getClientToken } = useGetClientToken();
 
-  const handleNovelDelete = async (novel_id: any) => {
-    const token = await getToken({ template: "UserToken" });
+  const handleNovelDelete = async (novelId: string) => {
+    const token = await getClientToken();
     showWarningAlert({
       showCancelButton: true,
       confirmButtonText: "Yes, deletel it!",
       title: "Are you absolutely sure?",
       text: "This action cannot be undone. This will permanently delete your account and remove your data from our servers.",
-      // target: `#${TOPIC_EDITING_TREE_ID}`,
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
         deleteFn({
-          novelId: novel_id,
+          novelId: novelId,
           userId: token,
         });
         showSuccessfulAlert({
           title: "Deleted!",
           text: "Your story has been deleted.",
         });
-        // todo: 没有刷新小说列表。昊哥修复一下
-        router.push(`/allnovels`);
+        await afterDeleteCallback?.();
       }
     });
   };
   return (
     <RiDeleteBin6Line
       className=" text-2xl text-[#FF453A] cursor-pointer"
-      onClick={() => handleNovelDelete(props.novel_id)}
+      onClick={() => handleNovelDelete(novelId)}
     />
   );
-}
+};
+
+export default DeleteNovel;
