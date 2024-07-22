@@ -53,15 +53,14 @@ const useStreamedChunksStore = create(
             chapterInfo
           })
         }
-        if (
-          !chapterInfo.details?.chapter_chunks ||
-          chapterInfo.details.chapter_chunks.length < 1
-        ) {
-          return;
-        }
-        console.log(chapterInfo, "chapterInfo");
+        // if (
+        //   !chapterInfo.details?.chapter_chunks ||
+        //   chapterInfo.details.chapter_chunks.length < 1
+        // ) {
+        //   return;
+        // }
         const chapterChunks: TChapterChunkDoc[] =
-          chapterInfo.details.chapter_chunks;
+          chapterInfo.details.chapter_chunks || [];
         // Convert chapterChunks to streamedChunks
         const streamedChunks: TStreamedChunk[] = chapterChunks.map((chunk) => ({
           id: chunk.id || getUUid(),

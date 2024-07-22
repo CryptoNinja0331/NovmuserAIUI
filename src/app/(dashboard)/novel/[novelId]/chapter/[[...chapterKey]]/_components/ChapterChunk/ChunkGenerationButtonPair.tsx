@@ -39,9 +39,9 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
   chapterKey,
   userFeedback,
   nextPointChecked,
-  chapterInfo,
 }) => {
   const {
+    chapterInfo,
     appendChunk,
     appendChunkContent,
     setIsStreaming,
@@ -56,11 +56,9 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
     useContext(ChapterContext);
   const { getToken } = useAuth();
 
-  const chapterChunks = chapterInfo.details?.chapter_chunks ?? [];
-
   const isFirstChunk = React.useMemo<boolean>(() => {
-    return chapterChunks.length === 0;
-  }, [chapterChunks.length]);
+    return streamedChunks.length === 0;
+  }, [streamedChunks.length]);
 
   const getStreamGenerationPayload = () => {
     if (isFirstChunk || nextPointChecked) {
