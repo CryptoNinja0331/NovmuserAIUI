@@ -105,7 +105,7 @@ const ChunkGenerationButtonPair: FC<TChunkGenerationButtonPairProps> = ({
   );
   const getNewChunk = (): TStreamedChunk => {
     if (isFirstChunk && streamedChunks.length == 0) {
-      const topics = chapterInfo.details.chapter_topics?.topics || [];
+      const topics = chapterInfo?.details?.chapter_topics?.topics || [];
       return {
         id: getUUid(),
         isStreaming: true,
