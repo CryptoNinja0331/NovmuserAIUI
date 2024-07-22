@@ -3,7 +3,6 @@ import { TChapterChunkMetaData } from "@/lib/types/api/chapter";
 import React, { FC, FormEventHandler, useState } from 'react';
 import { shallow } from "zustand/shallow";
 import { ChapterContext } from '../../context/useChapterContext';
-import { debounce } from 'lodash-es';
 
 export type TStreamedChunkProps = {
   index: number;
