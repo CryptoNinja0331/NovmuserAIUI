@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Textarea } from "../ui/textarea";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { GrUserFemale, GrUser } from "react-icons/gr";
 import { BsQuestionOctagon } from "react-icons/bs";
 import { TEditStatus } from "./agentCard";
+import { formatLabelText } from "@/lib/utils";
 
 interface CharacterProfileUiProps {
   novelMsg: any | null;
@@ -11,9 +12,9 @@ interface CharacterProfileUiProps {
 }
 const NotAllEditElement = ["name", "age", "sex", "nationality"];
 const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({
-  novelMsg,
-  editStatus,
-}) => {
+                                                                 novelMsg,
+                                                                 editStatus,
+                                                               }) => {
   let data = {};
   if (typeof novelMsg.msg == "string") {
     try {
@@ -24,6 +25,7 @@ const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({
   } else {
     data = novelMsg.msg
   }
+  const [formData, updateFormData] = useState(data);
   const getAvatar = (sex: string) => {
     const style: React.CSSProperties = {
       width: "100px",
@@ -59,6 +61,9 @@ const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({
       );
     }
   };
+  const mainCharactersInput = (e: ChangeEvent<HTMLTextAreaElement>, key) => {
+    console.log(e, key)
+  }
   const saveEdit = () => {
     console.log("保存");
   };
@@ -119,16 +124,18 @@ const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({
                         className="justify-center items-center  mt-4 w-full"
                       >
                         <div className=" flex text-[#eee0ff66] capitalize mb-2 font-medium text-[1rem]">
-                          <div className="mr-1">{key}</div>
+                          <div className="mr-1">{formatLabelText(key)}</div>
                           <AiOutlineExclamationCircle
                             size={20}
                             color={"#818cf8"}
                           />
                         </div>
                         <Textarea
+                          onChange={event => { mainCharactersInput(event, key)}}
                           disabled={editStatus !== "edit"}
                           style={{ minHeight: "50px" }}
                           defaultValue={character[key]}
+
                           className="text-[#eee0ffd9]  font-semibold text-sm"
                         />
                       </div>
@@ -189,7 +196,7 @@ const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({
                             className="justify-center items-center  mt-4 w-full"
                           >
                             <div className=" flex text-[#eee0ff66] capitalize mb-2 font-medium text-[1rem]">
-                              <div className="mr-1">{key}</div>
+                              <div className="mr-1">{formatLabelText(key)}</div>
                               <AiOutlineExclamationCircle
                                 size={20}
                                 color={"#818cf8"}
