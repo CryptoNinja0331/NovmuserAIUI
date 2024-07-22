@@ -1,32 +1,25 @@
 
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Textarea } from "../ui/textarea";
-import SimpleBar from "simplebar-react";
-import 'simplebar-react/dist/simplebar.min.css';
-
-
-
-
-
-
+import AgentCard from '../aiAgent/agentCard';
 
 const displayNames = {
-    'brain_storming': 'Brain Storming',
-    'characters': 'Characters',
-    'world_view': 'World View',
-    'plot_outline': 'Plot Outline',
-    'chapter_outline': 'Chapter Outline'
+    brain_storming: "Leader Writer",
+    world_view: "World Builder",
+    characters: "Character Designer",
+    chapter_outline: "Plot Designer",
+    plot_outline: "Outline Planner",
 } as const;
 
 type DisplayNameKeys = keyof typeof displayNames;
 
 interface NovelDetailsItemProps {
+    index: number;
     name: DisplayNameKeys;
     data: any; // Adjust the type based on the actual data structure
 }
 
-const NovelDetailsItem: React.FC<NovelDetailsItemProps> = ({ name, data }) => {
-
+const NovelDetailsItem: React.FC<NovelDetailsItemProps> = ({ name, data, index }) => {
+    console.log(name, data, 'NovelDetailsItem')
     return (
         <div
             key={name}
@@ -37,10 +30,13 @@ const NovelDetailsItem: React.FC<NovelDetailsItemProps> = ({ name, data }) => {
                 <DialogTrigger asChild>
                     <p>{displayNames[name]}</p>
                 </DialogTrigger>
-                <DialogContent className="max-w-[50vw] min-h-[40vh] bg-[#150F2D] text-white ">
-                    <SimpleBar style={{ maxHeight: '40vh' }}>
-                        <Textarea defaultValue={data} className="!min-h-[60vh] p-4" placeholder="Type your message here." />
-                    </SimpleBar>
+                <DialogContent className="max-w-[80vw] w-[60rem] h-[80vh] bg-[#150F2D] text-white ">
+                    <AgentCard
+                      activeTab={index}
+                      agent={{ name: name, wsMsg: {msg: data}}}
+                      style={{ maxHeight: "90vh" }}
+                      className="overflow-y-auto overflow-x-hidden"
+                    />
                 </DialogContent>
             </Dialog>
         </div>
