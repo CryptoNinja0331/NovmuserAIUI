@@ -59,6 +59,7 @@ const StreamedChunk: FC<TStreamedChunkProps> = ({ content = '', index = 0, mappi
           ) {
             console.log(cur.currentChunk, '监听到的变化')
             setChunkContent(cur.currentChunk?.content!);
+            updateContext(cur?.currentChunk?.content!);
           }
         }
       },

@@ -84,6 +84,7 @@ const useStreamedChunksStore = create(
       },
       deleteChunk: async (chunkId) => {
         const chapterInfo = get().chapterInfo;
+        debugger
         const res: TResponseDto<any> = await PATCH({
           url: `/chapter/${chapterInfo?.chapter_key}/delete/chunk/${chunkId}`,
           token: await getToken(),
@@ -135,6 +136,7 @@ const useStreamedChunksStore = create(
         const copyChunk = cloneDeep<TStreamedChunk[]>(chunkList);
         if (index > copyChunk.length - 1) return;
         const item = copyChunk[index];
+        debugger
         if (content == '') {
           console.log(item);
           get().deleteChunk(item.id);
