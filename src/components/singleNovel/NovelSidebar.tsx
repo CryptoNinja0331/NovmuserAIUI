@@ -12,15 +12,16 @@ import UserCredits from "../userInfo/UserCredits";
 import NovelDetailsItem from "./NovelDetailsItem";
 const displayNames = {
   brain_storming: "Brain Storming",
-  characters: "Characters",
   world_view: "World View",
+  characters: "Characters",
   plot_outline: "Plot Outline",
   chapter_outline: "Chapter Outline",
 } as const;
 
 type DisplayNameKeys = keyof typeof displayNames;
-
+const keys = Object.keys(displayNames)
 const NovelSidebar = ({ novelDetails }: { novelDetails: any }) => {
+  console.log("🚀~novelDetail", novelDetails)
   const [openNOvelSheet, setNovelSheet] = useState(true);
   const [deleteFn, { isLoading }] = useDeleteNovelMutation();
   const router = useRouter();
@@ -91,13 +92,16 @@ const NovelSidebar = ({ novelDetails }: { novelDetails: any }) => {
               <TopUpDialog />
             </div>
             <div className="p-2 space-y-3">
-              {Object.keys(novelDetails?.details).map((name) => (
-                <NovelDetailsItem
-                  key={name}
-                  name={name as DisplayNameKeys}
-                  data={novelDetails?.details[name]}
-                />
-              ))}
+              {Object.keys(novelDetails?.details).length > 0 && keys.map((key, index) => {
+                return (
+                  <NovelDetailsItem
+                    key={key}
+                    index={index}
+                    name={key as DisplayNameKeys}
+                    data={novelDetails?.details[key]}
+                  />
+                )
+              })}
             </div>
           </React.Fragment>
         )}

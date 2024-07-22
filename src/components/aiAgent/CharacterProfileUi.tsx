@@ -22,6 +22,8 @@ const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({
     } catch (e) {
       data = novelMsg.msg;
     }
+  } else {
+    data = novelMsg.msg
   }
   const getAvatar = (sex: string) => {
     const style: React.CSSProperties = {
@@ -68,6 +70,7 @@ const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({
       console.log("可编辑");
     }
   }, [editStatus]);
+  console.log(data, 'CharacterProfileUi')
   return (
     <div className="charecter">
       <div className=" mx-auto">

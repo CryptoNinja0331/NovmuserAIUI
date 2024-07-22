@@ -114,11 +114,6 @@ const AgentUi: React.FC<AgentUiProps> = ({ wsMsgStr, finishedPrepare }) => {
           <div className="w-[80%]">
             <AgentCard
               activeTab={activeTab}
-              canEdit={activeTab > 0}
-              title={agents?.[activeTab]?.name || ""}
-              icon={<FaRobot size={30} />}
-              tip={agents?.[activeTab]?.name}
-              editCallback={(e) => console.log(e)}
               style={{ maxHeight: "90vh" }}
               agent={agents[activeTab]}
               className="overflow-y-auto overflow-x-hidden"
