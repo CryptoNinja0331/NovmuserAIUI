@@ -1,5 +1,5 @@
 import { TPlotOutline, TSubplot } from "@/lib/types/api/agent";
-import { cn } from "@/lib/utils";
+import { cn, formatLabelText } from "@/lib/utils";
 import React, { FC } from "react";
 import { AiOutlineArrowDown, AiOutlineExclamationCircle } from "react-icons/ai";
 import { BiSolidUser } from "react-icons/bi";
@@ -73,7 +73,9 @@ const PlotUi: React.FC<TPlotUiProps> = ({ novelMsg, editStatus }) => {
         .map((key, index) => (
           <CardContent key={index}>
             <div className="flex gap-1 items-center text-[#eee0ff66] capitalize mb-2 font-medium text-[1rem]">
-              <div className={cn("mr-1", titleClassName)}>{key}</div>
+              <div className={cn("mr-1", titleClassName)}>
+                {formatLabelText(key)}
+              </div>
               <AiOutlineExclamationCircle size={20} color={"#818cf8"} />
             </div>
             <Textarea
@@ -96,14 +98,17 @@ const PlotUi: React.FC<TPlotUiProps> = ({ novelMsg, editStatus }) => {
       return (
         <CardContent>
           <div className="flex gap-1 items-center text-[#eee0ff66] capitalize mb-2 font-medium text-[1rem]">
-            <div className="mr-1">Subplots:</div>
+            <div className="mr-1">Subplots</div>
             <AiOutlineExclamationCircle size={20} color={"#818cf8"} />
           </div>
-          <div className="flex flex-row items-center gap-1">
-            <IoMdPricetag size={24} className="text-purple-500" />
-            <div className="flex-1 bg-violet-500/30 p-2 rounded-lg">
-              {subplots.map((subplot, index) => (
-                <div key={index}>
+          <div className="flex flex-col items-center gap-2">
+            {subplots.map((subplot, index) => (
+              <div
+                key={index}
+                className="flex flex-row items-center self-stretch gap-1"
+              >
+                <IoMdPricetag size={24} className="text-purple-500" />
+                <div className="flex-1 bg-violet-500/30 p-2 rounded-lg">
                   {renderTextField(
                     subplot,
                     (key) => key !== "involved_characters",
@@ -111,7 +116,7 @@ const PlotUi: React.FC<TPlotUiProps> = ({ novelMsg, editStatus }) => {
                   )}
                   <CardContent className="flex flex-col gap-1 text-[#eee0ff66] capitalize mb-2 font-medium text-[0.8rem] py-2">
                     <div className="flex flex-row gap-1">
-                      <div className="mr-1">Involved Characters:</div>
+                      <div className="mr-1">Involved Characters</div>
                       <AiOutlineExclamationCircle size={20} color={"#818cf8"} />
                     </div>
                     {subplot?.involved_characters &&
@@ -137,8 +142,8 @@ const PlotUi: React.FC<TPlotUiProps> = ({ novelMsg, editStatus }) => {
                       )}
                   </CardContent>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </CardContent>
       );
@@ -167,7 +172,7 @@ const PlotUi: React.FC<TPlotUiProps> = ({ novelMsg, editStatus }) => {
             {renderTextField(beginning, (key) => key !== "main_characters")}
             <CardContent>
               <div className="flex gap-1 items-center text-[#eee0ff66] capitalize mb-2 font-medium text-[1rem]">
-                <div className="mr-1">Main Characters:</div>
+                <div className="mr-1">Main Characters</div>
                 <AiOutlineExclamationCircle size={20} color={"#818cf8"} />
               </div>
               {beginning.main_characters &&

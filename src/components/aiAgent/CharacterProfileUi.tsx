@@ -4,6 +4,7 @@ import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { GrUserFemale, GrUser } from "react-icons/gr";
 import { BsQuestionOctagon } from "react-icons/bs";
 import { TEditStatus } from "./agentCard";
+import { formatLabelText } from "@/lib/utils";
 
 interface CharacterProfileUiProps {
   novelMsg: any | null;
@@ -116,7 +117,7 @@ const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({
                         className="justify-center items-center  mt-4 w-full"
                       >
                         <div className=" flex text-[#eee0ff66] capitalize mb-2 font-medium text-[1rem]">
-                          <div className="mr-1">{key}</div>
+                          <div className="mr-1">{formatLabelText(key)}</div>
                           <AiOutlineExclamationCircle
                             size={20}
                             color={"#818cf8"}
@@ -186,7 +187,7 @@ const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({
                             className="justify-center items-center  mt-4 w-full"
                           >
                             <div className=" flex text-[#eee0ff66] capitalize mb-2 font-medium text-[1rem]">
-                              <div className="mr-1">{key}</div>
+                              <div className="mr-1">{formatLabelText(key)}</div>
                               <AiOutlineExclamationCircle
                                 size={20}
                                 color={"#818cf8"}

@@ -24,7 +24,6 @@ export async function getAllNovels(pageNumber: number) {
         tags: [NOVEL_PAGE_CACHE_TAG],
       },
     },
-    next: { tags: ["allNovels"] },
   });
 }
 

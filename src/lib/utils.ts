@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import uuid from "react-uuid";
 import * as _ from "lodash";
-import { TChapterTopicDoc } from './types/api/chapter';
+import { TChapterTopicDoc } from "./types/api/chapter";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -55,4 +55,8 @@ export const getNextTopicAndChunkId = (
     topic_id: "",
     topic_point_id: "",
   };
+};
+
+export const formatLabelText = (label: string) => {
+  return label.replace(/_/g, " "); // Replace underscores with spaces, example: test_abc -> text abc
 };
