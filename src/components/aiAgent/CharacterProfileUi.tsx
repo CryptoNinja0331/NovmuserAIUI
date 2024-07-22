@@ -5,6 +5,7 @@ import { GrUserFemale, GrUser } from "react-icons/gr";
 import { BsQuestionOctagon } from "react-icons/bs";
 import { TEditStatus } from "./agentCard";
 import { formatLabelText } from "@/lib/utils";
+import { cloneDeep } from '../../lib/utils';
 
 interface CharacterProfileUiProps {
   novelMsg: any | null;
@@ -12,9 +13,9 @@ interface CharacterProfileUiProps {
 }
 const NotAllEditElement = ["name", "age", "sex", "nationality"];
 const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({
-                                                                 novelMsg,
-                                                                 editStatus,
-                                                               }) => {
+ novelMsg,
+ editStatus,
+}) => {
   let data = {};
   if (typeof novelMsg.msg == "string") {
     try {
@@ -61,11 +62,26 @@ const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({
       );
     }
   };
-  const mainCharactersInput = (e: ChangeEvent<HTMLTextAreaElement>, key) => {
-    console.log(e, key)
+  const mainCharactersInput = (e: ChangeEvent<HTMLTextAreaElement>, key: string, index: number) => {
+    const value = e.target.value
+    updateFormData(prevState => {
+      const copyValue = cloneDeep(prevState)
+      copyValue.main_characters[index][key] = value;
+      return copyValue
+    })
+  }
+
+  const supportCharactersInput = (e: ChangeEvent<HTMLTextAreaElement>, key: string, index: number) => {
+    const value = e.target.value
+    updateFormData(prevState => {
+      const copyValue = cloneDeep(prevState)
+      copyValue.supporting_characters[index][key] = value;
+      return copyValue
+    })
   }
   const saveEdit = () => {
     console.log("保存");
+    console.log(formData)
   };
   useEffect(() => {
     if (editStatus == "save") {
@@ -84,7 +100,7 @@ const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({
           </h1>
         </div>
         <div className="gap-16 items-center ">
-          {data?.main_characters?.map((character: any, index: number) => {
+          {formData?.main_characters?.map((character: any, index: number) => {
             // Extract keys from the character object
             const keys = Object.keys(character);
             return (
@@ -131,7 +147,7 @@ const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({
                           />
                         </div>
                         <Textarea
-                          onChange={event => { mainCharactersInput(event, key)}}
+                          onChange={event => { mainCharactersInput(event, key, index)}}
                           disabled={editStatus !== "edit"}
                           style={{ minHeight: "50px" }}
                           defaultValue={character[key]}
@@ -154,7 +170,7 @@ const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({
           </div>
 
           <div className="gird grid-cols-2 gap-4 w-full">
-            {data?.supporting_characters?.map(
+            {formData?.supporting_characters?.map(
               (character: any, index: number) => {
                 // Extract keys from the character object
                 const keys = Object.keys(character);
@@ -203,6 +219,7 @@ const CharacterProfileUi: React.FC<CharacterProfileUiProps> = ({
                               />
                             </div>
                             <Textarea
+                              onChange={e => supportCharactersInput(e, key, index)}
                               disabled={editStatus !== "edit"}
                               style={{ minHeight: "50px" }}
                               defaultValue={character[key]}
